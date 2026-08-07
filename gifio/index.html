@@ -1,0 +1,4077 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>GeekoGifio — Créer et monter des GIF pour écrans LED pixel</title>
+<meta name="description" content="Montage de GIF pour écrans LED pixel — glisser-déposer, tout dans le navigateur">
+<meta name="keywords" content="GIF, montage GIF, écran LED pixel, écran LED, convertisseur vidéo GIF, créateur de GIF, animation pixel art, GIF maker, LED matrix">
+<meta name="author" content="GeekoGifio">
+<meta name="robots" content="index, follow">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="GeekoGifio — Créer et monter des GIF pour écrans LED pixel">
+<meta property="og:description" content="Monte, rogne, découpe et convertis tes GIF pour écrans LED pixel — tout se passe dans le navigateur, rien n'est envoyé sur un serveur.">
+<meta property="og:site_name" content="GeekoGifio">
+
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="GeekoGifio — Créer et monter des GIF pour écrans LED pixel">
+<meta name="twitter:description" content="Monte, rogne, découpe et convertis tes GIF pour écrans LED pixel, directement dans le navigateur.">
+
+<meta name="theme-color" content="#5B5FA8">
+<link rel="manifest" href="data:application/manifest+json;base64,eyJuYW1lIjogIkdlZWtvR2lmaW8iLCAic2hvcnRfbmFtZSI6ICJHZWVrb0dpZmlvIiwgImRlc2NyaXB0aW9uIjogIk1vbnRhZ2UgZGUgR0lGIHBvdXIgXHUwMGU5Y3JhbnMgTEVEIHBpeGVsIFx1MjAxNCBnbGlzc2VyLWRcdTAwZTlwb3NlciwgdG91dCBkYW5zIGxlIG5hdmlnYXRldXIiLCAic3RhcnRfdXJsIjogIi4iLCAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwgImJhY2tncm91bmRfY29sb3IiOiAiI0Y0RjRGNyIsICJ0aGVtZV9jb2xvciI6ICIjNUI1RkE4IiwgIm9yaWVudGF0aW9uIjogImFueSIsICJpY29ucyI6IFt7InNyYyI6ICJkYXRhOmltYWdlL3N2Zyt4bWw7YmFzZTY0LFBITjJaeUI0Yld4dWN6MGlhSFIwY0RvdkwzZDNkeTUzTXk1dmNtY3ZNakF3TUM5emRtY2lJSFpwWlhkQ2IzZzlJakFnTUNBMU1USWdOVEV5SWo0S1BHUmxabk0rUEd4cGJtVmhja2R5WVdScFpXNTBJR2xrUFNKbklpQjRNVDBpTUNJZ2VURTlJakFpSUhneVBTSXhJaUI1TWowaU1TSStDanh6ZEc5d0lHOW1abk5sZEQwaU1DSWdjM1J2Y0MxamIyeHZjajBpSXpWQ05VWkJPQ0l2UGp4emRHOXdJRzltWm5ObGREMGlNU0lnYzNSdmNDMWpiMnh2Y2owaUl6ZEVPRGxDTUNJdlBnbzhMMnhwYm1WaGNrZHlZV1JwWlc1MFBqd3ZaR1ZtY3o0S1BISmxZM1FnZDJsa2RHZzlJalV4TWlJZ2FHVnBaMmgwUFNJMU1USWlJSEo0UFNJeE1qQWlJR1pwYkd3OUluVnliQ2dqWnlraUx6NEtQR05wY21Oc1pTQmplRDBpTWpVMklpQmplVDBpTWpVMklpQnlQU0l4TlRBaUlHWnBiR3c5SWlObVptWm1abVlpTHo0S1BIQmhkR2dnWkQwaVRUSXhOaUF4TnpZZ1RESXhOaUF6TXpZZ1RETTFOaUF5TlRZZ1dpSWdabWxzYkQwaWRYSnNLQ05uS1NJdlBnbzhMM04yWno0PSIsICJzaXplcyI6ICI1MTJ4NTEyIiwgInR5cGUiOiAiaW1hZ2Uvc3ZnK3htbCIsICJwdXJwb3NlIjogImFueSJ9LCB7InNyYyI6ICJkYXRhOmltYWdlL3N2Zyt4bWw7YmFzZTY0LFBITjJaeUI0Yld4dWN6MGlhSFIwY0RvdkwzZDNkeTUzTXk1dmNtY3ZNakF3TUM5emRtY2lJSFpwWlhkQ2IzZzlJakFnTUNBMU1USWdOVEV5SWo0S1BHUmxabk0rUEd4cGJtVmhja2R5WVdScFpXNTBJR2xrUFNKbklpQjRNVDBpTUNJZ2VURTlJakFpSUhneVBTSXhJaUI1TWowaU1TSStDanh6ZEc5d0lHOW1abk5sZEQwaU1DSWdjM1J2Y0MxamIyeHZjajBpSXpWQ05VWkJPQ0l2UGp4emRHOXdJRzltWm5ObGREMGlNU0lnYzNSdmNDMWpiMnh2Y2owaUl6ZEVPRGxDTUNJdlBnbzhMMnhwYm1WaGNrZHlZV1JwWlc1MFBqd3ZaR1ZtY3o0S1BISmxZM1FnZDJsa2RHZzlJalV4TWlJZ2FHVnBaMmgwUFNJMU1USWlJSEo0UFNJeE1qQWlJR1pwYkd3OUluVnliQ2dqWnlraUx6NEtQR05wY21Oc1pTQmplRDBpTWpVMklpQmplVDBpTWpVMklpQnlQU0l4TlRBaUlHWnBiR3c5SWlObVptWm1abVlpTHo0S1BIQmhkR2dnWkQwaVRUSXhOaUF4TnpZZ1RESXhOaUF6TXpZZ1RETTFOaUF5TlRZZ1dpSWdabWxzYkQwaWRYSnNLQ05uS1NJdlBnbzhMM04yWno0PSIsICJzaXplcyI6ICI1MTJ4NTEyIiwgInR5cGUiOiAiaW1hZ2Uvc3ZnK3htbCIsICJwdXJwb3NlIjogIm1hc2thYmxlIn1dfQ==">
+<link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KPGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJnIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+CjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iIzVCNUZBOCIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzdEODlCMCIvPgo8L2xpbmVhckdyYWRpZW50PjwvZGVmcz4KPHJlY3Qgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHJ4PSIxMjAiIGZpbGw9InVybCgjZykiLz4KPGNpcmNsZSBjeD0iMjU2IiBjeT0iMjU2IiByPSIxNTAiIGZpbGw9IiNmZmZmZmYiLz4KPHBhdGggZD0iTTIxNiAxNzYgTDIxNiAzMzYgTDM1NiAyNTYgWiIgZmlsbD0idXJsKCNnKSIvPgo8L3N2Zz4=">
+<link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KPGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJnIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+CjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iIzVCNUZBOCIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzdEODlCMCIvPgo8L2xpbmVhckdyYWRpZW50PjwvZGVmcz4KPHJlY3Qgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHJ4PSIxMjAiIGZpbGw9InVybCgjZykiLz4KPGNpcmNsZSBjeD0iMjU2IiBjeT0iMjU2IiByPSIxNTAiIGZpbGw9IiNmZmZmZmYiLz4KPHBhdGggZD0iTTIxNiAxNzYgTDIxNiAzMzYgTDM1NiAyNTYgWiIgZmlsbD0idXJsKCNnKSIvPgo8L3N2Zz4=">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="GeekoGifio">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.js"></script>
+<style>
+  :root{
+    --bg:#F4F4F7;
+    --bg2:#EFEFF3;
+    --panel:#FFFFFF;
+    --panel-alt:#F6F6F9;
+    --border:#E1E1E7;
+    --text:#20232E;
+    --muted:#6B7086;
+    --pink:#5B5FA8;
+    --pink-deep:#464A8C;
+    --mint:#3D8F82;
+    --mint-deep:#2E6E64;
+    --peach:#B4813C;
+    --lav:#7D89B0;
+    --lav-deep:#4A5578;
+    --sky:#8CA0B3;
+    --danger:#B3453D;
+    --radius:var(--m3-shape-xl);
+    --radius-sm:var(--m3-shape-lg);
+
+    /* ---- Material Design 3 tokens ---- */
+    --m3-shape-xs:4px;
+    --m3-shape-sm:8px;
+    --m3-shape-md:12px;
+    --m3-shape-lg:16px;
+    --m3-shape-xl:28px;
+    --m3-shape-full:999px;
+    --m3-elev-0:none;
+    --m3-elev-1:0 1px 2px rgba(20,20,30,0.10), 0 1px 3px 1px rgba(20,20,30,0.08);
+    --m3-elev-2:0 1px 2px rgba(20,20,30,0.12), 0 2px 6px 2px rgba(20,20,30,0.09);
+    --m3-elev-3:0 1px 3px rgba(20,20,30,0.14), 0 4px 8px 3px rgba(20,20,30,0.10);
+    --m3-elev-4:0 2px 3px rgba(20,20,30,0.16), 0 6px 10px 4px rgba(20,20,30,0.11);
+    --m3-elev-5:0 4px 4px rgba(20,20,30,0.18), 0 8px 12px 6px rgba(20,20,30,0.12);
+  }
+  html[data-theme="dark"]{
+    --bg:#16171D;
+    --bg2:#1C1E26;
+    --panel:#22242E;
+    --panel-alt:#2A2D38;
+    --border:#3A3D4A;
+    --text:#E8E9EE;
+    --muted:#9297A8;
+    --pink:#8B8FD9;
+    --pink-deep:#A5A9E8;
+    --mint:#5FBBA8;
+    --mint-deep:#7DD4C0;
+    --peach:#D4A05C;
+    --lav:#9AA5CC;
+    --lav-deep:#B8C0E0;
+    --sky:#A8BAC9;
+    --danger:#E07268;
+    --m3-elev-1:0 1px 2px rgba(0,0,0,0.35), 0 1px 3px 1px rgba(0,0,0,0.28);
+    --m3-elev-2:0 1px 2px rgba(0,0,0,0.38), 0 2px 6px 2px rgba(0,0,0,0.30);
+    --m3-elev-3:0 1px 3px rgba(0,0,0,0.42), 0 4px 8px 3px rgba(0,0,0,0.32);
+    --m3-elev-4:0 2px 3px rgba(0,0,0,0.46), 0 6px 10px 4px rgba(0,0,0,0.34);
+    --m3-elev-5:0 4px 4px rgba(0,0,0,0.5), 0 8px 12px 6px rgba(0,0,0,0.36);
+  }
+  html{ transition:background-color .2s ease; }
+  body{ transition:background-color .2s ease, color .2s ease; }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Roboto',system-ui,sans-serif;
+    min-height:100vh;
+    min-height:100dvh;
+    padding:22px;
+    padding-top:calc(22px + env(safe-area-inset-top));
+    padding-bottom:calc(22px + env(safe-area-inset-bottom));
+    padding-left:calc(22px + env(safe-area-inset-left));
+    padding-right:calc(22px + env(safe-area-inset-right));
+    -webkit-text-size-adjust:100%;
+  }
+  *{-webkit-tap-highlight-color:transparent;}
+  .brand{
+    font-family:'Roboto',sans-serif;
+    font-weight:700;
+    font-size:26px;
+    letter-spacing:0.2px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    color:var(--text);
+  }
+  .brand .dot{
+    width:16px;height:16px;border-radius:50%;
+    background:linear-gradient(135deg, var(--pink), var(--lav));
+    box-shadow:0 0 0 5px #FFFFFF, 0 4px 10px rgba(255,122,179,0.35);
+  }
+  .brand span{
+    background:linear-gradient(135deg, var(--pink-deep), var(--lav-deep));
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+  }
+  header.topbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-bottom:22px;
+    padding:10px 26px 10px 6px;
+  }
+  header.topbar .tagline{
+    color:var(--muted);
+    font-size:13.5px;
+    font-family:'Roboto',sans-serif;
+    font-weight:600;
+    background:var(--panel);
+    padding:8px 16px;
+    border-radius:999px;
+    box-shadow:0 4px 14px rgba(169,138,255,0.12);
+  }
+  .install-btn{
+    font-size:12.5px;
+    padding:9px 14px;
+    background:linear-gradient(135deg, var(--mint), var(--sky));
+    border:none;
+    color:#FFFFFF;
+    box-shadow:0 6px 14px rgba(95,209,168,0.3);
+  }
+  .install-btn:hover{filter:brightness(1.06);}
+  .feedback-btn{
+    font-family:'Roboto',sans-serif;
+    font-size:12.5px;
+    font-weight:600;
+    padding:9px 14px;
+    border-radius:var(--m3-shape-full);
+    background:var(--panel-alt);
+    border:2px solid var(--border);
+    color:var(--text);
+    text-decoration:none;
+    cursor:pointer;
+    display:inline-flex;
+    align-items:center;
+    transition:border-color .15s, color .15s, box-shadow .15s;
+  }
+  .feedback-btn:hover{border-color:var(--mint-deep);color:var(--mint-deep); box-shadow:var(--m3-elev-1);}
+  .nav-link{
+    font-family:'Roboto',sans-serif;
+    font-size:12.5px;
+    font-weight:700;
+    padding:9px 14px;
+    border-radius:var(--m3-shape-full);
+    background:var(--panel-alt);
+    border:2px solid var(--border);
+    color:var(--text);
+    text-decoration:none;
+    cursor:pointer;
+    display:inline-flex;
+    align-items:center;
+    transition:border-color .15s, color .15s, box-shadow .15s;
+  }
+  .nav-link:hover{border-color:var(--pink-deep);color:var(--pink-deep); box-shadow:var(--m3-elev-1);}
+  .donate-btn{
+    font-family:'Roboto',sans-serif;
+    font-size:12.5px;
+    font-weight:600;
+    padding:9px 14px;
+    border-radius:var(--m3-shape-full);
+    background:var(--panel-alt);
+    border:2px solid var(--border);
+    color:var(--text);
+    text-decoration:none;
+    cursor:pointer;
+    display:inline-flex;
+    align-items:center;
+    transition:border-color .15s, color .15s, box-shadow .15s;
+  }
+  .donate-btn:hover{border-color:var(--peach);color:var(--peach); box-shadow:var(--m3-elev-1);}
+  .like-btn{
+    font-size:14px;
+    padding:8px 12px;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+  }
+  .like-btn:hover{border-color:var(--danger);}
+  #likeIcon{transition:transform .15s;}
+  .like-btn.liked #likeIcon{transform:scale(1.15);}
+  #likeCount{font-size:12px;font-weight:700;color:var(--muted);}
+  .theme-toggle{
+    font-size:15px;
+    padding:8px 12px;
+    line-height:1;
+  }
+  .lang-select{
+    width:auto;
+    max-width:50%;
+    background:var(--panel);
+    border:2px solid var(--border);
+    color:var(--text);
+    font-family:'Roboto',sans-serif;
+    font-weight:600;
+    font-size:12.5px;
+    padding:8px 10px;
+    border-radius:var(--m3-shape-full);
+    cursor:pointer;
+    box-shadow:var(--m3-elev-1);
+  }
+  .lang-select:hover{border-color:var(--lav-deep);}
+  .ios-install-tip{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    background:var(--panel);
+    border:2px solid var(--lav);
+    border-radius:16px;
+    padding:12px 16px;
+    margin-bottom:16px;
+    font-size:12.5px;
+    color:var(--text);
+    box-shadow:var(--m3-elev-1);
+  }
+  .ios-install-tip strong{color:var(--pink-deep);}
+  .ios-install-tip button{
+    margin-left:auto;
+    background:none;
+    border:none;
+    color:var(--muted);
+    font-size:14px;
+    cursor:pointer;
+    flex-shrink:0;
+  }
+  .ios-install-tip button:hover{color:var(--pink-deep);}
+  main.layout{
+    display:grid;
+    grid-template-columns: 1fr 300px;
+    gap:18px;
+    align-items:start;
+  }
+  @media (max-width:880px){
+    main.layout{grid-template-columns:1fr;}
+  }
+  @media (max-width:600px){
+    body{padding:14px; padding-top:calc(14px + env(safe-area-inset-top)); padding-bottom:calc(14px + env(safe-area-inset-bottom));}
+    header.topbar{margin-bottom:14px; padding:6px 4px;}
+    .brand{font-size:21px;}
+    header.topbar .tagline{font-size:12px; padding:6px 12px;}
+    main.layout{gap:12px;}
+    .panel{padding:14px;}
+    .canvas-wrap{padding:16px; min-height:260px;}
+    .clip-card{flex:0 0 148px;}
+    .crop-panel{padding:16px; border-radius:18px;}
+    .crop-transform-row button{min-width:0; font-size:11px; padding:8px 4px;}
+    .track-toolbar{flex-wrap:wrap;}
+    .track-toolbar-tip{display:none;}
+    .arm-left, .arm-right, .arm-bottom{display:none;} /* keep the small canvas focused and uncluttered */
+  }
+  .panel{
+    background:var(--panel);
+    border:none;
+    border-radius:var(--radius);
+    padding:20px;
+    box-shadow:var(--m3-elev-2);
+  }
+  .panel h2{
+    font-family:'Roboto',sans-serif;
+    font-size:17px;
+    letter-spacing:0.2px;
+    text-transform:none;
+    color:var(--lav-deep);
+    margin:0 0 16px 0;
+    font-weight:700;
+  }
+  /* ---- Stage ---- */
+  .stage{display:flex;flex-direction:column;gap:14px;}
+  .canvas-wrap{
+    background:linear-gradient(150deg, #FFF9FC, #F5F0FF);
+    border:3px solid transparent;
+    border-radius:var(--radius);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:28px;
+    min-height:380px;
+    position:relative;
+    box-shadow:var(--m3-elev-2);
+    transition:border-color .15s, background .15s;
+  }
+  .canvas-wrap.dragover{
+    border-color:var(--pink-deep);
+    background:linear-gradient(150deg, #FFEFF6, #F5EEFF);
+  }
+  #previewCanvas{
+    image-rendering:pixelated;
+    background:#fff;
+    max-width:100%;
+    height:auto;
+    max-height:420px;
+    border-radius:18px;
+    box-shadow:0 8px 24px rgba(70,58,94,0.18), 0 0 0 8px #ffffff, 0 0 0 9px var(--border);
+  }
+  .stage-controls{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    background:var(--panel);
+    border:none;
+    border-radius:999px;
+    padding:10px 18px;
+    font-family:'Roboto',sans-serif;
+    font-weight:700;
+    font-size:13.5px;
+    box-shadow:0 6px 18px rgba(169,138,255,0.12);
+  }
+  .stage-controls .spacer{flex:1;}
+  .stage-controls .clip-label{color:var(--muted);}
+  button{
+    font-family:'Roboto',sans-serif;
+    cursor:pointer;
+    border:none;
+    border-radius:var(--m3-shape-full);
+    padding:10px 18px;
+    font-size:13.5px;
+    font-weight:600;
+    letter-spacing:0.1px;
+    position:relative;
+    overflow:hidden;
+    transition:transform .12s ease, filter .15s ease, box-shadow .15s ease;
+  }
+  button:active{transform:scale(0.97);}
+  button.primary{
+    background:linear-gradient(135deg, var(--pink), var(--lav));
+    color:#FFFFFF;
+    box-shadow:var(--m3-elev-1);
+  }
+  button.primary:hover{filter:brightness(1.05); box-shadow:var(--m3-elev-3);}
+  button.primary:active{box-shadow:var(--m3-elev-1);}
+  button.primary:disabled{background:var(--panel-alt);color:#B4B7C4;box-shadow:none;cursor:not-allowed;}
+  .m3-fab{
+    font-size:14.5px;
+    padding:14px 24px;
+    box-shadow:var(--m3-elev-3);
+  }
+  .m3-fab:hover:not(:disabled){box-shadow:var(--m3-elev-4);}
+  .m3-fab:active:not(:disabled){box-shadow:var(--m3-elev-2);}
+  button.ghost{
+    background:var(--panel-alt);
+    border:2px solid var(--border);
+    color:var(--text);
+  }
+  button.ghost:hover{border-color:var(--mint-deep);color:var(--mint-deep); box-shadow:var(--m3-elev-1);}
+  #addImageBtn{
+    background:none;
+    border:none;
+    color:var(--muted);
+    font-size:11.5px;
+    font-weight:700;
+    padding:6px 8px;
+    text-decoration:underline;
+  }
+  #addImageBtn:hover{color:var(--pink-deep);}
+  button.icon{
+    background:linear-gradient(135deg, var(--sky), var(--mint));
+    color:#FFFFFF;
+    padding:9px 13px;
+    border:none;
+    box-shadow:var(--m3-elev-1);
+  }
+  button.icon:hover{filter:brightness(1.06); box-shadow:var(--m3-elev-2);}
+  /* ---- Material ripple ---- */
+  .m3-ripple{
+    position:absolute;
+    border-radius:50%;
+    background:rgba(255,255,255,0.55);
+    transform:scale(0);
+    pointer-events:none;
+    animation:m3-ripple-anim 550ms ease-out;
+  }
+  @keyframes m3-ripple-anim{ to{ transform:scale(2.6); opacity:0; } }
+  @media (prefers-reduced-motion: reduce){
+    .m3-ripple{ display:none; }
+  }
+  /* ---- Settings panel ---- */
+  .field{margin-bottom:18px;}
+  .field label{
+    display:block;
+    font-size:12.5px;
+    color:var(--muted);
+    margin-bottom:7px;
+    font-family:'Roboto',sans-serif;
+    font-weight:700;
+    letter-spacing:.2px;
+  }
+  select, input[type=number]{
+    width:100%;
+    background:var(--panel-alt);
+    border:2px solid var(--border);
+    color:var(--text);
+    padding:9px 12px;
+    border-radius:var(--radius-sm);
+    font-family:'Roboto',sans-serif;
+    font-weight:600;
+    font-size:13.5px;
+  }
+  select:focus, input:focus{outline:3px solid var(--lav); outline-offset:1px;}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  .segmented{
+    display:flex;
+    border:2px solid var(--border);
+    border-radius:999px;
+    overflow:hidden;
+    background:var(--panel-alt);
+  }
+  .segmented button{
+    flex:1;
+    border-radius:999px;
+    background:transparent;
+    color:var(--muted);
+    font-size:12.5px;
+    padding:9px 6px;
+  }
+  .segmented button.active{
+    background:linear-gradient(135deg, var(--mint), var(--sky));
+    color:#FFFFFF;
+    box-shadow:0 4px 10px rgba(95,209,168,0.3);
+  }
+  .field input[type=color]{
+    width:100%;
+    height:38px;
+    background:var(--panel-alt);
+    border:2px solid var(--border);
+    border-radius:var(--radius-sm);
+    padding:3px;
+  }
+  #bgColorField{display:none;}
+  #progressWrap{margin-top:16px;display:none;}
+  #progressBar{
+    height:10px;
+    background:var(--panel-alt);
+    border-radius:999px;
+    overflow:hidden;
+    border:2px solid var(--border);
+  }
+  #progressFill{
+    height:100%;
+    width:0%;
+    background:linear-gradient(90deg, var(--pink), var(--lav), var(--sky));
+    transition:width .15s ease;
+    border-radius:999px;
+  }
+  #progressText{
+    font-family:'Roboto',sans-serif;
+    font-weight:700;
+    font-size:11.5px;
+    color:var(--muted);
+    margin-top:8px;
+  }
+  .video-to-gif-btn{
+    font-size:12.5px;
+    padding:9px 14px;
+  }
+  .video-range-row{margin-bottom:12px;}
+  .video-field{
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .video-field label{
+    font-size:12px;
+    font-weight:700;
+    color:var(--muted);
+    width:110px;
+    flex-shrink:0;
+  }
+  .video-field input[type=range]{
+    flex:1;
+    -webkit-appearance:none;
+    appearance:none;
+    height:6px;
+    border-radius:var(--m3-shape-full);
+    background:var(--border);
+    outline:none;
+  }
+  .video-field input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none;
+    appearance:none;
+    width:20px;
+    height:20px;
+    border-radius:50%;
+    background:var(--mint-deep);
+    box-shadow:var(--m3-elev-2);
+    cursor:pointer;
+    border:4px solid #fff;
+  }
+  .video-field input[type=range]::-moz-range-thumb{
+    width:20px;
+    height:20px;
+    border-radius:50%;
+    background:var(--mint-deep);
+    box-shadow:var(--m3-elev-2);
+    cursor:pointer;
+    border:4px solid #fff;
+  }
+  .video-field span{
+    font-family:'Roboto',sans-serif;
+    font-weight:700;
+    font-size:12px;
+    color:var(--text);
+    width:44px;
+    flex-shrink:0;
+    text-align:right;
+  }
+  #videoProgressWrap{margin:14px 0;}
+  #videoProgressBar{
+    height:10px;
+    background:var(--panel-alt);
+    border-radius:999px;
+    overflow:hidden;
+    border:2px solid var(--border);
+  }
+  #videoProgressFill{
+    height:100%;
+    width:0%;
+    background:linear-gradient(90deg, var(--mint), var(--sky), var(--lav));
+    transition:width .15s ease;
+    border-radius:999px;
+  }
+  #videoProgressText{
+    font-family:'Roboto',sans-serif;
+    font-weight:700;
+    font-size:11.5px;
+    color:var(--muted);
+    margin-top:8px;
+  }
+  #videoDownloadBar{
+    height:10px;
+    background:var(--panel-alt);
+    border-radius:999px;
+    overflow:hidden;
+    border:2px solid var(--border);
+  }
+  #videoDownloadFill{
+    height:100%;
+    width:0%;
+    background:linear-gradient(90deg, var(--pink), var(--lav), var(--sky));
+    transition:width .15s ease;
+    border-radius:999px;
+  }
+  #videoDownloadText{
+    font-family:'Roboto',sans-serif;
+    font-weight:700;
+    font-size:11.5px;
+    color:var(--muted);
+    margin-top:8px;
+    text-align:center;
+  }
+  #downloadLink{
+    display:none;
+    margin-top:14px;
+    text-align:center;
+    text-decoration:none;
+  }
+  /* ---- Timeline ---- */
+  .timeline-section{margin-top:18px;}
+  .track-wrap{margin-bottom:14px;}
+  .track-toolbar{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:8px;
+  }
+  .track-toolbar .spacer{flex:1;}
+  .track-toolbar .icon-btn{font-size:13px; padding:7px 10px;}
+  .track-split-btn{
+    font-size:12.5px;
+    padding:7px 12px;
+    color:#C9791A;
+    border-color:#F3DFC2;
+  }
+  .track-split-btn:hover{background:var(--peach);color:#FFFFFF;border-color:transparent;}
+  .track-toolbar-tip{
+    font-size:11px;
+    color:var(--muted);
+    font-weight:600;
+  }
+  .track-bar-scroll{
+    overflow-x:auto;
+    overflow-y:hidden;
+    border-radius:14px;
+    box-shadow:var(--m3-elev-1);
+  }
+  .track-bar{
+    position:relative;
+    display:flex;
+    height:48px;
+    border-radius:14px;
+    overflow:hidden;
+    background:var(--panel);
+    cursor:pointer;
+    touch-action:none;
+  }
+  .track-bar:empty::after{content:'';}
+  .track-seg{
+    position:relative;
+    display:flex;
+    align-items:center;
+    gap:5px;
+    font-family:'Roboto',sans-serif;
+    font-weight:800;
+    font-size:11px;
+    color:#FFFFFF;
+    text-shadow:0 1px 3px rgba(0,0,0,0.6);
+    border-right:2px solid #fff;
+    padding:0 8px;
+    white-space:nowrap;
+    overflow:hidden;
+    pointer-events:none;
+  }
+  .track-seg:last-child{border-right:none;}
+  .track-seg .n{
+    background:rgba(255,255,255,0.28);
+    border-radius:999px;
+    padding:1px 6px;
+    font-size:10px;
+  }
+  .track-seg .t{overflow:hidden;text-overflow:ellipsis;}
+  .track-seg:hover{filter:brightness(1.05);}
+  .track-seg.active{outline:3px solid #fff;outline-offset:-3px;filter:brightness(1.08);}
+  .track-handle{
+    position:absolute;
+    top:0; bottom:0;
+    width:10px;
+    cursor:ew-resize;
+    z-index:3;
+    touch-action:none;
+    pointer-events:auto;
+  }
+  .track-handle-left{ left:0; }
+  .track-handle-right{ right:0; }
+  .track-handle::after{
+    content:'';
+    position:absolute;
+    top:50%; left:50%;
+    transform:translate(-50%,-50%);
+    width:4px; height:60%;
+    background:rgba(255,255,255,0.7);
+    border-radius:3px;
+    opacity:0;
+    transition:opacity .15s;
+  }
+  .track-handle:hover::after, .track-handle:active::after{ opacity:1; }
+  .track-empty-msg{
+    display:flex;align-items:center;justify-content:center;
+    width:100%;
+    font-size:12.5px;
+    color:var(--muted);
+    font-weight:700;
+  }
+  .track-playhead{
+    position:absolute;
+    top:0; bottom:0;
+    width:3px;
+    background:#3A2A50;
+    box-shadow:0 0 8px rgba(58,42,80,0.5);
+    left:0%;
+    pointer-events:none;
+    z-index:5;
+  }
+  .track-playhead.hidden{opacity:0;}
+  .timeline-header{
+    display:flex;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-bottom:12px;
+    padding-left:6px;
+  }
+  .timeline-header h2{
+    font-family:'Roboto',sans-serif;
+    font-size:17px;
+    letter-spacing:0.2px;
+    text-transform:none;
+    color:var(--lav-deep);
+    margin:0;
+    flex:1;
+    font-weight:700;
+  }
+  .count-badge{
+    font-family:'Roboto',sans-serif;
+    font-weight:800;
+    font-size:12px;
+    color:var(--peach);
+    background:var(--panel-alt);
+    border:1px solid var(--border);
+    padding:5px 14px;
+    border-radius:999px;
+  }
+  #dropzone{
+    border:3px dashed var(--lav);
+    border-radius:var(--radius);
+    padding:22px;
+    text-align:center;
+    color:var(--lav-deep);
+    font-weight:700;
+    font-size:13.5px;
+    cursor:pointer;
+    transition:border-color .15s, color .15s, background .15s, transform .15s;
+    margin-bottom:14px;
+    background:var(--panel);
+  }
+  #dropzone:hover, #dropzone.dragover{
+    border-color:var(--pink-deep);
+    color:var(--pink-deep);
+    background:#FFF6FA;
+    transform:scale(1.005);
+  }
+  #timeline{
+    display:flex;
+    gap:14px;
+    overflow-x:auto;
+    padding:8px 4px 16px 4px;
+    min-height:160px;
+  }
+  #timeline:empty::after{
+    content:"Tes clips apparaîtront ici, sous forme de piste de montage. 🌈";
+    color:var(--muted);
+    font-weight:700;
+    font-size:13.5px;
+    padding:44px 0;
+    width:100%;
+    text-align:center;
+    display:block;
+  }
+  .clip-card{
+    flex:0 0 172px;
+    background:var(--panel);
+    border:none;
+    border-radius:var(--m3-shape-md);
+    padding:10px;
+    position:relative;
+    cursor:grab;
+    box-shadow:var(--m3-elev-1);
+    transition:transform .15s, box-shadow .15s;
+  }
+  .clip-card.dragging{
+    opacity:0.96;
+    z-index:50;
+    box-shadow:var(--m3-elev-5);
+    transition:none;
+    cursor:grabbing;
+  }
+  .clip-card.drop-indicator-before{box-shadow:-4px 0 0 0 var(--pink-deep), var(--m3-elev-1);}
+  .clip-card.drop-indicator-after{box-shadow:4px 0 0 0 var(--pink-deep), var(--m3-elev-1);}
+  .clip-card:hover{transform:translateY(-3px); box-shadow:var(--m3-elev-3);}
+  .clip-card .order-badge{
+    position:absolute;
+    top:8px;
+    left:8px;
+    background:linear-gradient(135deg, var(--lav), var(--sky));
+    color:#FFFFFF;
+    font-family:'Roboto',sans-serif;
+    font-weight:700;
+    font-size:11px;
+    padding:2px 8px;
+    border-radius:999px;
+    box-shadow:0 3px 8px rgba(169,138,255,0.4);
+  }
+  .clip-card .card-actions{
+    position:absolute;
+    top:8px;
+    right:8px;
+    display:flex;
+    gap:4px;
+    z-index:2;
+  }
+  .clip-card .mini-btn{
+    background:#fff;
+    border:none;
+    width:22px;height:22px;
+    border-radius:50%;
+    font-size:11px;
+    line-height:1;
+    display:flex;align-items:center;justify-content:center;
+    padding:0;
+    box-shadow:0 3px 8px rgba(70,58,94,0.22);
+    cursor:pointer;
+  }
+  .clip-card .play-btn{color:var(--mint-deep);}
+  .clip-card .play-btn:hover{background:var(--mint);color:#FFFFFF;}
+  .clip-card .crop-btn{color:#C9791A; font-size:12px;}
+  .clip-card .crop-btn:hover{background:var(--peach);color:#FFFFFF;}
+  .clip-card .clone-btn{color:var(--lav-deep); font-size:14px; font-weight:800;}
+  .clip-card .clone-btn:hover{background:var(--lav);color:#FFFFFF;}
+  .clip-card .remove-btn{color:var(--danger);}
+  .clip-card .remove-btn:hover{background:var(--danger);color:#fff;}
+  .clip-card .thumb{
+    width:100%;
+    background:repeating-conic-gradient(#F7F1FF 0% 25%, #FFFFFF 0% 50%) 50%/14px 14px;
+    border-radius:14px;
+    overflow:hidden;
+    margin-bottom:8px;
+    display:flex;align-items:center;justify-content:center;
+    cursor:grab;
+    touch-action:none;
+  }
+  .clip-card .thumb:active{cursor:grabbing;}
+  .clip-card .drag-handle{
+    width:100%;
+    height:16px;
+    display:flex;align-items:center;justify-content:center;
+    color:var(--muted);
+    font-size:12px;
+    letter-spacing:2px;
+    cursor:grab;
+    -webkit-user-drag:element;
+    user-select:none;
+    touch-action:none;
+    margin-bottom:6px;
+  }
+  .clip-card .drag-handle:active{cursor:grabbing;}
+  .clip-card .order-badge{top:26px;}
+  .clip-card .card-actions{top:26px;}
+  .clip-card .thumb canvas{width:100%;height:100%;display:block;image-rendering:pixelated;touch-action:none;}
+  .dur-row input{-webkit-user-drag:none;user-select:text;}
+  .clip-card .fname{
+    font-size:11px;
+    font-weight:700;
+    color:var(--muted);
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    margin-bottom:8px;
+  }
+  .dur-row{
+    display:flex;
+    align-items:center;
+    gap:5px;
+  }
+  .dur-row input{
+    width:100%;
+    background:var(--panel-alt);
+    border:2px solid var(--border);
+    color:var(--text);
+    font-family:'Roboto',sans-serif;
+    font-weight:700;
+    font-size:12px;
+    padding:5px 8px;
+    border-radius:999px;
+    text-align:center;
+  }
+  .dur-row span{font-size:11px;color:var(--muted);font-weight:700;}
+  .speed-row{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    margin-top:6px;
+  }
+  .speed-row label{
+    font-size:10px;
+    font-weight:800;
+    color:var(--muted);
+    white-space:nowrap;
+  }
+  .speed-row .speed-select{
+    flex:1;
+    background:var(--panel-alt);
+    border:2px solid var(--border);
+    color:var(--mint-deep);
+    font-family:'Roboto',sans-serif;
+    font-weight:700;
+    font-size:11.5px;
+    padding:3px 6px;
+    border-radius:999px;
+  }
+  .repeat-row{
+    display:flex;
+    align-items:center;
+    gap:5px;
+    margin-top:6px;
+  }
+  .repeat-row label{
+    font-size:10px;
+    font-weight:800;
+    color:var(--muted);
+    white-space:nowrap;
+  }
+  .repeat-row .repeat-input{
+    width:36px;
+    background:var(--panel-alt);
+    border:2px solid var(--border);
+    color:var(--pink-deep);
+    font-family:'Roboto',sans-serif;
+    font-weight:700;
+    font-size:12px;
+    padding:3px 2px;
+    border-radius:8px;
+    text-align:center;
+  }
+  .repeat-row .repeat-step{
+    width:22px;
+    height:22px;
+    flex-shrink:0;
+    padding:0;
+    border-radius:50%;
+    background:var(--panel-alt);
+    border:2px solid var(--border);
+    color:var(--pink-deep);
+    font-size:14px;
+    font-weight:800;
+    line-height:1;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .repeat-row .repeat-step:hover{background:var(--pink);color:#fff;border-color:transparent;}
+  .repeat-row .repeat-step:active{transform:scale(0.92);}
+  .repeat-row .repeat-note{
+    font-size:9px;
+    color:var(--muted);
+    line-height:1.3;
+  }
+  .clip-card .loop-hint{
+    font-size:9.5px;
+    color:var(--muted);
+    margin-top:6px;
+    line-height:1.5;
+  }
+  footer{
+    margin-top:28px;
+    text-align:center;
+    color:var(--muted);
+    font-family:'Roboto',sans-serif;
+    font-weight:700;
+    font-size:11.5px;
+  }
+  .visit-counter{
+    display:block;
+    margin-top:4px;
+    font-size:10.5px;
+    color:var(--muted);
+    opacity:0.8;
+  }
+  #imgPool{position:fixed;left:-99999px;top:0;pointer-events:none;}
+
+  /* ---- Sakura petals (disabled — doesn't fit the sober theme) ---- */
+  #sakuraContainer{
+    display:none;
+  }
+  .petal{
+    position:absolute;
+    top:var(--y);
+    left:var(--x);
+    width:var(--size);
+    height:var(--size);
+    background:radial-gradient(circle at 32% 30%, #FFF0F6, var(--petal-c, var(--pink)) 75%);
+    border-radius:0% 60% 60% 60%;
+    opacity:var(--o, 0.75);
+    transform:rotate(var(--rot, 0deg));
+  }
+
+  /* ---- Cute arms (disabled — doesn't fit the sober theme) ---- */
+  .arm-deco{
+    display:none;
+  }
+  .arm-left{
+    left:-56px;
+    top:32%;
+    width:130px;
+    transform-origin:6% 82%;
+    animation:arm-wave-left 2.6s ease-in-out infinite;
+  }
+  .arm-right{
+    right:-56px;
+    top:8%;
+    width:126px;
+    transform-origin:94% 82%;
+    animation:arm-wave-right 3.1s ease-in-out infinite;
+  }
+  .arm-bottom{
+    bottom:-48px;
+    left:45%;
+    width:104px;
+    transform-origin:50% 100%;
+    animation:arm-bob 2.3s ease-in-out infinite;
+  }
+  @keyframes arm-wave-left{ 0%,100%{transform:rotate(-7deg);} 50%{transform:rotate(7deg);} }
+  @keyframes arm-wave-right{ 0%,100%{transform:rotate(6deg);} 50%{transform:rotate(-6deg);} }
+  @keyframes arm-bob{ 0%,100%{transform:translateY(0);} 50%{transform:translateY(-9px);} }
+
+  @media (prefers-reduced-motion: reduce){
+    .arm-left, .arm-right, .arm-bottom{ animation:none; }
+  }
+
+  /* ---- Touch-friendly hit areas (phones, tablets, foldables) ---- */
+  @media (pointer: coarse){
+    .clip-card .mini-btn{ width:26px; height:26px; font-size:13px; }
+    .clip-card .card-actions{ gap:6px; }
+    .clip-card .drag-handle{ height:22px; font-size:15px; }
+    .clip-card .order-badge, .clip-card .card-actions{ top:32px; }
+    .track-handle{ width:20px; }
+    .track-handle-left{ left:-8px; }
+    .track-handle-right{ right:-8px; }
+    .trim-handle-time{ width:22px; }
+    .trim-handle-time-left{ left:-11px; }
+    .trim-handle-time-right{ right:-11px; }
+    button{ padding:11px 16px; }
+    .clip-card .remove-btn, .clip-card .play-btn, .clip-card .crop-btn, .clip-card .clone-btn, .repeat-row .repeat-step{
+      padding:0;
+    }
+    .repeat-row .repeat-step{ width:28px; height:28px; }
+    input[type=number], input[type=range], select{ min-height:38px; }
+    #playBtn{ width:38px; height:38px; }
+  }
+
+  /* ---- Crop modal ---- */
+  .crop-modal{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.45);
+    backdrop-filter:blur(2px);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:10000;
+    padding:20px;
+    padding-top:calc(20px + env(safe-area-inset-top));
+    padding-bottom:calc(20px + env(safe-area-inset-bottom));
+  }
+  .crop-modal.open{display:flex;}
+  .crop-panel{
+    background:var(--panel);
+    border-radius:var(--radius);
+    padding:24px;
+    max-width:420px;
+    width:100%;
+    max-height:100%;
+    overflow-y:auto;
+    -webkit-overflow-scrolling:touch;
+    box-shadow:var(--m3-elev-5);
+  }
+  .crop-panel h2{
+    font-family:'Roboto',sans-serif;
+    color:var(--lav-deep);
+    margin:0 0 14px 0;
+    font-size:19px;
+    font-weight:700;
+  }
+  .video-stepper{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-wrap:wrap;
+    gap:6px;
+    background:var(--panel-alt);
+    border-radius:var(--m3-shape-full);
+    padding:8px 10px;
+    margin-bottom:16px;
+  }
+  .video-stepper .step-item{
+    font-size:11.5px;
+    font-weight:700;
+    color:var(--muted);
+    padding:6px 10px;
+    border-radius:var(--m3-shape-full);
+    white-space:nowrap;
+    transition:background .2s, color .2s;
+  }
+  .video-stepper .step-item.done{
+    color:var(--mint-deep);
+  }
+  .video-stepper .step-item.active{
+    background:linear-gradient(135deg, var(--pink), var(--lav));
+    color:#FFFFFF;
+    box-shadow:var(--m3-elev-1);
+  }
+  .video-stepper .step-arrow{
+    color:var(--border);
+    font-size:13px;
+    font-weight:700;
+  }
+  .crop-frame-wrap{
+    position:relative;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:repeating-conic-gradient(#F7F1FF 0% 25%, #FFFFFF 0% 50%) 50%/14px 14px;
+    border-radius:16px;
+    padding:12px;
+    margin-bottom:16px;
+  }
+  .crop-play-btn{
+    position:absolute;
+    top:20px;
+    left:20px;
+    z-index:2;
+  }
+  #cropCanvas{
+    border-radius:10px;
+    cursor:grab;
+    box-shadow:0 6px 18px rgba(70,58,94,0.22);
+    touch-action:none;
+    image-rendering:pixelated;
+    max-width:100%;
+  }
+  #cropCanvas:active{cursor:grabbing;}
+  .crop-controls{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:10px;
+  }
+  .crop-controls label{
+    font-size:12.5px;
+    font-weight:700;
+    color:var(--muted);
+    font-family:'Roboto',sans-serif;
+  }
+  .crop-controls input[type=range]{
+    flex:1;
+    accent-color:var(--pink-deep);
+    -webkit-appearance:none;
+    appearance:none;
+    height:6px;
+    border-radius:var(--m3-shape-full);
+    background:var(--border);
+    outline:none;
+  }
+  .crop-controls input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none;
+    appearance:none;
+    width:20px;
+    height:20px;
+    border-radius:50%;
+    background:var(--pink-deep);
+    box-shadow:var(--m3-elev-2);
+    cursor:pointer;
+    border:4px solid #fff;
+  }
+  .crop-controls input[type=range]::-moz-range-thumb{
+    width:20px;
+    height:20px;
+    border-radius:50%;
+    background:var(--pink-deep);
+    box-shadow:var(--m3-elev-2);
+    cursor:pointer;
+    border:4px solid #fff;
+  }
+  .crop-transform-row{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+    margin-bottom:12px;
+  }
+  .crop-transform-row button{
+    flex:1;
+    min-width:110px;
+    font-size:12px;
+    padding:8px 10px;
+  }
+  .crop-transform-row button.active{
+    background:linear-gradient(135deg, var(--mint), var(--sky));
+    color:#FFFFFF;
+    border-color:transparent;
+  }
+  .trim-section{
+    background:var(--panel-alt);
+    border:2px solid var(--border);
+    border-radius:16px;
+    padding:12px 14px;
+    margin-bottom:14px;
+  }
+  .trim-title-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:8px;
+    margin-bottom:6px;
+  }
+  .trim-title{
+    font-family:'Roboto',sans-serif;
+    font-weight:700;
+    font-size:13.5px;
+    color:var(--pink-deep);
+  }
+  .trim-clear-btn{
+    background:none;
+    border:none;
+    color:var(--muted);
+    font-size:10.5px;
+    font-weight:700;
+    text-decoration:underline;
+    cursor:pointer;
+    padding:2px 4px;
+  }
+  .trim-clear-btn:hover{color:var(--pink-deep);}
+  .trim-hint{
+    font-size:10.5px;
+    color:var(--muted);
+    margin:0 0 10px 0;
+    line-height:1.4;
+  }
+  .trim-bar{
+    position:relative;
+    height:40px;
+    background:linear-gradient(135deg, var(--mint), var(--sky));
+    border-radius:10px;
+    cursor:crosshair;
+    touch-action:none;
+    overflow:hidden;
+  }
+  .video-sel-bar-wrap{
+    position:relative;
+    padding:16px 0;
+  }
+  .video-sel-handle{
+    position:absolute;
+    top:0;
+    bottom:0;
+    width:32px;
+    margin-left:-16px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:9px;
+    font-size:13px;
+    font-weight:800;
+    color:#fff;
+    cursor:ew-resize;
+    touch-action:none;
+    z-index:5;
+    box-shadow:var(--m3-elev-2);
+    transition:transform .1s;
+  }
+  .video-sel-handle:active{transform:scale(1.08);}
+  .video-sel-handle-left{ background:var(--mint-deep); }
+  .video-sel-handle-right{ background:var(--pink-deep); }
+  .trim-cut-region{
+    position:absolute;
+    top:0; bottom:0;
+    left:0; width:0;
+    background:repeating-linear-gradient(135deg, rgba(255,90,110,0.55) 0 6px, rgba(255,120,140,0.45) 6px 12px);
+    border-left:2px solid #D9364F;
+    border-right:2px solid #D9364F;
+    cursor:grab;
+    touch-action:none;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .trim-cut-region:active{cursor:grabbing;}
+  .video-keep-region{
+    background:repeating-linear-gradient(135deg, rgba(95,209,168,0.55) 0 6px, rgba(143,227,194,0.45) 6px 12px);
+    border-left:2px solid var(--mint-deep);
+    border-right:2px solid var(--mint-deep);
+  }
+  .video-keep-region .trim-scissors{color:#FFFFFF;}
+  .trim-scissors{
+    font-size:15px;
+    color:#7A0E22;
+    pointer-events:none;
+    user-select:none;
+  }
+  .trim-handle-time{
+    position:absolute;
+    top:0; bottom:0;
+    width:12px;
+    cursor:ew-resize;
+    z-index:2;
+    touch-action:none;
+  }
+  .trim-handle-time-left{ left:-6px; }
+  .trim-handle-time-right{ right:-6px; }
+  .trim-note{
+    font-size:10.5px;
+    color:var(--muted);
+    margin:8px 0 0 0;
+    text-align:center;
+  }
+  .crop-tip{
+    font-size:11.5px;
+    color:var(--muted);
+    margin:0 0 16px 0;
+    text-align:center;
+  }
+  .crop-actions{
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .crop-actions .crop-spacer{flex:1;}
+</style>
+</head>
+<body>
+
+<div id="sakuraContainer"></div>
+
+<header class="topbar">
+  <a class="brand" href="../" style="text-decoration:none;"><span class="dot"></span>Geeko<span>Gifio</span></a>
+  <a class="nav-link" href="../montage/">🎬 GeekoMontage</a>
+  <a class="nav-link" href="../audio/">🎵 GeekoAudio</a>
+  <button id="themeToggle" class="ghost theme-toggle" title="Thème clair / sombre">🌙</button>
+  <select id="langSelect" class="lang-select" title="Langue / Language">
+    <option value="fr">🇫🇷 Français</option>
+    <option value="en">🇬🇧 English</option>
+    <option value="de">🇩🇪 Deutsch</option>
+    <option value="it">🇮🇹 Italiano</option>
+    <option value="es">🇪🇸 Español</option>
+    <option value="ru">🇷🇺 Русский</option>
+    <option value="ja">🇯🇵 日本語</option>
+    <option value="zh">🇨🇳 中文</option>
+    <option value="ko">🇰🇷 한국어</option>
+    <option value="hi">🇮🇳 हिन्दी</option>
+  </select>
+  <div class="tagline" data-i18n="tagline">montage de GIF pour écrans LED pixel — glisser-déposer, tout dans le navigateur</div>
+  <button class="primary video-to-gif-btn" id="videoToGifBtn" data-i18n="videoTrim">✂️ Rogner vidéo + la convertir en GIF</button>
+  <button class="ghost install-btn" id="installBtn" style="display:none;" data-i18n="installApp">📲 Installer l'app</button>
+  <button class="ghost like-btn" id="likeBtn" title="J'aime ce site"><span id="likeIcon">🤍</span> <span id="likeCount"></span></button>
+  <a class="ghost feedback-btn" id="feedbackBtn" data-i18n="feedback" href="mailto:geekorobin@gmail.com?subject=Id%C3%A9e%20pour%20GeekoGifio&body=Salut%2C%0A%0AVoici%20mon%20id%C3%A9e%20%3A%20">💡 Une idée ?</a>
+  <a class="ghost donate-btn" id="donateBtn" data-i18n="donate" href="https://paypal.me/Geekorobin56" target="_blank" rel="noopener noreferrer">☕ Faire un don</a>
+</header>
+
+<div class="ios-install-tip" id="iosInstallTip" style="display:none;">
+  📲 Pour installer : appuie sur <strong>Partager</strong> (le carré avec la flèche) puis choisis <strong>« Sur l'écran d'accueil »</strong>.
+  <button type="button" id="iosInstallTipClose">✕</button>
+</div>
+
+<div class="ios-install-tip" id="autosaveBanner" style="display:none;">
+  <span id="autosaveBannerText">💾 Montage précédent retrouvé — restaurer ?</span>
+  <button type="button" class="ghost" id="autosaveRestoreBtn" style="margin-left:auto;">Restaurer</button>
+  <button type="button" id="autosaveDismissBtn">✕</button>
+</div>
+
+<input type="file" id="videoInput" accept="video/*" style="display:none;">
+
+<div id="videoModal" class="crop-modal">
+  <div class="crop-panel">
+    <div class="video-stepper">
+      <span class="step-item done" id="stepVideoIndicator">🎬 Vidéo</span>
+      <span class="step-arrow">→</span>
+      <span class="step-item active" id="stepTrimIndicator">✂️ Rognage</span>
+      <span class="step-arrow">→</span>
+      <span class="step-item" id="stepConvertIndicator">🎞️ Conversion GIF</span>
+      <span class="step-arrow">→</span>
+      <span class="step-item" id="stepResultIndicator">🎉 Résultat</span>
+    </div>
+    <div id="videoStepTrim">
+      <h2>✂️ Rogner ta vidéo</h2>
+      <div class="crop-frame-wrap">
+        <video id="videoPreview" muted playsinline style="max-width:100%;max-height:38vh;width:auto;height:auto;border-radius:10px;display:block;margin:0 auto;"></video>
+      </div>
+      <div class="trim-section">
+        <div class="trim-title-row">
+          <label class="trim-title">🎯 Choisis le passage à garder</label>
+        </div>
+        <p class="trim-hint">Fais glisser la poignée <strong>gauche</strong> (verte) et la poignée <strong>droite</strong> (rose) pour bien cadrer le passage — la vidéo à l'écran te montre exactement où tu es (max 10s).</p>
+        <div class="video-sel-bar-wrap">
+          <div class="trim-bar" id="videoSelBar">
+            <div class="trim-cut-region video-keep-region" id="videoSelRegion"></div>
+          </div>
+          <div class="video-sel-handle video-sel-handle-left" id="videoSelHandleLeft">◀</div>
+          <div class="video-sel-handle video-sel-handle-right" id="videoSelHandleRight">▶</div>
+        </div>
+        <p class="trim-note" id="videoSelNote">0.0s → 0.0s (0.0s sélectionnées)</p>
+      </div>
+      <p class="crop-tip" id="videoInfoTip">Choisis le passage à garder (max 10s pour rester léger sur un écran LED).</p>
+      <div class="crop-actions">
+        <button class="ghost" id="videoCancelBtn" data-i18n="cancel">Annuler</button>
+        <div class="crop-spacer"></div>
+        <button class="primary" id="videoTrimConfirmBtn">✂️ Rogner</button>
+      </div>
+    </div>
+
+    <div id="videoStepConvert" style="display:none;">
+      <h2>🎬 Convertir en GIF ?</h2>
+      <p class="crop-tip" id="videoTrimmedSummary" style="margin-bottom:16px;">Passage rogné.</p>
+      <div class="crop-controls">
+        <label>Images/seconde</label>
+        <select id="videoFpsSelect">
+          <option value="5">5 (léger)</option>
+          <option value="10" selected>10 (recommandé)</option>
+          <option value="15">15 (fluide)</option>
+          <option value="20">20 (très fluide, plus lourd)</option>
+        </select>
+      </div>
+      <div id="videoProgressWrap" style="display:none;">
+        <div id="videoProgressBar"><div id="videoProgressFill"></div></div>
+        <div id="videoProgressText">—</div>
+      </div>
+      <div class="crop-actions">
+        <button class="ghost" id="videoBackToTrimBtn">← Revoir le rognage</button>
+        <div class="crop-spacer"></div>
+        <button class="primary" id="videoConvertBtn">🎬 Convertir en GIF</button>
+      </div>
+    </div>
+
+    <div id="videoStepResult" style="display:none;">
+      <h2>🎉 GIF prêt !</h2>
+      <p class="crop-tip" id="videoResultSummary" style="margin-bottom:18px;">Ton GIF est prêt.</p>
+      <div class="crop-actions" style="flex-direction:column;gap:10px;">
+        <button class="primary" id="videoDownloadBtn" style="width:100%;">⬇ Télécharger le GIF</button>
+        <button class="ghost" id="videoAddToTimelineBtn" style="width:100%;">+ Ajouter au montage</button>
+      </div>
+      <div id="videoDownloadProgress" style="display:none;margin-top:12px;">
+        <div id="videoDownloadBar"><div id="videoDownloadFill"></div></div>
+        <div id="videoDownloadText">—</div>
+      </div>
+      <a id="videoDownloadLink" download="clip.gif" style="display:none;"></a>
+      <div class="crop-actions" style="margin-top:14px;">
+        <button class="ghost" id="videoResultCloseBtn" style="width:100%;">Fermer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<main class="layout">
+  <section class="stage">
+    <div class="canvas-wrap">
+      <canvas id="previewCanvas" width="256" height="256"></canvas>
+
+      <!-- cute arm waving in from the left -->
+      <svg class="arm-deco arm-left" viewBox="0 0 220 200" xmlns="http://www.w3.org/2000/svg">
+        <path d="M -20 150 C 30 155 55 140 75 118 C 90 100 95 90 100 78" stroke="#FF9FC7" stroke-width="36" stroke-linecap="round" fill="none"/>
+        <path d="M 5 148 C 30 152 48 142 62 128" stroke="#ffffff" stroke-width="8" stroke-linecap="round" fill="none" opacity="0.55"/>
+        <ellipse cx="110" cy="68" rx="30" ry="26" fill="#FF9FC7" transform="rotate(-20 110 68)"/>
+        <ellipse cx="90" cy="92" rx="11" ry="15" fill="#FF9FC7" transform="rotate(35 90 92)"/>
+        <ellipse cx="120" cy="40" rx="9" ry="15" fill="#FF9FC7" transform="rotate(-15 120 40)"/>
+        <ellipse cx="136" cy="34" rx="9" ry="15" fill="#FF9FC7"/>
+        <ellipse cx="151" cy="40" rx="9" ry="15" fill="#FF9FC7" transform="rotate(15 151 40)"/>
+        <ellipse cx="102" cy="58" rx="8" ry="6" fill="#ffffff" opacity="0.4"/>
+      </svg>
+
+      <!-- cute arm flashing a peace sign in from the right -->
+      <svg class="arm-deco arm-right" viewBox="0 0 220 200" xmlns="http://www.w3.org/2000/svg">
+        <path d="M 240 150 C 190 155 165 140 145 118 C 130 100 125 90 120 78" stroke="#8FE3C2" stroke-width="36" stroke-linecap="round" fill="none"/>
+        <path d="M 215 148 C 190 152 172 142 158 128" stroke="#ffffff" stroke-width="8" stroke-linecap="round" fill="none" opacity="0.55"/>
+        <ellipse cx="110" cy="68" rx="30" ry="26" fill="#8FE3C2" transform="rotate(20 110 68)"/>
+        <ellipse cx="128" cy="92" rx="10" ry="13" fill="#8FE3C2" transform="rotate(-30 128 92)"/>
+        <ellipse cx="98" cy="34" rx="9" ry="20" fill="#8FE3C2" transform="rotate(-16 98 34)"/>
+        <ellipse cx="122" cy="30" rx="9" ry="20" fill="#8FE3C2" transform="rotate(14 122 30)"/>
+        <ellipse cx="102" cy="56" rx="8" ry="6" fill="#ffffff" opacity="0.4"/>
+      </svg>
+
+      <!-- cute arm giving a thumbs up from below -->
+      <svg class="arm-deco arm-bottom" viewBox="0 0 200 220" xmlns="http://www.w3.org/2000/svg">
+        <path d="M 100 240 C 100 205 95 180 92 158 C 90 140 92 122 98 108" stroke="#C9B6FF" stroke-width="34" stroke-linecap="round" fill="none"/>
+        <rect x="76" y="68" width="48" height="44" rx="18" fill="#C9B6FF"/>
+        <ellipse cx="104" cy="50" rx="13" ry="27" fill="#C9B6FF" transform="rotate(-8 104 50)"/>
+        <ellipse cx="92" cy="82" rx="8" ry="6" fill="#ffffff" opacity="0.4"/>
+      </svg>
+    </div>
+    <div class="stage-controls">
+      <button class="icon" id="playBtn" title="Lecture / Pause">▶</button>
+      <span class="clip-label" id="clipLabel">Aucun clip</span>
+      <div class="spacer"></div>
+      <span class="clip-label" id="totalDurLabel">0.0s au total</span>
+    </div>
+  </section>
+
+  <aside class="panel">
+    <h2 data-i18n="settingsTitle">Réglages de sortie</h2>
+
+    <div class="field">
+      <label data-i18n="screenSize">Taille de l'écran</label>
+      <select id="sizePreset">
+        <option value="16x16">16 × 16</option>
+        <option value="32x32" selected>32 × 32</option>
+        <option value="64x64">64 × 64</option>
+        <option value="64x32">64 × 32</option>
+        <option value="custom">Personnalisé…</option>
+      </select>
+    </div>
+
+    <div class="field row2" id="customSizeFields" style="display:none;">
+      <div>
+        <label>Largeur</label>
+        <input type="number" id="customW" value="32" min="4" max="256">
+      </div>
+      <div>
+        <label>Hauteur</label>
+        <input type="number" id="customH" value="32" min="4" max="256">
+      </div>
+    </div>
+
+    <div class="field">
+      <label data-i18n="cropMode">Cadrage de chaque image</label>
+      <div class="segmented">
+        <button type="button" class="active" data-fit="cover" data-i18n="fitCover">Remplir (crop)</button>
+        <button type="button" data-fit="contain" data-i18n="fitContain">Tout montrer</button>
+      </div>
+    </div>
+
+    <div class="field" id="bgColorField">
+      <label>Couleur de fond (bandes)</label>
+      <input type="color" id="bgColor" value="#000000">
+    </div>
+
+    <button class="primary m3-fab" id="generateBtn" style="width:100%;" disabled data-i18n="generateBtn">✨ Générer le GIF combiné</button>
+
+    <div id="progressWrap">
+      <div id="progressBar"><div id="progressFill"></div></div>
+      <div id="progressText">—</div>
+    </div>
+
+    <a id="downloadLink" download="montage.gif">
+      <button class="ghost" style="width:100%;">⬇ Télécharger le GIF</button>
+    </a>
+  </aside>
+</main>
+
+<section class="timeline-section">
+  <div class="timeline-header">
+    <h2 data-i18n="montageTitle">Montage</h2>
+    <span class="count-badge" id="countBadge">0 clip</span>
+    <button class="ghost" id="addBtn" data-i18n="addGif">🎞️ Ajouter des GIF</button>
+    <button class="ghost" id="addImageBtn" data-i18n="addImage">+ image fixe</button>
+  </div>
+
+  <div class="track-wrap">
+    <div class="track-toolbar">
+      <button class="ghost track-split-btn" id="splitBtn" data-i18n="splitHere">✂ Couper ici</button>
+      <button class="ghost track-split-btn" id="undoDeleteBtn" style="display:none;" title="Remet le dernier clip supprimé">↩ Annuler</button>
+      <span class="track-toolbar-tip">Glisse sur la piste pour te déplacer dans le montage, puis coupe au bon endroit</span>
+      <div class="spacer"></div>
+      <button class="ghost icon-btn" id="trackZoomOutBtn" title="Zoom arrière">🔍−</button>
+      <button class="ghost icon-btn" id="trackZoomInBtn" title="Zoom avant">🔍+</button>
+    </div>
+    <div class="track-bar-scroll">
+      <div class="track-bar" id="trackBar">
+        <div class="track-playhead hidden" id="trackPlayhead"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="dropzone" data-i18n="dropzoneText">Glisse tes GIF ou images ici, ou clique pour parcourir — puis réordonne-les et ajuste la durée de chacun</div>
+  <input type="file" id="fileInput" accept="image/gif" multiple style="display:none;">
+  <input type="file" id="fileInputImages" accept="image/*" multiple style="display:none;">
+
+  <div id="timeline"></div>
+</section>
+
+<footer>
+  <span data-i18n="footerText">Tout le traitement se fait localement dans ton navigateur — rien n'est envoyé sur un serveur.</span>
+  <span class="visit-counter" id="visitCounter"></span>
+</footer>
+
+<div id="cropModal" class="crop-modal">
+  <div class="crop-panel">
+    <h2>✂ Cadrer ce GIF</h2>
+    <div class="crop-frame-wrap">
+      <button class="icon crop-play-btn" id="cropPlayBtn" title="Lecture / Pause">⏸</button>
+      <canvas id="cropCanvas"></canvas>
+    </div>
+    <div class="crop-controls">
+      <label>Zoom</label>
+      <input type="range" id="cropZoom" min="1" max="3" step="0.05" value="1">
+    </div>
+    <div class="crop-transform-row">
+      <button class="ghost" id="cropRotateLeft" title="Pivoter à gauche">⟲ 90°</button>
+      <button class="ghost" id="cropRotateRight" title="Pivoter à droite">⟳ 90°</button>
+      <button class="ghost" id="cropFlipH" title="Miroir horizontal">⇋ Horizontal</button>
+      <button class="ghost" id="cropFlipV" title="Miroir vertical">⇵ Vertical</button>
+    </div>
+    <div class="crop-controls">
+      <label>Vitesse</label>
+      <select id="cropSpeedSelect" class="speed-select">
+        <option value="0.5">0.5×</option>
+        <option value="0.75">0.75×</option>
+        <option value="1">1×</option>
+        <option value="1.5">1.5×</option>
+        <option value="2">2×</option>
+        <option value="3">3×</option>
+        <option value="4">4×</option>
+      </select>
+    </div>
+    <div class="trim-section" id="trimSection">
+      <div class="trim-title-row">
+        <label class="trim-title">✂ Supprimer un passage</label>
+        <button type="button" class="trim-clear-btn" id="trimClearBtn">Aucune coupe</button>
+      </div>
+      <p class="trim-hint">Glisse directement sur la barre pour sélectionner ce qui doit disparaître (début, fin, ou un passage au milieu) — ça se rejoint tout seul.</p>
+      <div class="trim-bar" id="trimBar">
+        <div class="trim-cut-region" id="trimCutRegion">
+          <div class="trim-handle-time trim-handle-time-left" id="trimHandleLeft"></div>
+          <span class="trim-scissors">✂</span>
+          <div class="trim-handle-time trim-handle-time-right" id="trimHandleRight"></div>
+        </div>
+      </div>
+      <p class="trim-note" id="trimNote">Rien de coupé — 0.0s natif</p>
+    </div>
+    <p class="crop-tip">Glisse l'image pour la repositionner, molette ou curseur pour zoomer. Le bouton ⏸ fige l'image sur l'image courante pour cadrer plus précisément.</p>
+    <div class="crop-actions">
+      <button class="ghost" id="cropReset" data-i18n="reset">↺ Réinitialiser</button>
+      <div class="crop-spacer"></div>
+      <button class="ghost" id="cropCancel" data-i18n="cancel">Annuler</button>
+      <button class="primary" id="cropSave" data-i18n="validate">Valider</button>
+    </div>
+  </div>
+</div>
+
+<div id="imgPool"></div>
+
+<script>
+(function(){
+  "use strict";
+
+  // ---------- State ----------
+  let clips = [];              // {id, file, url, name, type, duration, thumbDataURL, imgEl}
+  let clipIdCounter = 0;
+  let draggingId = null;
+
+  const timelineEl = document.getElementById('timeline');
+  const countBadge = document.getElementById('countBadge');
+  const dropzone = document.getElementById('dropzone');
+  const fileInput = document.getElementById('fileInput');
+  const fileInputImages = document.getElementById('fileInputImages');
+  const addBtn = document.getElementById('addBtn');
+  const addImageBtn = document.getElementById('addImageBtn');
+  const generateBtn = document.getElementById('generateBtn');
+  const previewCanvas = document.getElementById('previewCanvas');
+  const ctx = previewCanvas.getContext('2d');
+  const playBtn = document.getElementById('playBtn');
+  const clipLabel = document.getElementById('clipLabel');
+  const totalDurLabel = document.getElementById('totalDurLabel');
+  const imgPool = document.getElementById('imgPool');
+  const progressWrap = document.getElementById('progressWrap');
+  const progressFill = document.getElementById('progressFill');
+  const progressText = document.getElementById('progressText');
+  const downloadLink = document.getElementById('downloadLink');
+  const sizePreset = document.getElementById('sizePreset');
+  const customSizeFields = document.getElementById('customSizeFields');
+  const customW = document.getElementById('customW');
+  const customH = document.getElementById('customH');
+  const bgColorField = document.getElementById('bgColorField');
+  const bgColorInput = document.getElementById('bgColor');
+
+  let fitMode = 'cover';
+  let outW = 32, outH = 32;
+
+  // ---------- Output size handling ----------
+  function currentSize(){
+    if(sizePreset.value === 'custom'){
+      return [parseInt(customW.value)||32, parseInt(customH.value)||32];
+    }
+    const [w,h] = sizePreset.value.split('x').map(Number);
+    return [w,h];
+  }
+  function applySize(){
+    [outW, outH] = currentSize();
+    // scale up canvas display for tiny grids so it's visible, keep pixelated
+    const scale = Math.max(1, Math.floor(320 / Math.max(outW, outH)));
+    previewCanvas.width = outW;
+    previewCanvas.height = outH;
+    previewCanvas.style.width = (outW*scale)+'px';
+    previewCanvas.style.height = (outH*scale)+'px';
+    drawCurrentFrame();
+    if(clips.length) renderTimeline();
+  }
+  sizePreset.addEventListener('change', () => {
+    customSizeFields.style.display = sizePreset.value === 'custom' ? 'grid' : 'none';
+    applySize();
+  });
+  customW.addEventListener('input', applySize);
+  customH.addEventListener('input', applySize);
+
+  document.querySelectorAll('.segmented button').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.querySelectorAll('.segmented button').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      fitMode = btn.dataset.fit;
+      bgColorField.style.display = fitMode === 'contain' ? 'block' : 'none';
+      drawCurrentFrame();
+    });
+  });
+
+  // ---------- File handling ----------
+  // Two separate inputs so the phone's native picker can actually filter:
+  // accept="image/gif" makes Android's photo picker show GIFs only (a real,
+  // OS-level filter — we can't make thumbnails animate, that's OS-controlled,
+  // but we CAN make sure it's not a haystack of regular photos).
+  addBtn.addEventListener('click', ()=> fileInput.click());
+  addImageBtn.addEventListener('click', ()=> fileInputImages.click());
+  dropzone.addEventListener('click', ()=> fileInput.click());
+  fileInput.addEventListener('change', e => handleFiles(e.target.files));
+  fileInputImages.addEventListener('change', e => handleFiles(e.target.files));
+
+  ['dragenter','dragover'].forEach(evt=>{
+    dropzone.addEventListener(evt, e=>{ e.preventDefault(); dropzone.classList.add('dragover'); });
+  });
+  ['dragleave','drop'].forEach(evt=>{
+    dropzone.addEventListener(evt, e=>{ e.preventDefault(); dropzone.classList.remove('dragover'); });
+  });
+  dropzone.addEventListener('drop', e=>{
+    if(e.dataTransfer.files && e.dataTransfer.files.length){
+      handleFiles(e.dataTransfer.files);
+    }
+  });
+
+  // The preview screen itself also accepts dropped files
+  const canvasWrap = document.querySelector('.canvas-wrap');
+  ['dragenter','dragover'].forEach(evt=>{
+    canvasWrap.addEventListener(evt, e=>{ e.preventDefault(); canvasWrap.classList.add('dragover'); });
+  });
+  ['dragleave','drop'].forEach(evt=>{
+    canvasWrap.addEventListener(evt, e=>{ e.preventDefault(); canvasWrap.classList.remove('dragover'); });
+  });
+  canvasWrap.addEventListener('drop', e=>{
+    if(e.dataTransfer.files && e.dataTransfer.files.length){
+      handleFiles(e.dataTransfer.files);
+    }
+  });
+
+  // overrides lets autosave-restore reapply saved duration/crop/speed/cut
+  // once decode completes, instead of the normal fresh defaults.
+  function addClipFromFile(file, overrides){
+    if(!file.type.startsWith('image/')) return null;
+    const id = 'c' + (clipIdCounter++);
+    const url = URL.createObjectURL(file);
+    const imgEl = new Image();
+    imgEl.decoding = 'async';
+    imgPool.appendChild(imgEl);
+
+    const clip = {
+      id, file, url, name: file.name,
+      type: file.type,
+      duration: (overrides && overrides.duration) || 2.0,
+      speed: (overrides && overrides.speed) || 1,
+      crop: (overrides && overrides.crop) || { scale: 1, offsetX: 0.5, offsetY: 0.5, rotation: 0, flipH: false, flipV: false },
+      nativeDuration: null,
+      frameCount: null,
+      frames: null,
+      totalNativeMs: null,
+      cutStart: (overrides && overrides.cutStart) || 0,
+      cutEnd: (overrides && overrides.cutEnd) || 0, // cutStart === cutEnd means "nothing removed"
+      lastFrameIdx: -1,
+      imgEl
+    };
+    clips.push(clip);
+
+    imgEl.onload = ()=>{
+      renderTimeline();
+      if(clips.length === 1) startPreview();
+      generateBtn.disabled = clips.length === 0;
+      scheduleAutosave();
+    };
+    imgEl.src = url;
+
+    if(file.type === 'image/gif'){
+      file.arrayBuffer().then(buf=>{
+        try{
+          const decoded = decodeGif(buf);
+          if(decoded.frames.length){
+            clip.frames = decoded.frames;
+            clip.totalNativeMs = decoded.frames.reduce((s,f)=>s+f.delay, 0) || 1;
+            clip.nativeDuration = clip.totalNativeMs / 1000;
+            clip.frameCount = decoded.frames.length;
+            // Only reset the cut window / default duration for a FRESH
+            // upload — a restored clip (from autosave) keeps whatever was
+            // saved. A fresh clip defaults to exactly one full native loop
+            // instead of a flat 2s, which used to chop the animation off
+            // mid-cycle for anything longer than 2 seconds.
+            if(!overrides){
+              clip.cutStart = 0;
+              clip.cutEnd = 0;
+              clip.duration = Math.min(30, Math.max(0.2, Math.round(clip.nativeDuration * 10) / 10));
+            }
+            clip.frameCanvas = document.createElement('canvas');
+            clip.frameCanvas.width = decoded.width;
+            clip.frameCanvas.height = decoded.height;
+            clip.frameCtx = clip.frameCanvas.getContext('2d');
+            clip.lastFrameIdx = -1;
+          }
+        }catch(err){
+          // decode failed — clip.imgEl (static first frame) remains as fallback
+        }
+        renderTimeline();
+        scheduleAutosave();
+      }).catch(()=>{});
+    }
+    return clip;
+  }
+
+  function handleFiles(fileList){
+    Array.from(fileList).forEach(file=> addClipFromFile(file));
+  }
+
+  function cloneClip(id){
+    const idx = clips.findIndex(c=>c.id===id);
+    if(idx === -1) return;
+    const original = clips[idx];
+    const newId = 'c' + (clipIdCounter++);
+    const imgEl = new Image();
+    imgEl.decoding = 'async';
+    imgPool.appendChild(imgEl);
+
+    const clone = {
+      id: newId,
+      file: original.file,
+      url: original.url,
+      name: original.name,
+      type: original.type,
+      duration: original.duration,
+      speed: original.speed,
+      crop: { ...original.crop },
+      nativeDuration: original.nativeDuration,
+      frameCount: original.frameCount,
+      frames: original.frames, // decoded pixel frames are immutable — safe to share
+      totalNativeMs: original.totalNativeMs,
+      cutStart: original.cutStart,
+      cutEnd: original.cutEnd,
+      lastFrameIdx: -1,
+      imgEl
+    };
+
+    if(original.frames && original.frames.length){
+      // No re-decoding needed — just give the clone its own paint canvas
+      clone.frameCanvas = document.createElement('canvas');
+      clone.frameCanvas.width = original.frameCanvas.width;
+      clone.frameCanvas.height = original.frameCanvas.height;
+      clone.frameCtx = clone.frameCanvas.getContext('2d');
+    }
+
+    imgEl.onload = ()=> renderTimeline();
+    imgEl.src = original.url;
+
+    clips.splice(idx+1, 0, clone);
+    renderTimeline();
+  }
+
+  // ---------- Full GIF decoder (structure + LZW pixel decode) ----------
+  // We decode every frame ourselves and paint them on our own clock, instead
+  // of relying on the browser to animate a hidden <img> — that turned out to
+  // be unreliable, so this removes the dependency entirely.
+
+  function lzwDecodeGif(minCodeSize, data, expectedLength){
+    const CLEAR = 1 << minCodeSize;
+    const EOI = CLEAR + 1;
+    let dict, codeSize, dictSize;
+    function resetDict(){
+      dict = new Array(4096);
+      for(let i=0; i<CLEAR; i++) dict[i] = [i];
+      codeSize = minCodeSize + 1;
+      dictSize = CLEAR + 2;
+    }
+    resetDict();
+
+    const out = new Uint8Array(expectedLength);
+    let outPos = 0;
+    let bitBuffer = 0, bitCount = 0, pos = 0;
+
+    function readCode(){
+      while(bitCount < codeSize){
+        if(pos >= data.length) return EOI;
+        bitBuffer |= data[pos++] << bitCount;
+        bitCount += 8;
+      }
+      const code = bitBuffer & ((1 << codeSize) - 1);
+      bitBuffer >>= codeSize;
+      bitCount -= codeSize;
+      return code;
+    }
+
+    let prev = null;
+    while(outPos < expectedLength){
+      const code = readCode();
+      if(code === CLEAR){ resetDict(); prev = null; continue; }
+      if(code === EOI) break;
+      let entry;
+      if(code < dictSize && dict[code]){
+        entry = dict[code];
+      } else if(code === dictSize && prev){
+        entry = prev.concat([prev[0]]);
+      } else {
+        break;
+      }
+      for(let i=0; i<entry.length && outPos<expectedLength; i++) out[outPos++] = entry[i];
+      if(prev && dictSize < 4096){
+        dict[dictSize++] = prev.concat([entry[0]]);
+        if(dictSize === (1 << codeSize) && codeSize < 12) codeSize++;
+      }
+      prev = entry;
+    }
+    return out;
+  }
+
+  function decodeGif(buffer){
+    const bytes = new Uint8Array(buffer);
+    let pos = 6; // skip signature
+    const screenW = bytes[pos] | (bytes[pos+1] << 8); pos += 2;
+    const screenH = bytes[pos] | (bytes[pos+1] << 8); pos += 2;
+    const packed = bytes[pos]; pos += 1;
+    const gctFlag = (packed & 0x80) !== 0;
+    const gctSize = packed & 0x07;
+    pos += 2; // background index + pixel aspect ratio
+
+    function readPalette(p, size){
+      const n = Math.pow(2, size+1);
+      const pal = [];
+      for(let i=0; i<n; i++) pal.push([bytes[p+i*3], bytes[p+i*3+1], bytes[p+i*3+2]]);
+      return pal;
+    }
+
+    let globalPalette = null;
+    if(gctFlag){ globalPalette = readPalette(pos, gctSize); pos += 3*Math.pow(2, gctSize+1); }
+
+    function readSubBlocksRaw(){
+      const chunks = []; let total = 0;
+      while(pos < bytes.length){
+        const size = bytes[pos]; pos += 1;
+        if(size === 0) break;
+        chunks.push(bytes.subarray(pos, pos+size));
+        pos += size; total += size;
+      }
+      const out = new Uint8Array(total); let o = 0;
+      for(const c of chunks){ out.set(c, o); o += c.length; }
+      return out;
+    }
+
+    function clearRect(buf, w, rect){
+      for(let y=rect.top; y<rect.top+rect.h; y++){
+        for(let x=rect.left; x<rect.left+rect.w; x++){
+          const i = (y*w+x)*4;
+          buf[i]=0; buf[i+1]=0; buf[i+2]=0; buf[i+3]=0;
+        }
+      }
+    }
+
+    let pendingDelay = 10, pendingTransparent = -1, pendingDisposal = 0;
+    const frames = [];
+    const compositeBuf = new Uint8ClampedArray(screenW*screenH*4);
+    let prevDisposal = 0, prevRect = null, prevSnapshot = null;
+
+    let guard = 0;
+    while(pos < bytes.length && guard++ < 100000){
+      const intro = bytes[pos]; pos += 1;
+      if(intro === 0x21){
+        const label = bytes[pos]; pos += 1;
+        const data = readSubBlocksRaw();
+        if(label === 0xF9 && data.length >= 4){
+          pendingDisposal = (data[0] >> 2) & 0x07;
+          const transpFlag = (data[0] & 0x01) !== 0;
+          const delay = data[1] | (data[2] << 8);
+          pendingDelay = delay > 0 ? delay : 10;
+          pendingTransparent = transpFlag ? data[3] : -1;
+        }
+      } else if(intro === 0x2C){
+        const left = bytes[pos] | (bytes[pos+1]<<8); pos += 2;
+        const top = bytes[pos] | (bytes[pos+1]<<8); pos += 2;
+        const fw = bytes[pos] | (bytes[pos+1]<<8); pos += 2;
+        const fh = bytes[pos] | (bytes[pos+1]<<8); pos += 2;
+        const idPacked = bytes[pos]; pos += 1;
+        const localFlag = (idPacked & 0x80) !== 0;
+        const interlace = (idPacked & 0x40) !== 0;
+        const localSize = idPacked & 0x07;
+        let palette = globalPalette;
+        if(localFlag){ palette = readPalette(pos, localSize); pos += 3*Math.pow(2, localSize+1); }
+        const minCodeSize = bytes[pos]; pos += 1;
+        const imgData = readSubBlocksRaw();
+        const raw = lzwDecodeGif(minCodeSize, imgData, fw*fh);
+
+        let finalIdx = raw;
+        if(interlace && fh > 0){
+          finalIdx = new Uint8Array(fw*fh);
+          const passStarts=[0,4,2,1], passSteps=[8,8,4,2];
+          let srcRow=0;
+          for(let p=0;p<4;p++){
+            for(let y=passStarts[p]; y<fh; y+=passSteps[p]){
+              finalIdx.set(raw.subarray(srcRow*fw, srcRow*fw+fw), y*fw);
+              srcRow++;
+            }
+          }
+        }
+
+        if(prevRect){
+          if(prevDisposal === 2) clearRect(compositeBuf, screenW, prevRect);
+          else if(prevDisposal === 3 && prevSnapshot) compositeBuf.set(prevSnapshot);
+        }
+        let snapshotForNext = (pendingDisposal === 3) ? compositeBuf.slice() : null;
+
+        for(let y=0; y<fh; y++){
+          const destY = top+y;
+          if(destY<0 || destY>=screenH) continue;
+          for(let x=0; x<fw; x++){
+            const destX = left+x;
+            if(destX<0 || destX>=screenW) continue;
+            const colorIndex = finalIdx[y*fw+x];
+            if(colorIndex === pendingTransparent) continue;
+            const rgb = (palette && palette[colorIndex]) || [0,0,0];
+            const di = (destY*screenW+destX)*4;
+            compositeBuf[di]=rgb[0]; compositeBuf[di+1]=rgb[1]; compositeBuf[di+2]=rgb[2]; compositeBuf[di+3]=255;
+          }
+        }
+
+        // GIF delay is in centiseconds (1/100s) — convert to real milliseconds here
+        // so every consumer downstream can just treat frame.delay as milliseconds.
+        frames.push({ imageData: new ImageData(compositeBuf.slice(), screenW, screenH), delay: pendingDelay * 10 });
+        prevDisposal = pendingDisposal;
+        prevRect = { left, top, w: fw, h: fh };
+        prevSnapshot = snapshotForNext;
+        pendingDelay = 10; pendingTransparent = -1; pendingDisposal = 0;
+      } else if(intro === 0x3B){
+        break;
+      } else {
+        break;
+      }
+    }
+
+    return { width: screenW, height: screenH, frames };
+  }
+
+  // Returns the canvas holding whichever decoded frame should be showing at
+  // tMs. clip.cutStart/cutEnd mark a region of the native timeline to SKIP —
+  // it can sit at the very start, the very end, or anywhere in the middle,
+  // and playback stitches the remaining parts together seamlessly. Falls
+  // back to the plain <img> for static images or an undecoded GIF.
+  function frameAtTime(clip, tMs){
+    if(!clip.frames || !clip.frames.length) return clip.imgEl;
+    const total = clip.totalNativeMs || 1;
+    const cutStart = clip.cutStart || 0;
+    const cutEnd = clip.cutEnd || 0;
+    const cutLen = Math.max(0, cutEnd - cutStart);
+    const keepDur = Math.max(50, total - cutLen); // guard against cutting everything
+    const local = ((tMs % keepDur) + keepDur) % keepDur;
+    const t = (local < cutStart) ? local : (local + cutLen);
+    let acc = 0, idx = clip.frames.length - 1;
+    for(let i=0; i<clip.frames.length; i++){
+      acc += clip.frames[i].delay;
+      if(t < acc){ idx = i; break; }
+    }
+    if(clip.lastFrameIdx !== idx){
+      clip.frameCtx.putImageData(clip.frames[idx].imageData, 0, 0);
+      clip.lastFrameIdx = idx;
+    }
+    return clip.frameCanvas;
+  }
+
+  // Same as frameAtTime but applies the clip's speed multiplier — used for
+  // live playback (preview/thumbnails), not for export (which applies speed
+  // separately, to the exported delay values, to keep captured motion clean).
+  function resolveSource(clip, nowMs){
+    if(clip.frames && clip.frames.length){
+      return frameAtTime(clip, nowMs * (clip.speed || 1));
+    }
+    return clip.imgEl;
+  }
+
+  // ---------- Drawing helper (cover / contain, with manual crop) ----------
+  let _rotScratch = null, _rotScratchCtx = null;
+
+  function drawFitted(targetCtx, sourceEl, w, h, mode, bg, crop){
+    crop = crop || { scale: 1, offsetX: 0.5, offsetY: 0.5, rotation: 0, flipH: false, flipV: false };
+    targetCtx.clearRect(0,0,w,h);
+    if(mode === 'contain'){
+      targetCtx.fillStyle = bg;
+      targetCtx.fillRect(0,0,w,h);
+    }
+    const sw = sourceEl.naturalWidth || sourceEl.width;
+    const sh = sourceEl.naturalHeight || sourceEl.height;
+    if(!sw || !sh) return;
+
+    const rotation = ((crop.rotation || 0) % 360 + 360) % 360;
+    const flipH = !!crop.flipH, flipV = !!crop.flipV;
+    let source = sourceEl, srcW = sw, srcH = sh;
+
+    if(rotation !== 0 || flipH || flipV){
+      const swapped = (rotation === 90 || rotation === 270);
+      srcW = swapped ? sh : sw;
+      srcH = swapped ? sw : sh;
+      if(!_rotScratch){ _rotScratch = document.createElement('canvas'); _rotScratchCtx = _rotScratch.getContext('2d'); }
+      if(_rotScratch.width !== srcW || _rotScratch.height !== srcH){
+        _rotScratch.width = srcW; _rotScratch.height = srcH;
+      }
+      _rotScratchCtx.save();
+      _rotScratchCtx.clearRect(0,0,srcW,srcH);
+      _rotScratchCtx.translate(srcW/2, srcH/2);
+      _rotScratchCtx.rotate(rotation * Math.PI/180);
+      _rotScratchCtx.scale(flipH ? -1 : 1, flipV ? -1 : 1);
+      _rotScratchCtx.drawImage(sourceEl, -sw/2, -sh/2, sw, sh);
+      _rotScratchCtx.restore();
+      source = _rotScratch;
+    }
+
+    const baseScale = (mode === 'cover') ? Math.max(w/srcW, h/srcH) : Math.min(w/srcW, h/srcH);
+    const effScale = baseScale * (crop.scale || 1);
+    const dw = srcW*effScale, dh = srcH*effScale;
+
+    let offsetX = crop.offsetX, offsetY = crop.offsetY;
+    if(dw > w){
+      const minX = (w/2)/dw, maxX = 1 - minX;
+      offsetX = Math.min(Math.max(offsetX, minX), maxX);
+    } else {
+      offsetX = 0.5;
+    }
+    if(dh > h){
+      const minY = (h/2)/dh, maxY = 1 - minY;
+      offsetY = Math.min(Math.max(offsetY, minY), maxY);
+    } else {
+      offsetY = 0.5;
+    }
+
+    const dx = w/2 - offsetX*dw;
+    const dy = h/2 - offsetY*dh;
+    targetCtx.drawImage(source, dx, dy, dw, dh);
+  }
+
+  // ---------- Timeline UI ----------
+  function renderTimeline(){
+    timelineEl.innerHTML = '';
+    clips.forEach((clip, idx)=>{
+      const card = document.createElement('div');
+      card.className = 'clip-card';
+      card.dataset.id = clip.id;
+
+      const thumbW = 148, thumbH = Math.max(40, Math.round(thumbW * (outH/outW)));
+
+      card.innerHTML = `
+        <div class="drag-handle" title="Glisser pour réordonner">⠿</div>
+        <div class="order-badge">${idx+1}</div>
+        <div class="card-actions">
+          <button class="mini-btn play-btn" title="Voir en grand / lecture solo">▶</button>
+          <button class="mini-btn crop-btn" title="Rogner / cadrer">✂</button>
+          <button class="mini-btn clone-btn" title="Dupliquer ce clip">+</button>
+          <button class="mini-btn remove-btn" title="Retirer">×</button>
+        </div>
+        <div class="thumb" style="aspect-ratio:${outW}/${outH};">
+          <canvas class="thumb-canvas" width="${thumbW}" height="${thumbH}"></canvas>
+        </div>
+        <div class="fname">${escapeHtml(clip.name)}</div>
+        <div class="dur-row">
+          <input type="number" min="0.2" max="15" step="0.1" value="${clip.duration}">
+          <span>sec</span>
+        </div>
+        <div class="speed-row">
+          <label>Vitesse</label>
+          <select class="speed-select">
+            <option value="0.5">0.5×</option>
+            <option value="0.75">0.75×</option>
+            <option value="1">1×</option>
+            <option value="1.5">1.5×</option>
+            <option value="2">2×</option>
+            <option value="3">3×</option>
+            <option value="4">4×</option>
+          </select>
+        </div>
+        <div class="repeat-row"></div>
+        <div class="loop-hint"></div>
+      `;
+
+      // The thumbnail is a canvas kept in sync with the real crop/fit —
+      // it's redrawn continuously by the shared thumbnail loop so it animates.
+      clip.thumbCanvasEl = card.querySelector('.thumb-canvas');
+
+      const hintEl = card.querySelector('.loop-hint');
+      const repeatRowEl = card.querySelector('.repeat-row');
+      const durInput = card.querySelector('input');
+      const MAX_REPEAT = 10;
+
+      let repeatInputEl = null;
+
+      function updateHintText(){
+        if(!clip.nativeDuration) return;
+        const cutLen = Math.max(0, (clip.cutEnd||0) - (clip.cutStart||0));
+        const effectiveNative = Math.max(0.05, (clip.totalNativeMs - cutLen) / 1000);
+        const isTrimmed = cutLen > 0;
+        const loops = (clip.duration * (clip.speed||1)) / effectiveNative;
+        const trimNote = isTrimmed ? ` · ✂ coupé à ${effectiveNative.toFixed(2)}s` : '';
+        hintEl.textContent = `GIF natif : ${clip.nativeDuration.toFixed(2)}s (${clip.frameCount||'?'} img)${trimNote} · sera vu ≈ ${loops.toFixed(1)}× à ${clip.duration.toFixed(1)}s`;
+      }
+
+      function applyRepeatValue(n){
+        n = Math.max(1, Math.min(MAX_REPEAT, n));
+        repeatInputEl.value = n;
+        const cutLen = Math.max(0, (clip.cutEnd||0) - (clip.cutStart||0));
+        const effectiveNative = Math.max(0.05, (clip.totalNativeMs - cutLen) / 1000);
+        clip.duration = Math.max(0.2, Math.round((n * effectiveNative / (clip.speed||1)) * 10) / 10);
+        durInput.value = clip.duration;
+        updateHintText();
+        updateTotalLabel();
+        renderTrack();
+      }
+
+      function ensureRepeatInput(){
+        if(repeatInputEl) return repeatInputEl;
+        repeatRowEl.innerHTML = `<label>Répéter ×</label>` +
+          `<button type="button" class="repeat-step" data-dir="-1">−</button>` +
+          `<input type="number" class="repeat-input" min="1" max="${MAX_REPEAT}" step="1" value="1">` +
+          `<button type="button" class="repeat-step" data-dir="1">+</button>` +
+          `<span class="repeat-note">fois avant de passer au suivant</span>`;
+        repeatInputEl = repeatRowEl.querySelector('.repeat-input');
+        repeatInputEl.addEventListener('click', e => e.stopPropagation());
+
+        repeatRowEl.querySelectorAll('.repeat-step').forEach(btn=>{
+          btn.addEventListener('click', (e)=>{
+            e.stopPropagation();
+            const current = parseInt(repeatInputEl.value, 10);
+            const base = isNaN(current) ? 1 : current;
+            applyRepeatValue(base + parseInt(btn.dataset.dir, 10));
+          });
+        });
+
+        // Live-update duration while typing — but never rewrite/clamp what
+        // the person is actively typing, or a mobile keyboard can never
+        // clear the field or compose a two-digit number.
+        repeatInputEl.addEventListener('input', (e)=>{
+          e.stopPropagation();
+          const raw = e.target.value;
+          if(raw === '') return; // let them clear the field freely
+          let n = parseInt(raw, 10);
+          if(isNaN(n)) return;
+          n = Math.max(1, Math.min(MAX_REPEAT, n));
+          const cutLen = Math.max(0, (clip.cutEnd||0) - (clip.cutStart||0));
+          const effectiveNative = Math.max(0.05, (clip.totalNativeMs - cutLen) / 1000);
+          clip.duration = Math.max(0.2, Math.round((n * effectiveNative / (clip.speed||1)) * 10) / 10);
+          durInput.value = clip.duration;
+          updateHintText();
+          updateTotalLabel();
+          renderTrack();
+        });
+
+        // Only normalize the displayed number once they're done editing.
+        repeatInputEl.addEventListener('blur', ()=>{
+          let n = parseInt(repeatInputEl.value, 10);
+          if(isNaN(n)) n = 1;
+          n = Math.max(1, Math.min(MAX_REPEAT, n));
+          repeatInputEl.value = n;
+        });
+
+        return repeatInputEl;
+      }
+
+      function updateHint(){
+        if(clip.nativeDuration){
+          ensureRepeatInput();
+          // Never overwrite the field while the person is actively typing in it.
+          if(document.activeElement !== repeatInputEl){
+            const cutLen = Math.max(0, (clip.cutEnd||0) - (clip.cutStart||0));
+            const effectiveNative = Math.max(0.05, (clip.totalNativeMs - cutLen) / 1000);
+            const loops = (clip.duration * (clip.speed||1)) / effectiveNative;
+            repeatInputEl.value = Math.min(MAX_REPEAT, Math.max(1, Math.round(loops)));
+          }
+          updateHintText();
+        } else if(clip.type === 'image/gif'){
+          repeatRowEl.innerHTML = '';
+          repeatInputEl = null;
+          hintEl.textContent = 'Analyse du GIF…';
+        } else {
+          repeatRowEl.innerHTML = '';
+          repeatInputEl = null;
+          hintEl.textContent = 'Image fixe — durée libre';
+        }
+      }
+      updateHint();
+
+      card.querySelector('.play-btn').addEventListener('click', (e)=>{
+        e.stopPropagation();
+        playSoloClip(clip.id);
+      });
+      card.querySelector('.crop-btn').addEventListener('click', (e)=>{
+        e.stopPropagation();
+        openCropModal(clip);
+      });
+      card.querySelector('.clone-btn').addEventListener('click', (e)=>{
+        e.stopPropagation();
+        cloneClip(clip.id);
+      });
+      card.querySelector('.remove-btn').addEventListener('click', (e)=>{
+        e.stopPropagation();
+        removeClip(clip.id);
+      });
+      durInput.addEventListener('click', e => e.stopPropagation());
+      durInput.addEventListener('input', (e)=>{
+        const v = parseFloat(e.target.value);
+        clip.duration = isNaN(v) ? 0.2 : Math.max(0.2, v);
+        updateHint();
+        updateTotalLabel();
+        renderTrack();
+      });
+
+      const speedSelect = card.querySelector('.speed-select');
+      speedSelect.value = clip.speed || 1;
+      speedSelect.addEventListener('click', e => e.stopPropagation());
+      speedSelect.addEventListener('change', (e)=>{
+        const oldSpeed = clip.speed || 1;
+        const newSpeed = parseFloat(e.target.value) || 1;
+        clip.speed = newSpeed;
+        // Keep however many loops are currently set — without this, a
+        // clip set to "repeat ×2" would silently show more/fewer loops
+        // the moment the speed changed, since duration alone doesn't
+        // track the loop count.
+        clip.duration = Math.max(0.2, Math.round(clip.duration * (oldSpeed / newSpeed) * 10) / 10);
+        if(durInput) durInput.value = clip.duration;
+        updateHintText();
+        updateTotalLabel();
+        renderTrack();
+      });
+
+      // The grip handle AND the thumbnail image both start a reorder drag —
+      // the number input and buttons are outside them, so they stay unaffected.
+      // Uses Pointer Events (not native HTML5 drag-and-drop) because dragstart
+      // essentially never fires from touch input on mobile browsers.
+      //
+      // IMPORTANT: we never move the actively-touched element in the DOM
+      // during the gesture — doing so breaks touch gesture tracking on
+      // mobile. Instead we show a drop-position indicator on other cards
+      // and only perform the real DOM move once, at pointerup.
+      function attachReorderDrag(el){
+        el.addEventListener('pointerdown', (e)=>{
+          e.preventDefault();
+          draggingId = clip.id;
+          card.classList.add('dragging');
+          const startX = e.clientX, startY = e.clientY;
+          let currentAfterEl = null;
+          let moved = false;
+          try{ el.setPointerCapture(e.pointerId); }catch(err){}
+
+          function clearIndicators(){
+            timelineEl.querySelectorAll('.clip-card').forEach(c=>{
+              c.classList.remove('drop-indicator-before','drop-indicator-after');
+            });
+          }
+
+          function onMove(ev){
+            moved = true;
+            // Purely visual — doesn't touch the DOM position, so it can't
+            // interrupt the touch gesture the way reordering mid-drag did.
+            const dx = ev.clientX - startX, dy = ev.clientY - startY;
+            card.style.transform = `translate(${dx}px, ${dy}px) scale(1.04)`;
+
+            const afterEl = getDragAfterElement(timelineEl, ev.clientX);
+            if(afterEl === currentAfterEl) return;
+            currentAfterEl = afterEl;
+            clearIndicators();
+            if(afterEl){
+              afterEl.classList.add('drop-indicator-before');
+            } else {
+              const others = [...timelineEl.querySelectorAll('.clip-card:not(.dragging)')];
+              const last = others[others.length-1];
+              if(last) last.classList.add('drop-indicator-after');
+            }
+          }
+          function onUp(){
+            window.removeEventListener('pointermove', onMove);
+            window.removeEventListener('pointerup', onUp);
+            clearIndicators();
+            card.classList.remove('dragging');
+            card.style.transform = '';
+            draggingId = null;
+            if(moved){
+              if(currentAfterEl){
+                timelineEl.insertBefore(card, currentAfterEl);
+              } else {
+                timelineEl.appendChild(card);
+              }
+              reorderFromDOM();
+            }
+          }
+          window.addEventListener('pointermove', onMove);
+          window.addEventListener('pointerup', onUp);
+        });
+      }
+      attachReorderDrag(card.querySelector('.drag-handle'));
+      attachReorderDrag(card.querySelector('.thumb'));
+
+      timelineEl.appendChild(card);
+    });
+    countBadge.textContent = clips.length + (clips.length === 1 ? ' clip' : ' clips');
+    updateTotalLabel();
+    renderTrack();
+    scheduleAutosave();
+  }
+
+  // ---------- Modern proportional track bar ----------
+  const trackBar = document.getElementById('trackBar');
+  const trackPlayhead = document.getElementById('trackPlayhead');
+  const trackColors = ['#5B5FA8', '#3D8F82', '#B4813C', '#7D89B0', '#8CA0B3'];
+  let PX_PER_SECOND = 60; // adjustable via the zoom buttons — clips keep a stable width; only the bar's total length changes
+
+  // One small snapshot per clip, tiled across its segment like a filmstrip
+  // (inspired by real editors such as Clipchamp) instead of a flat block of
+  // colour — cached on the clip object so it's only drawn once.
+  function getTrackThumb(clip){
+    if(clip._trackThumb) return clip._trackThumb;
+    if(!clip.imgEl || !clip.imgEl.complete || !clip.imgEl.naturalWidth) return null;
+    try{
+      const c = document.createElement('canvas');
+      const size = 64;
+      c.width = size; c.height = size;
+      const cx = c.getContext('2d');
+      const iw = clip.imgEl.naturalWidth, ih = clip.imgEl.naturalHeight;
+      const s = Math.max(size/iw, size/ih);
+      const dw = iw*s, dh = ih*s;
+      cx.drawImage(clip.imgEl, (size-dw)/2, (size-dh)/2, dw, dh);
+      clip._trackThumb = c.toDataURL('image/jpeg', 0.7);
+    }catch(err){ return null; }
+    return clip._trackThumb;
+  }
+
+  function renderTrack(){
+    trackBar.innerHTML = '';
+    trackBar.appendChild(trackPlayhead);
+    if(clips.length === 0){
+      const msg = document.createElement('div');
+      msg.className = 'track-empty-msg';
+      msg.textContent = 'Ta piste de montage apparaîtra ici, un clip après l\'autre';
+      trackBar.appendChild(msg);
+      trackBar.style.width = '100%';
+      return;
+    }
+    const total = clips.reduce((s,c)=>s+c.duration, 0) || 1;
+    const scrollWrap = trackBar.parentElement;
+    const wrapWidth = (scrollWrap && scrollWrap.clientWidth) || 0;
+    trackBar.style.width = Math.max(wrapWidth, total * PX_PER_SECOND) + 'px';
+
+    clips.forEach((clip, idx)=>{
+      const seg = document.createElement('div');
+      seg.className = 'track-seg';
+      seg.dataset.id = clip.id;
+      seg.style.width = (clip.duration * PX_PER_SECOND) + 'px';
+      const thumb = getTrackThumb(clip);
+      if(thumb){
+        seg.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.15),rgba(0,0,0,0.35)), url(${thumb})`;
+        seg.style.backgroundSize = `${PX_PER_SECOND}px 100%, ${PX_PER_SECOND}px 100%`;
+        seg.style.backgroundRepeat = 'repeat-x, repeat-x';
+      } else {
+        seg.style.background = trackColors[idx % trackColors.length];
+      }
+      seg.innerHTML = `<span class="n">${idx+1}</span><span class="t">${escapeHtml(clip.name)} · ${clip.duration.toFixed(1)}s</span>` +
+        `<div class="track-handle track-handle-left" title="Glisser pour raccourcir/allonger"></div>` +
+        `<div class="track-handle track-handle-right" title="Glisser pour raccourcir/allonger"></div>`;
+
+      const leftHandle = seg.querySelector('.track-handle-left');
+      const rightHandle = seg.querySelector('.track-handle-right');
+      attachTrackHandleDrag(leftHandle, clip, 'left');
+      attachTrackHandleDrag(rightHandle, clip, 'right');
+
+      trackBar.appendChild(seg);
+    });
+  }
+
+  // Dragging either edge of a clip's block on the track shortens or lengthens
+  // that clip's own duration directly — no snapping to the GIF's loop point,
+  // it can cut the animation mid-cycle and that's fine. At a fixed scale,
+  // this only ever touches the dragged clip's own segment — the others stay
+  // put instead of visually reflowing, which was confusing before.
+  function attachTrackHandleDrag(handleEl, clip, side){
+    handleEl.addEventListener('click', e => e.stopPropagation());
+    handleEl.addEventListener('pointerdown', (e)=>{
+      e.preventDefault();
+      e.stopPropagation();
+      handleEl.setPointerCapture(e.pointerId);
+
+      const startX = e.clientX;
+      const startDuration = clip.duration;
+
+      function onMove(ev){
+        const deltaPx = ev.clientX - startX;
+        const deltaSec = deltaPx / PX_PER_SECOND;
+        const raw = (side === 'right') ? (startDuration + deltaSec) : (startDuration - deltaSec);
+        clip.duration = Math.min(30, Math.max(0.2, raw));
+        updateTrackWidthsLive();
+      }
+      function onUp(){
+        window.removeEventListener('pointermove', onMove);
+        window.removeEventListener('pointerup', onUp);
+        renderTimeline(); // full resync: duration field, hints, track segments
+      }
+      window.addEventListener('pointermove', onMove);
+      window.addEventListener('pointerup', onUp);
+    });
+  }
+
+  // Lightweight live update used WHILE dragging a handle — updates only the
+  // dragged clip's own width/label plus the bar's total length, without
+  // rebuilding the DOM (which would kill the drag) and without touching any
+  // other clip's segment.
+  function updateTrackWidthsLive(){
+    const total = clips.reduce((s,c)=>s+c.duration, 0) || 1;
+    const scrollWrap = trackBar.parentElement;
+    const wrapWidth = (scrollWrap && scrollWrap.clientWidth) || 0;
+    trackBar.style.width = Math.max(wrapWidth, total * PX_PER_SECOND) + 'px';
+    clips.forEach(clip=>{
+      const seg = trackBar.querySelector(`.track-seg[data-id="${clip.id}"]`);
+      if(seg){
+        seg.style.width = (clip.duration * PX_PER_SECOND) + 'px';
+        const tEl = seg.querySelector('.t');
+        if(tEl) tEl.textContent = `${clip.name} · ${clip.duration.toFixed(1)}s`;
+      }
+    });
+    updateTotalLabel();
+  }
+
+  function setTrackActive(clipId){
+    trackBar.querySelectorAll('.track-seg').forEach(seg=>{
+      seg.classList.toggle('active', seg.dataset.id === clipId);
+    });
+  }
+
+  function getDragAfterElement(container, x){
+    const cards = [...container.querySelectorAll('.clip-card:not(.dragging)')];
+    return cards.reduce((closest, child)=>{
+      const box = child.getBoundingClientRect();
+      const offset = x - box.left - box.width/2;
+      if(offset < 0 && offset > closest.offset){
+        return {offset, element: child};
+      } else {
+        return closest;
+      }
+    }, {offset: -Infinity}).element;
+  }
+
+  function reorderFromDOM(){
+    const ids = [...timelineEl.querySelectorAll('.clip-card')].map(c=>c.dataset.id);
+    clips.sort((a,b)=> ids.indexOf(a.id) - ids.indexOf(b.id));
+    renderTimeline();
+  }
+
+  let lastDeletedClip = null; // { clip, index } — kept alive (not revoked) until overwritten, so Undo can restore it
+  const undoDeleteBtn = document.getElementById('undoDeleteBtn');
+
+  function removeClip(id){
+    const idx = clips.findIndex(c=>c.id===id);
+    if(idx === -1) return;
+    const clip = clips[idx];
+
+    // Free the PREVIOUS undo buffer now that it's about to be replaced —
+    // only the most recent deletion stays undoable.
+    if(lastDeletedClip){
+      const stillShared = clips.some(c=>c.url===lastDeletedClip.clip.url) || lastDeletedClip.clip.url===clip.url;
+      if(!stillShared) URL.revokeObjectURL(lastDeletedClip.clip.url);
+      if(lastDeletedClip.clip.imgEl) lastDeletedClip.clip.imgEl.remove();
+    }
+
+    if(clip.imgEl) clip.imgEl.remove(); // detach from the pool, but keep the object + blob URL alive for undo
+    clips.splice(idx, 1);
+    lastDeletedClip = { clip, index: idx };
+    undoDeleteBtn.style.display = 'inline-flex';
+
+    renderTimeline();
+    generateBtn.disabled = clips.length === 0;
+    if(clips.length === 0){
+      stopPreview();
+      ctx.clearRect(0,0,previewCanvas.width, previewCanvas.height);
+      clipLabel.textContent = 'Aucun clip';
+    }
+  }
+
+  function undoDelete(){
+    if(!lastDeletedClip) return;
+    const { clip, index } = lastDeletedClip;
+    const insertAt = Math.min(index, clips.length);
+    clips.splice(insertAt, 0, clip);
+    if(clip.imgEl) imgPool.appendChild(clip.imgEl);
+    lastDeletedClip = null;
+    undoDeleteBtn.style.display = 'none';
+    renderTimeline();
+    generateBtn.disabled = clips.length === 0;
+  }
+  undoDeleteBtn.addEventListener('click', undoDelete);
+
+  const trackZoomInBtn = document.getElementById('trackZoomInBtn');
+  const trackZoomOutBtn = document.getElementById('trackZoomOutBtn');
+  trackZoomInBtn.addEventListener('click', ()=>{
+    PX_PER_SECOND = Math.min(160, PX_PER_SECOND + 20);
+    renderTrack();
+  });
+  trackZoomOutBtn.addEventListener('click', ()=>{
+    PX_PER_SECOND = Math.max(20, PX_PER_SECOND - 20);
+    renderTrack();
+  });
+
+  // Delete/Backspace removes whichever clip the playhead is currently on —
+  // the same clip "Couper ici" would operate on — but never while the
+  // person is typing in a field (name, duration, repeat count, etc.).
+  window.addEventListener('keydown', (e)=>{
+    if(e.key !== 'Delete' && e.key !== 'Backspace') return;
+    const tag = (e.target.tagName || '').toLowerCase();
+    const isEditable = tag === 'input' || tag === 'textarea' || tag === 'select' || e.target.isContentEditable;
+    if(isEditable) return;
+    if(clips.length === 0) return;
+    e.preventDefault();
+    const clip = clips[previewClipIndex];
+    if(clip) removeClip(clip.id);
+  });
+
+  function updateTotalLabel(){
+    const total = clips.reduce((s,c)=>s+c.duration, 0);
+    totalDurLabel.textContent = total.toFixed(1) + 's au total';
+  }
+
+  function escapeHtml(s){
+    return s.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  }
+
+  // ---------- Live preview player ----------
+  let playing = false;
+  let rafId = null;
+  let previewClipIndex = 0;
+  let previewClipStart = 0;
+  let soloId = null;
+
+  let pauseStartedAt = null;
+
+  function startPreview(){
+    if(clips.length === 0) return;
+    soloId = null;
+    playing = true;
+    playBtn.textContent = '⏸';
+    previewClipIndex = 0;
+    previewClipStart = performance.now();
+    pauseStartedAt = null;
+    trackPlayhead.classList.remove('hidden');
+    cancelAnimationFrame(rafId);
+    loop();
+  }
+  function stopPreview(){
+    playing = false;
+    playBtn.textContent = '▶';
+    pauseStartedAt = null;
+    trackPlayhead.classList.add('hidden');
+    setTrackActive(null);
+    cancelAnimationFrame(rafId);
+  }
+  // A real pause: freezes the animation exactly where it is, WITHOUT
+  // hiding the playhead or resetting position — so you can still see and
+  // drag to precisely pick a cut point while stopped, instead of the old
+  // behaviour where pausing made everything disappear.
+  function pausePreview(){
+    if(!playing) return;
+    playing = false;
+    playBtn.textContent = '▶';
+    pauseStartedAt = performance.now();
+    cancelAnimationFrame(rafId);
+  }
+  function resumePreview(){
+    if(clips.length === 0) return;
+    if(pauseStartedAt !== null){
+      previewClipStart += performance.now() - pauseStartedAt; // compensate for the paused duration
+      pauseStartedAt = null;
+    }
+    soloId = null;
+    playing = true;
+    playBtn.textContent = '⏸';
+    trackPlayhead.classList.remove('hidden');
+    cancelAnimationFrame(rafId);
+    loop();
+  }
+  playBtn.addEventListener('click', ()=>{
+    if(playing) pausePreview(); else resumePreview();
+  });
+
+  function playSoloClip(id){
+    const clip = clips.find(c=>c.id===id);
+    if(!clip) return;
+    soloId = id;
+    playing = true;
+    playBtn.textContent = '⏸';
+    trackPlayhead.classList.add('hidden');
+    setTrackActive(id);
+    cancelAnimationFrame(rafId);
+    soloLoop();
+  }
+
+  function soloLoop(){
+    if(!playing || soloId === null) return;
+    const clip = clips.find(c=>c.id===soloId);
+    if(!clip){ soloId = null; return; }
+    try{
+      drawClip(clip);
+      clipLabel.textContent = `Aperçu solo — ${clip.name}`;
+    }catch(err){
+      console.error('soloLoop draw error', err);
+    }
+    rafId = requestAnimationFrame(soloLoop);
+  }
+
+  function loop(){
+    if(!playing || clips.length === 0) return;
+    try{
+      const now = performance.now();
+      const clip = clips[previewClipIndex];
+      const elapsed = (now - previewClipStart) / 1000;
+      if(elapsed >= clip.duration){
+        previewClipIndex = (previewClipIndex + 1) % clips.length;
+        previewClipStart = now;
+      }
+      drawClip(clips[previewClipIndex]);
+      clipLabel.textContent = `Clip ${previewClipIndex+1}/${clips.length} — ${clips[previewClipIndex].name}`;
+      setTrackActive(clips[previewClipIndex].id);
+
+      const total = clips.reduce((s,c)=>s+c.duration, 0) || 1;
+      let elapsedTotal = 0;
+      for(let i=0; i<previewClipIndex; i++) elapsedTotal += clips[i].duration;
+      elapsedTotal += Math.min(elapsed, clips[previewClipIndex].duration);
+      trackPlayhead.style.left = ((elapsedTotal/total)*100) + '%';
+    }catch(err){
+      console.error('loop draw error', err);
+    }
+    rafId = requestAnimationFrame(loop);
+  }
+
+  function drawClip(clip){
+    if(!clip || !clip.imgEl) return;
+    const src = resolveSource(clip, performance.now());
+    if(!src) return;
+    if(src === clip.imgEl && !clip.imgEl.complete) return;
+    drawFitted(ctx, src, outW, outH, fitMode, bgColorInput.value, clip.crop);
+  }
+
+  // ---------- Track scrubbing ----------
+  // Click-and-drag anywhere on the track bar to seek the sequence to that
+  // exact point, instead of the old behaviour of jumping into an isolated
+  // solo preview (which hid the playhead and felt like it "disappeared").
+  let scrubbing = false;
+
+  function scrubToFraction(frac){
+    if(clips.length === 0) return;
+    frac = Math.min(1, Math.max(0, frac));
+    const total = clips.reduce((s,c)=>s+c.duration, 0) || 1;
+    const targetSec = frac * total;
+    let acc = 0, idx = clips.length - 1, localSec = 0;
+    for(let i=0; i<clips.length; i++){
+      if(targetSec < acc + clips[i].duration){ idx = i; localSec = targetSec - acc; break; }
+      acc += clips[i].duration;
+    }
+    soloId = null;
+    previewClipIndex = idx;
+    previewClipStart = performance.now() - localSec * 1000;
+    pauseStartedAt = playing ? null : performance.now();
+    trackPlayhead.classList.remove('hidden');
+    trackPlayhead.style.left = (frac * 100) + '%';
+    setTrackActive(clips[idx].id);
+    clipLabel.textContent = `Clip ${idx+1}/${clips.length} — ${clips[idx].name}`;
+    try{ drawClip(clips[idx]); }
+    catch(err){ console.error('scrub draw error', err); }
+  }
+
+  trackBar.addEventListener('pointerdown', (e)=>{
+    if(clips.length === 0) return;
+    scrubbing = true;
+    trackBar.setPointerCapture(e.pointerId);
+    const rect = trackBar.getBoundingClientRect();
+    scrubToFraction((e.clientX - rect.left) / rect.width);
+  });
+  trackBar.addEventListener('pointermove', (e)=>{
+    if(!scrubbing) return;
+    const rect = trackBar.getBoundingClientRect();
+    scrubToFraction((e.clientX - rect.left) / rect.width);
+  });
+  window.addEventListener('pointerup', ()=>{ scrubbing = false; });
+
+  // ---------- Split at playhead ----------
+  // Splits the clip currently under the playhead into two separate timeline
+  // entries at that exact moment, so the boring half can just be deleted.
+  function splitAtPlayhead(){
+    if(clips.length === 0) return;
+    const clip = clips[previewClipIndex];
+    if(!clip) return;
+    const now = performance.now();
+    const elapsedSec = Math.min(clip.duration, Math.max(0, (now - previewClipStart) / 1000));
+    if(elapsedSec < 0.15 || elapsedSec > clip.duration - 0.15){
+      return; // too close to an edge — nothing meaningful to split
+    }
+
+    const secondDuration = clip.duration - elapsedSec;
+    clip.duration = elapsedSec;
+
+    const newId = 'c' + (clipIdCounter++);
+    const imgEl = new Image();
+    imgEl.decoding = 'async';
+    imgPool.appendChild(imgEl);
+    imgEl.src = clip.url;
+
+    const secondClip = {
+      id: newId, file: clip.file, url: clip.url, name: clip.name, type: clip.type,
+      duration: secondDuration,
+      speed: clip.speed,
+      crop: { ...clip.crop },
+      nativeDuration: clip.nativeDuration,
+      frameCount: clip.frameCount,
+      frames: clip.frames,
+      totalNativeMs: clip.totalNativeMs,
+      cutStart: clip.cutStart,
+      cutEnd: clip.cutEnd,
+      lastFrameIdx: -1,
+      imgEl
+    };
+    if(clip.frames && clip.frames.length){
+      secondClip.frameCanvas = document.createElement('canvas');
+      secondClip.frameCanvas.width = clip.frameCanvas.width;
+      secondClip.frameCanvas.height = clip.frameCanvas.height;
+      secondClip.frameCtx = secondClip.frameCanvas.getContext('2d');
+    }
+
+    clips.splice(previewClipIndex + 1, 0, secondClip);
+    previewClipStart = performance.now(); // playhead now sits right at the start of the new second piece
+    renderTimeline();
+  }
+
+  document.getElementById('splitBtn').addEventListener('click', splitAtPlayhead);
+
+  function drawCurrentFrame(){
+    if(clips.length > 0){
+      drawClip(clips[previewClipIndex] || clips[0]);
+    }
+  }
+
+  // ---------- GIF export (gif.js) ----------
+  let workerBlobURL = null;
+
+  async function ensureWorker(){
+    if(workerBlobURL) return workerBlobURL;
+    const resp = await fetch('https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.worker.js');
+    const code = await resp.text();
+    workerBlobURL = URL.createObjectURL(new Blob([code], {type:'application/javascript'}));
+    return workerBlobURL;
+  }
+
+  // Encodes a plain frames array ({imageData, delay}[]) into a standalone
+  // .gif Blob — used to let the video-conversion result be downloaded
+  // directly, separately from the main multi-clip "Générer" export.
+  async function encodeFramesToGif(frames, w, h){
+    const workerScript = await ensureWorker();
+    const gif = new GIF({ workers: 2, quality: 8, width: w, height: h, workerScript });
+    const tmpCanvas = document.createElement('canvas');
+    tmpCanvas.width = w; tmpCanvas.height = h;
+    const tmpCtx = tmpCanvas.getContext('2d');
+    for(const f of frames){
+      tmpCtx.putImageData(f.imageData, 0, 0);
+      gif.addFrame(tmpCanvas, {copy:true, delay: f.delay}); // pass the canvas ELEMENT, not its 2D context
+    }
+    return new Promise((resolve)=>{
+      gif.on('finished', blob => resolve(blob));
+      gif.render();
+    });
+  }
+
+  generateBtn.addEventListener('click', generate);
+
+  async function generate(){
+    if(clips.length === 0) return;
+    stopPreview();
+    generateBtn.disabled = true;
+    downloadLink.style.display = 'none';
+    progressWrap.style.display = 'block';
+    progressFill.style.width = '0%';
+    progressText.textContent = 'Préparation…';
+
+    try{
+      const workerScript = await ensureWorker();
+      const gif = new GIF({
+        workers: 2,
+        quality: 8,
+        width: outW,
+        height: outH,
+        workerScript
+      });
+
+      const captureFps = 12;
+      const captureCanvas = document.createElement('canvas');
+      captureCanvas.width = outW; captureCanvas.height = outH;
+      const cctx = captureCanvas.getContext('2d');
+
+      for(let i=0; i<clips.length; i++){
+        const clip = clips[i];
+        progressText.textContent = `Capture du clip ${i+1}/${clips.length} — ${clip.name}`;
+        const isAnimated = !!(clip.frames && clip.frames.length);
+        const frameCount = Math.max(1, Math.round(clip.duration * (isAnimated ? captureFps : 2)));
+        const speed = clip.speed || 1;
+        const delayMs = Math.max(20, Math.round((clip.duration * 1000) / frameCount / speed));
+
+        for(let f=0; f<frameCount; f++){
+          const src = isAnimated ? frameAtTime(clip, (f/frameCount) * clip.duration * 1000 * speed) : clip.imgEl;
+          drawFitted(cctx, src, outW, outH, fitMode, bgColorInput.value, clip.crop);
+          gif.addFrame(captureCanvas, {copy:true, delay: delayMs}); // pass the canvas ELEMENT, not its 2D context
+        }
+        await sleep(0); // yield so the progress bar/UI stays responsive
+        progressFill.style.width = (((i+1)/clips.length) * 50) + '%';
+      }
+
+      progressText.textContent = 'Encodage du GIF…';
+
+      gif.on('progress', p=>{
+        progressFill.style.width = (50 + p*50) + '%';
+      });
+      gif.on('finished', blob=>{
+        generateBtn.disabled = false;
+        if(!blob || blob.size < 200){
+          progressText.textContent = "Le GIF généré semble vide ou corrompu (fichier anormalement petit) — réessaie, ou dis-le moi si ça se reproduit.";
+          console.error('gif.js produced a suspiciously small/empty blob:', blob && blob.size);
+          return;
+        }
+        const url = URL.createObjectURL(blob);
+        downloadLink.href = url;
+        const sizeKB = Math.round(blob.size/1024);
+        progressText.textContent = `Terminé — ${sizeKB} Ko`;
+        downloadLink.style.display = 'block';
+        startPreview();
+      });
+
+      gif.render();
+    }catch(err){
+      console.error('generate() export error', err);
+      const detail = (err && err.message) ? err.message : String(err);
+      progressText.textContent = `Erreur pendant l'export : ${detail} — réessaie, ou dis-le moi si ça se reproduit.`;
+      generateBtn.disabled = false;
+    }
+  }
+
+  function sleep(ms){ return new Promise(r=>setTimeout(r, ms)); }
+
+  // ---------- Sakura petals (static decoration) ----------
+  function spawnPetals(count){
+    const container = document.getElementById('sakuraContainer');
+    const colors = ['#FFB3D1', '#FFC7DE', '#FFE1EC', '#FFD9EC'];
+    for(let i=0; i<count; i++){
+      const p = document.createElement('div');
+      p.className = 'petal';
+      const size = 12 + Math.random()*16;
+      const x = Math.random()*96 + 'vw';
+      const y = Math.random()*96 + 'vh';
+      const rot = Math.round(Math.random()*360) + 'deg';
+      const opacity = (0.5 + Math.random()*0.35).toFixed(2);
+      const color = colors[Math.floor(Math.random()*colors.length)];
+      p.style.setProperty('--size', size+'px');
+      p.style.setProperty('--x', x);
+      p.style.setProperty('--y', y);
+      p.style.setProperty('--rot', rot);
+      p.style.setProperty('--o', opacity);
+      p.style.setProperty('--petal-c', color);
+      container.appendChild(p);
+    }
+  }
+
+  // ---------- Thumbnail animation loop ----------
+  // Redraws every visible thumbnail canvas from its decoded frames each
+  // tick, so timeline thumbnails animate AND reflect the chosen crop/fit.
+  function thumbLoop(){
+    const now = performance.now();
+    clips.forEach(clip=>{
+      try{
+        if(!clip.thumbCanvasEl) return;
+        const src = resolveSource(clip, now);
+        if(!src) return;
+        if(src === clip.imgEl && !clip.imgEl.complete) return;
+        const c = clip.thumbCanvasEl;
+        const cx = c.getContext('2d');
+        drawFitted(cx, src, c.width, c.height, fitMode, bgColorInput.value, clip.crop);
+      }catch(err){
+        console.error('thumbLoop draw error', err);
+      }
+    });
+    requestAnimationFrame(thumbLoop);
+  }
+
+  // ---------- Crop modal ----------
+  const cropModal = document.getElementById('cropModal');
+  const cropCanvas = document.getElementById('cropCanvas');
+  const cropCtx = cropCanvas.getContext('2d');
+  const cropZoom = document.getElementById('cropZoom');
+  const cropPlayBtn = document.getElementById('cropPlayBtn');
+  const cropSpeedSelect = document.getElementById('cropSpeedSelect');
+  const trimSection = document.getElementById('trimSection');
+  const trimBar = document.getElementById('trimBar');
+  const trimCutRegion = document.getElementById('trimCutRegion');
+  const trimHandleLeft = document.getElementById('trimHandleLeft');
+  const trimHandleRight = document.getElementById('trimHandleRight');
+  const trimClearBtn = document.getElementById('trimClearBtn');
+  const trimNoteEl = document.getElementById('trimNote');
+  let cropClip = null;
+  let cropWorking = null;
+  let cropDragging = false;
+  let cropDragStart = null;
+  let cropRafId = null;
+  let cropPlaying = true;
+  let cropOrigSpeed = 1;
+  let cutOrigStart = 0;
+  let cutOrigEnd = 0;
+  let trimDragMode = null; // 'create' | 'move' | 'resize-left' | 'resize-right'
+  let trimAnchorMs = 0;
+  let trimMoveStartCutStart = 0, trimMoveStartCutEnd = 0, trimMoveStartX = 0;
+
+  function getClipDims(clip){
+    if(clip.frames && clip.frames.length){
+      return { w: clip.frameCanvas.width, h: clip.frameCanvas.height };
+    }
+    if(clip.imgEl && clip.imgEl.naturalWidth){
+      return { w: clip.imgEl.naturalWidth, h: clip.imgEl.naturalHeight };
+    }
+    return null;
+  }
+
+  function updateTrimUI(){
+    if(!cropClip) return;
+    const total = cropClip.totalNativeMs || 1;
+    const start = cropClip.cutStart || 0;
+    const end = cropClip.cutEnd || 0;
+    const cutLen = Math.max(0, end - start);
+    trimCutRegion.style.left = ((start/total)*100) + '%';
+    trimCutRegion.style.width = ((cutLen/total)*100) + '%';
+    trimClearBtn.style.display = cutLen > 0 ? 'inline' : 'none';
+    if(cutLen > 0){
+      trimNoteEl.textContent = `${(cutLen/1000).toFixed(2)}s supprimées (de ${(start/1000).toFixed(2)}s à ${(end/1000).toFixed(2)}s) · ${((total-cutLen)/1000).toFixed(2)}s gardées sur ${(total/1000).toFixed(2)}s natif`;
+    } else {
+      trimNoteEl.textContent = `Rien de coupé — ${(total/1000).toFixed(2)}s natif`;
+    }
+  }
+
+  function openCropModal(clip){
+    cropClip = clip;
+    cropWorking = { ...(clip.crop || {scale:1, offsetX:0.5, offsetY:0.5, rotation:0, flipH:false, flipV:false}) };
+    cropZoom.value = cropWorking.scale;
+    cropPlaying = true;
+    cropPlayBtn.textContent = '⏸';
+    updateFlipButtonStates();
+
+    cropOrigSpeed = clip.speed || 1;
+    cropSpeedSelect.value = cropOrigSpeed;
+
+    const hasFrames = !!(clip.frames && clip.frames.length);
+    trimSection.style.display = hasFrames ? 'block' : 'none';
+    if(hasFrames){
+      cutOrigStart = clip.cutStart || 0;
+      cutOrigEnd = clip.cutEnd || 0;
+      updateTrimUI();
+    }
+
+    const ratio = outH / outW;
+    const availableW = Math.min(300, window.innerWidth - 90); // fit narrow phones without overflow
+    const frameW = Math.max(140, availableW);
+    const frameH = Math.max(60, Math.round(frameW * ratio));
+    cropCanvas.width = frameW;
+    cropCanvas.height = frameH;
+    cropCanvas.style.width = frameW + 'px';
+    cropCanvas.style.height = frameH + 'px';
+
+    cropModal.classList.add('open');
+    cancelAnimationFrame(cropRafId);
+    cropRenderLoop();
+  }
+
+  function renderCropCanvasOnce(){
+    if(!cropClip) return;
+    const src = resolveSource(cropClip, performance.now());
+    if(!src) return;
+    if(src === cropClip.imgEl && !cropClip.imgEl.complete) return;
+    drawFitted(cropCtx, src, cropCanvas.width, cropCanvas.height, fitMode, bgColorInput.value, cropWorking);
+  }
+
+  function cropRenderLoop(){
+    if(!cropModal.classList.contains('open')) return;
+    if(cropPlaying){
+      try{ renderCropCanvasOnce(); }
+      catch(err){ console.error('cropRenderLoop draw error', err); }
+    }
+    cropRafId = requestAnimationFrame(cropRenderLoop);
+  }
+
+  function closeCropModal(){
+    cropModal.classList.remove('open');
+    cancelAnimationFrame(cropRafId);
+    cropClip = null;
+  }
+
+  cropPlayBtn.addEventListener('click', ()=>{
+    cropPlaying = !cropPlaying;
+    cropPlayBtn.textContent = cropPlaying ? '⏸' : '▶';
+    if(!cropPlaying) renderCropCanvasOnce(); // freeze on the current frame
+  });
+
+  cropSpeedSelect.addEventListener('change', ()=>{
+    if(!cropClip) return;
+    cropClip.speed = parseFloat(cropSpeedSelect.value) || 1;
+  });
+
+  cropCanvas.addEventListener('pointerdown', (e)=>{
+    if(!cropClip) return;
+    cropDragging = true;
+    cropCanvas.setPointerCapture(e.pointerId);
+    cropDragStart = { x: e.clientX, y: e.clientY, offsetX: cropWorking.offsetX, offsetY: cropWorking.offsetY };
+  });
+  cropCanvas.addEventListener('pointermove', (e)=>{
+    if(!cropDragging || !cropClip) return;
+    const dims = getClipDims(cropClip);
+    if(!dims) return;
+    const swapped = (((cropWorking.rotation||0) % 360 + 360) % 360) === 90 || (((cropWorking.rotation||0) % 360 + 360) % 360) === 270;
+    const sw = swapped ? dims.h : dims.w, sh = swapped ? dims.w : dims.h;
+    const baseScale = (fitMode === 'cover') ? Math.max(cropCanvas.width/sw, cropCanvas.height/sh) : Math.min(cropCanvas.width/sw, cropCanvas.height/sh);
+    const effScale = baseScale * cropWorking.scale;
+    const dx = e.clientX - cropDragStart.x;
+    const dy = e.clientY - cropDragStart.y;
+    let nx = cropDragStart.offsetX - dx/(sw*effScale);
+    let ny = cropDragStart.offsetY - dy/(sh*effScale);
+    const dw = sw*effScale, dh = sh*effScale;
+    if(dw > cropCanvas.width){
+      const minX = (cropCanvas.width/2)/dw, maxX = 1-minX;
+      nx = Math.min(Math.max(nx, minX), maxX);
+    } else nx = 0.5;
+    if(dh > cropCanvas.height){
+      const minY = (cropCanvas.height/2)/dh, maxY = 1-minY;
+      ny = Math.min(Math.max(ny, minY), maxY);
+    } else ny = 0.5;
+    cropWorking.offsetX = nx;
+    cropWorking.offsetY = ny;
+    renderCropCanvasOnce(); // reflect the pan immediately, even while paused
+  });
+  window.addEventListener('pointerup', ()=>{ cropDragging = false; });
+
+  cropCanvas.addEventListener('wheel', (e)=>{
+    if(!cropClip) return;
+    e.preventDefault();
+    const delta = e.deltaY > 0 ? -0.1 : 0.1;
+    cropWorking.scale = Math.min(3, Math.max(1, cropWorking.scale + delta));
+    cropZoom.value = cropWorking.scale;
+    renderCropCanvasOnce();
+  }, { passive: false });
+
+  cropZoom.addEventListener('input', ()=>{
+    cropWorking.scale = parseFloat(cropZoom.value);
+    renderCropCanvasOnce();
+  });
+
+  const cropRotateLeftBtn = document.getElementById('cropRotateLeft');
+  const cropRotateRightBtn = document.getElementById('cropRotateRight');
+  const cropFlipHBtn = document.getElementById('cropFlipH');
+  const cropFlipVBtn = document.getElementById('cropFlipV');
+
+  function updateFlipButtonStates(){
+    cropFlipHBtn.classList.toggle('active', !!cropWorking.flipH);
+    cropFlipVBtn.classList.toggle('active', !!cropWorking.flipV);
+  }
+
+  cropRotateLeftBtn.addEventListener('click', ()=>{
+    cropWorking.rotation = ((cropWorking.rotation||0) - 90 + 360) % 360;
+    renderCropCanvasOnce();
+  });
+  cropRotateRightBtn.addEventListener('click', ()=>{
+    cropWorking.rotation = ((cropWorking.rotation||0) + 90) % 360;
+    renderCropCanvasOnce();
+  });
+  cropFlipHBtn.addEventListener('click', ()=>{
+    cropWorking.flipH = !cropWorking.flipH;
+    updateFlipButtonStates();
+    renderCropCanvasOnce();
+  });
+  cropFlipVBtn.addEventListener('click', ()=>{
+    cropWorking.flipV = !cropWorking.flipV;
+    updateFlipButtonStates();
+    renderCropCanvasOnce();
+  });
+
+  function trimBarFrac(e){
+    const rect = trimBar.getBoundingClientRect();
+    return Math.min(1, Math.max(0, (e.clientX - rect.left) / rect.width));
+  }
+
+  trimBar.addEventListener('pointerdown', (e)=>{
+    if(!cropClip || !cropClip.frames || !cropClip.frames.length) return;
+    const total = cropClip.totalNativeMs || 1;
+    trimDragMode = 'create';
+    trimAnchorMs = trimBarFrac(e) * total;
+    cropClip.cutStart = trimAnchorMs;
+    cropClip.cutEnd = trimAnchorMs;
+    updateTrimUI();
+  });
+  trimCutRegion.addEventListener('pointerdown', (e)=>{
+    e.stopPropagation();
+    if(!cropClip) return;
+    trimDragMode = 'move';
+    trimMoveStartCutStart = cropClip.cutStart || 0;
+    trimMoveStartCutEnd = cropClip.cutEnd || 0;
+    trimMoveStartX = e.clientX;
+  });
+  trimHandleLeft.addEventListener('pointerdown', (e)=>{
+    e.stopPropagation();
+    trimDragMode = 'resize-left';
+  });
+  trimHandleRight.addEventListener('pointerdown', (e)=>{
+    e.stopPropagation();
+    trimDragMode = 'resize-right';
+  });
+  window.addEventListener('pointermove', (e)=>{
+    if(!trimDragMode || !cropClip || !cropClip.frames || !cropClip.frames.length) return;
+    const total = cropClip.totalNativeMs || 1;
+    const minGap = 50; // ms
+    if(trimDragMode === 'create'){
+      const ms = trimBarFrac(e) * total;
+      cropClip.cutStart = Math.min(trimAnchorMs, ms);
+      cropClip.cutEnd = Math.max(trimAnchorMs, ms);
+    } else if(trimDragMode === 'resize-left'){
+      let ms = trimBarFrac(e) * total;
+      ms = Math.min(ms, (cropClip.cutEnd||0) - minGap);
+      cropClip.cutStart = Math.max(0, ms);
+    } else if(trimDragMode === 'resize-right'){
+      let ms = trimBarFrac(e) * total;
+      ms = Math.max(ms, (cropClip.cutStart||0) + minGap);
+      cropClip.cutEnd = Math.min(total, ms);
+    } else if(trimDragMode === 'move'){
+      const rect = trimBar.getBoundingClientRect();
+      const deltaMs = ((e.clientX - trimMoveStartX) / rect.width) * total;
+      const len = trimMoveStartCutEnd - trimMoveStartCutStart;
+      let newStart = Math.max(0, Math.min(total - len, trimMoveStartCutStart + deltaMs));
+      cropClip.cutStart = newStart;
+      cropClip.cutEnd = newStart + len;
+    }
+    updateTrimUI();
+  });
+  window.addEventListener('pointerup', ()=>{ trimDragMode = null; });
+
+  trimClearBtn.addEventListener('click', ()=>{
+    if(!cropClip) return;
+    cropClip.cutStart = 0;
+    cropClip.cutEnd = 0;
+    updateTrimUI();
+  });
+
+  document.getElementById('cropReset').addEventListener('click', ()=>{
+    cropWorking.scale = 1; cropWorking.offsetX = 0.5; cropWorking.offsetY = 0.5;
+    cropWorking.rotation = 0; cropWorking.flipH = false; cropWorking.flipV = false;
+    cropZoom.value = 1;
+    updateFlipButtonStates();
+    cropSpeedSelect.value = 1;
+    if(cropClip){
+      cropClip.speed = 1;
+      if(cropClip.frames && cropClip.frames.length){
+        cropClip.cutStart = 0;
+        cropClip.cutEnd = 0;
+        updateTrimUI();
+      }
+    }
+    renderCropCanvasOnce();
+  });
+  document.getElementById('cropCancel').addEventListener('click', ()=>{
+    // Speed and trim are applied live to the clip as you adjust them, so
+    // cancelling means putting them back the way they were when opened.
+    if(cropClip){
+      cropClip.speed = cropOrigSpeed;
+      if(cropClip.frames && cropClip.frames.length){
+        cropClip.cutStart = cutOrigStart;
+        cropClip.cutEnd = cutOrigEnd;
+      }
+    }
+    closeCropModal();
+  });
+  document.getElementById('cropSave').addEventListener('click', ()=>{
+    if(cropClip) cropClip.crop = { ...cropWorking };
+    closeCropModal();
+    drawCurrentFrame();
+    renderTimeline(); // refresh duration hints (cut/speed can change loop count)
+  });
+
+  // ---------- Visit counter ----------
+  // Same free CountAPI service as the like button — increments once per
+  // page load, no signup, no account, best-effort (never blocks anything
+  // else if the service is unreachable).
+  (function initVisitCounter(){
+    const VISIT_NAMESPACE_KEY = 'geekogifio_site_visits_v1';
+    const el = document.getElementById('visitCounter');
+    if(typeof fetch !== 'function') return;
+    try{
+      fetch(`https://countapi.mileshilliard.com/api/v1/hit/${VISIT_NAMESPACE_KEY}`)
+        .then(r=>r.json())
+        .then(data=>{ if(typeof data.value === 'number') el.textContent = `👀 ${data.value} visites`; })
+        .catch(()=>{});
+    }catch(err){}
+  })();
+
+  // ---------- Like button ----------
+  // Uses CountAPI (free, no signup, no keys) for a real counter shared
+  // across every visitor — this depends on a third-party free service, so
+  // it's best-effort: if it's ever down (or fetch is unavailable at all),
+  // the button still works locally and never breaks anything else on load.
+  (function initLikeButton(){
+    const LIKE_NAMESPACE_KEY = 'geekogifio_site_likes_v1';
+    const likeBtn = document.getElementById('likeBtn');
+    const likeIcon = document.getElementById('likeIcon');
+    const likeCountEl = document.getElementById('likeCount');
+    const canFetch = typeof fetch === 'function';
+    let hasLiked = false;
+    try{ hasLiked = localStorage.getItem('geekogifio_liked') === '1'; }catch(err){}
+    if(hasLiked){ likeIcon.textContent = '❤️'; likeBtn.classList.add('liked'); }
+
+    if(canFetch){
+      try{
+        fetch(`https://countapi.mileshilliard.com/api/v1/get/${LIKE_NAMESPACE_KEY}`)
+          .then(r=>r.json())
+          .then(data=>{ if(typeof data.value === 'number') likeCountEl.textContent = data.value; })
+          .catch(()=>{});
+      }catch(err){}
+    }
+
+    likeBtn.addEventListener('click', ()=>{
+      if(hasLiked) return;
+      hasLiked = true;
+      likeIcon.textContent = '❤️';
+      likeBtn.classList.add('liked');
+      try{ localStorage.setItem('geekogifio_liked', '1'); }catch(err){}
+      const current = parseInt(likeCountEl.textContent, 10);
+      likeCountEl.textContent = isNaN(current) ? '' : (current + 1);
+      if(canFetch){
+        try{
+          fetch(`https://countapi.mileshilliard.com/api/v1/hit/${LIKE_NAMESPACE_KEY}`)
+            .then(r=>r.json())
+            .then(data=>{ if(typeof data.value === 'number') likeCountEl.textContent = data.value; })
+            .catch(()=>{});
+        }catch(err){}
+      }
+    });
+  })();
+
+  // ---------- Install app button ----------
+  const installBtn = document.getElementById('installBtn');
+  const iosInstallTip = document.getElementById('iosInstallTip');
+  const iosInstallTipClose = document.getElementById('iosInstallTipClose');
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+  let deferredInstallPrompt = null;
+
+  if(!isStandalone){
+    if(isIOS){
+      // iOS has no install-prompt API — show the button, explain the manual steps
+      installBtn.style.display = 'inline-flex';
+      installBtn.addEventListener('click', ()=>{
+        iosInstallTip.style.display = iosInstallTip.style.display === 'none' ? 'flex' : 'none';
+      });
+      iosInstallTipClose.addEventListener('click', ()=>{
+        iosInstallTip.style.display = 'none';
+      });
+    } else {
+      window.addEventListener('beforeinstallprompt', (e)=>{
+        e.preventDefault();
+        deferredInstallPrompt = e;
+        installBtn.style.display = 'inline-flex';
+      });
+      installBtn.addEventListener('click', async ()=>{
+        if(!deferredInstallPrompt) return;
+        deferredInstallPrompt.prompt();
+        try{ await deferredInstallPrompt.userChoice; }catch(err){}
+        deferredInstallPrompt = null;
+        installBtn.style.display = 'none';
+      });
+      window.addEventListener('appinstalled', ()=>{
+        installBtn.style.display = 'none';
+        iosInstallTip.style.display = 'none';
+      });
+    }
+  }
+
+  // ---------- Material ripple ----------
+  // Delegated so it works on buttons created dynamically (cards, etc.) too.
+  document.addEventListener('pointerdown', (e)=>{
+    const btn = e.target.closest('button');
+    if(!btn) return;
+    const rect = btn.getBoundingClientRect();
+    const size = Math.max(rect.width, rect.height);
+    const ripple = document.createElement('span');
+    ripple.className = 'm3-ripple';
+    ripple.style.width = ripple.style.height = size + 'px';
+    ripple.style.left = (e.clientX - rect.left - size/2) + 'px';
+    ripple.style.top = (e.clientY - rect.top - size/2) + 'px';
+    btn.appendChild(ripple);
+    setTimeout(()=> ripple.remove(), 600);
+  });
+
+  // ---------- Video → GIF ----------
+  // Extracts frames from an uploaded video by seeking + drawing to a canvas,
+  // then builds a clip using the exact same {frames, frameCanvas, ...}
+  // structure as a decoded GIF — so cropping, cutting, speed, and export all
+  // just work on it for free, no separate code path needed.
+  const videoToGifBtn = document.getElementById('videoToGifBtn');
+  const videoInput = document.getElementById('videoInput');
+  const videoModal = document.getElementById('videoModal');
+  const videoStepTrim = document.getElementById('videoStepTrim');
+  const videoStepConvert = document.getElementById('videoStepConvert');
+  const videoPreview = document.getElementById('videoPreview');
+  const videoSelBar = document.getElementById('videoSelBar');
+  const videoSelRegion = document.getElementById('videoSelRegion');
+  const videoSelHandleLeft = document.getElementById('videoSelHandleLeft');
+  const videoSelHandleRight = document.getElementById('videoSelHandleRight');
+  const videoSelNote = document.getElementById('videoSelNote');
+  const videoFpsSelect = document.getElementById('videoFpsSelect');
+  const videoInfoTip = document.getElementById('videoInfoTip');
+  const videoTrimmedSummary = document.getElementById('videoTrimmedSummary');
+  const videoProgressWrap = document.getElementById('videoProgressWrap');
+  const videoProgressFill = document.getElementById('videoProgressFill');
+  const videoProgressText = document.getElementById('videoProgressText');
+  const videoCancelBtn = document.getElementById('videoCancelBtn');
+  const videoTrimConfirmBtn = document.getElementById('videoTrimConfirmBtn');
+  const videoBackToTrimBtn = document.getElementById('videoBackToTrimBtn');
+  const videoConvertBtn = document.getElementById('videoConvertBtn');
+
+  let currentVideoFile = null;
+  let currentVideoUrl = null;
+  const MAX_VIDEO_CLIP_SECONDS = 10;
+  const MAX_VIDEO_CAPTURE_DIM = 480; // cap resolution to keep memory/time sane
+
+  // Selection state, in seconds — represents what gets KEPT/converted
+  // (opposite semantics from the GIF cut-bar, where the region is removed).
+  let videoSelStart = 0;
+  let videoSelEnd = 3;
+  let videoSelDragMode = null; // 'create' | 'move' | 'resize-left' | 'resize-right'
+  let videoSelAnchor = 0;
+  let videoSelMoveStartX = 0, videoSelMoveStartStart = 0, videoSelMoveStartEnd = 0;
+
+  const stepVideoIndicator = document.getElementById('stepVideoIndicator');
+  const stepTrimIndicator = document.getElementById('stepTrimIndicator');
+  const stepConvertIndicator = document.getElementById('stepConvertIndicator');
+
+  function showTrimStep(){
+    videoStepTrim.style.display = 'block';
+    videoStepConvert.style.display = 'none';
+    stepVideoIndicator.classList.add('done');
+    stepTrimIndicator.classList.add('active');
+    stepTrimIndicator.classList.remove('done');
+    stepConvertIndicator.classList.remove('active','done');
+  }
+  function showConvertStep(){
+    videoStepTrim.style.display = 'none';
+    videoStepConvert.style.display = 'block';
+    videoTrimmedSummary.textContent = `Passage rogné : ${videoSelStart.toFixed(1)}s → ${videoSelEnd.toFixed(1)}s (${(videoSelEnd-videoSelStart).toFixed(1)}s). Convertir en GIF ?`;
+    stepVideoIndicator.classList.add('done');
+    stepTrimIndicator.classList.remove('active');
+    stepTrimIndicator.classList.add('done');
+    stepConvertIndicator.classList.add('active');
+    stepConvertIndicator.classList.remove('done');
+  }
+
+  videoToGifBtn.addEventListener('click', ()=> videoInput.click());
+
+  videoInput.addEventListener('change', (e)=>{
+    const file = e.target.files[0];
+    if(!file) return;
+    currentVideoFile = file;
+    currentVideoUrl = URL.createObjectURL(file);
+
+    // Show the modal BEFORE loading the video — loading media metadata while
+    // an element sits inside a display:none container can stall or never
+    // fire on some mobile browsers (same class of bug as the earlier
+    // hidden-GIF-never-animates issue).
+    showTrimStep();
+    videoModal.classList.add('open');
+    videoTrimConfirmBtn.disabled = true;
+    videoInfoTip.textContent = 'Chargement de la vidéo…';
+    videoProgressWrap.style.display = 'none';
+
+    let metadataLoaded = false;
+    const stallTimeout = setTimeout(()=>{
+      if(metadataLoaded) return;
+      videoInfoTip.textContent = `Ça bloque au chargement (readyState: ${videoPreview.readyState}, erreur: ${videoPreview.error ? videoPreview.error.code : 'aucune'}). Essaie une vidéo plus courte, ou un format MP4/H.264.`;
+    }, 8000);
+
+    videoPreview.src = currentVideoUrl;
+    videoPreview.load();
+    videoPreview.addEventListener('loadedmetadata', ()=>{
+      metadataLoaded = true;
+      clearTimeout(stallTimeout);
+      const dur = videoPreview.duration || 1;
+      videoSelStart = 0;
+      videoSelEnd = Math.min(3, dur, MAX_VIDEO_CLIP_SECONDS);
+      updateVideoSelUI();
+      videoInfoTip.textContent = `Vidéo de ${dur.toFixed(1)}s détectée — choisis le passage à garder (max ${MAX_VIDEO_CLIP_SECONDS}s pour rester léger).`;
+      videoPreview.currentTime = 0;
+      videoTrimConfirmBtn.disabled = false;
+    }, { once: true });
+
+    videoPreview.addEventListener('error', ()=>{
+      clearTimeout(stallTimeout);
+      const code = videoPreview.error ? videoPreview.error.code : '?';
+      videoInfoTip.textContent = `Impossible de lire cette vidéo (erreur ${code}) — essaie un autre fichier (MP4/H.264 recommandé).`;
+    }, { once: true });
+  });
+
+  videoTrimConfirmBtn.addEventListener('click', ()=>{
+    if(videoSelEnd - videoSelStart < 0.2) return;
+    videoPreview.pause();
+    showConvertStep();
+  });
+  videoBackToTrimBtn.addEventListener('click', showTrimStep);
+
+  function updateVideoSelUI(){
+    const dur = videoPreview.duration || 1;
+    const startPct = (videoSelStart/dur)*100;
+    const endPct = (videoSelEnd/dur)*100;
+    videoSelRegion.style.left = startPct + '%';
+    videoSelRegion.style.width = (endPct-startPct) + '%';
+    videoSelHandleLeft.style.left = startPct + '%';
+    videoSelHandleRight.style.left = endPct + '%';
+    videoSelNote.textContent = `${videoSelStart.toFixed(1)}s → ${videoSelEnd.toFixed(1)}s (${(videoSelEnd-videoSelStart).toFixed(1)}s sélectionnées)`;
+  }
+
+  function videoSelBarFrac(e){
+    const rect = videoSelBar.getBoundingClientRect();
+    return Math.min(1, Math.max(0, (e.clientX - rect.left) / rect.width));
+  }
+
+  // Tapping the bar background (outside the current selection) never resets
+  // it — it moves whichever edge is nearest to that point, so you can never
+  // accidentally lose your selection with a stray tap.
+  videoSelBar.addEventListener('pointerdown', (e)=>{
+    if(!videoPreview.duration) return;
+    const dur = videoPreview.duration;
+    const t = videoSelBarFrac(e) * dur;
+    const minGap = 0.2;
+    if(t <= videoSelStart){
+      videoSelDragMode = 'resize-left';
+      videoSelStart = Math.max(0, Math.max(t, videoSelEnd - MAX_VIDEO_CLIP_SECONDS));
+      videoPreview.currentTime = videoSelStart;
+    } else {
+      videoSelDragMode = 'resize-right';
+      videoSelEnd = Math.min(dur, Math.min(t, videoSelStart + MAX_VIDEO_CLIP_SECONDS));
+      videoPreview.currentTime = videoSelEnd;
+    }
+    updateVideoSelUI();
+  });
+  videoSelRegion.addEventListener('pointerdown', (e)=>{
+    e.stopPropagation();
+    videoSelDragMode = 'move';
+    videoSelMoveStartX = e.clientX;
+    videoSelMoveStartStart = videoSelStart;
+    videoSelMoveStartEnd = videoSelEnd;
+  });
+  videoSelHandleLeft.addEventListener('pointerdown', (e)=>{
+    e.stopPropagation();
+    videoSelDragMode = 'resize-left';
+  });
+  videoSelHandleRight.addEventListener('pointerdown', (e)=>{
+    e.stopPropagation();
+    videoSelDragMode = 'resize-right';
+  });
+  window.addEventListener('pointermove', (e)=>{
+    if(!videoSelDragMode || !videoPreview.duration) return;
+    const dur = videoPreview.duration;
+    const minGap = 0.2;
+    if(videoSelDragMode === 'resize-left'){
+      let t = videoSelBarFrac(e) * dur;
+      t = Math.min(t, videoSelEnd - minGap);
+      t = Math.max(0, t, videoSelEnd - MAX_VIDEO_CLIP_SECONDS);
+      videoSelStart = t;
+      videoPreview.currentTime = videoSelStart;
+    } else if(videoSelDragMode === 'resize-right'){
+      let t = videoSelBarFrac(e) * dur;
+      t = Math.max(t, videoSelStart + minGap);
+      t = Math.min(dur, t, videoSelStart + MAX_VIDEO_CLIP_SECONDS);
+      videoSelEnd = t;
+      videoPreview.currentTime = videoSelEnd;
+    } else if(videoSelDragMode === 'move'){
+      const rect = videoSelBar.getBoundingClientRect();
+      const deltaT = ((e.clientX - videoSelMoveStartX) / rect.width) * dur;
+      const len = videoSelMoveStartEnd - videoSelMoveStartStart;
+      let newStart = Math.max(0, Math.min(dur - len, videoSelMoveStartStart + deltaT));
+      videoSelStart = newStart;
+      videoSelEnd = newStart + len;
+      videoPreview.currentTime = videoSelStart;
+    }
+    updateVideoSelUI();
+  });
+  window.addEventListener('pointerup', ()=>{ videoSelDragMode = null; });
+
+  function closeVideoModal(){
+    videoModal.classList.remove('open');
+    videoPreview.pause();
+    videoPreview.removeAttribute('src');
+    videoPreview.load();
+    if(currentVideoUrl){ URL.revokeObjectURL(currentVideoUrl); currentVideoUrl = null; }
+    currentVideoFile = null;
+    videoInput.value = '';
+    videoProgressWrap.style.display = 'none';
+    videoConvertBtn.disabled = false;
+    videoTrimConfirmBtn.disabled = false;
+    document.getElementById('videoStepResult').style.display = 'none';
+    document.getElementById('stepResultIndicator').classList.remove('active','done');
+    pendingVideoFrames = null;
+    showTrimStep();
+  }
+  videoCancelBtn.addEventListener('click', closeVideoModal);
+
+  function seekVideo(video, t){
+    return new Promise((resolve)=>{
+      let done = false;
+      const finish = ()=>{ if(done) return; done = true; resolve(); };
+      video.addEventListener('seeked', finish, { once: true });
+      video.currentTime = t;
+      setTimeout(finish, 600); // safety net in case 'seeked' doesn't fire
+    });
+  }
+
+  let pendingVideoFrames = null;
+  let pendingVideoCapW = 0, pendingVideoCapH = 0, pendingVideoDurS = 0, pendingVideoName = '';
+
+  videoConvertBtn.addEventListener('click', async ()=>{
+    if(!currentVideoFile) return;
+    videoConvertBtn.disabled = true;
+    videoProgressWrap.style.display = 'block';
+    videoProgressFill.style.width = '0%';
+    videoProgressText.textContent = 'Préparation…';
+
+    const startS = videoSelStart || 0;
+    const durS = Math.max(0.2, videoSelEnd - videoSelStart) || 1;
+    const fps = parseInt(videoFpsSelect.value, 10) || 10;
+    const frameCount = Math.max(1, Math.min(150, Math.round(durS * fps)));
+    const delayMs = Math.round(1000 / fps);
+
+    const vw = videoPreview.videoWidth || 320;
+    const vh = videoPreview.videoHeight || 320;
+    const scale = Math.min(1, MAX_VIDEO_CAPTURE_DIM / Math.max(vw, vh));
+    const capW = Math.max(1, Math.round(vw * scale));
+    const capH = Math.max(1, Math.round(vh * scale));
+
+    const capCanvas = document.createElement('canvas');
+    capCanvas.width = capW;
+    capCanvas.height = capH;
+    const capCtx = capCanvas.getContext('2d');
+
+    const frames = [];
+    try{
+      for(let i=0; i<frameCount; i++){
+        const t = startS + (i / fps);
+        await seekVideo(videoPreview, Math.min(t, videoPreview.duration || t));
+        capCtx.clearRect(0,0,capW,capH);
+        capCtx.drawImage(videoPreview, 0, 0, capW, capH);
+        const imageData = capCtx.getImageData(0,0,capW,capH);
+        frames.push({ imageData, delay: delayMs });
+        videoProgressFill.style.width = (((i+1)/frameCount) * 100) + '%';
+        videoProgressText.textContent = `Extraction image ${i+1}/${frameCount}…`;
+      }
+    }catch(err){
+      console.error('video extraction error', err);
+      videoProgressText.textContent = "Erreur pendant l'extraction — réessaie avec un fichier plus court.";
+      videoConvertBtn.disabled = false;
+      return;
+    }
+
+    pendingVideoFrames = frames;
+    pendingVideoCapW = capW;
+    pendingVideoCapH = capH;
+    pendingVideoDurS = durS;
+    pendingVideoName = currentVideoFile.name.replace(/\.[^.]+$/, '') + '.gif';
+
+    videoConvertBtn.disabled = false;
+    videoProgressWrap.style.display = 'none';
+    showResultStep();
+  });
+
+  function showResultStep(){
+    videoStepTrim.style.display = 'none';
+    videoStepConvert.style.display = 'none';
+    document.getElementById('videoStepResult').style.display = 'block';
+    stepVideoIndicator.classList.add('done');
+    stepTrimIndicator.classList.remove('active'); stepTrimIndicator.classList.add('done');
+    stepConvertIndicator.classList.remove('active'); stepConvertIndicator.classList.add('done');
+    document.getElementById('stepResultIndicator').classList.add('active');
+    document.getElementById('videoResultSummary').textContent =
+      `${pendingVideoDurS.toFixed(1)}s, ${pendingVideoFrames.length} images — télécharge-le directement, ou ajoute-le au montage pour le combiner avec d'autres GIF.`;
+    document.getElementById('videoDownloadProgress').style.display = 'none';
+  }
+
+  document.getElementById('videoDownloadBtn').addEventListener('click', async ()=>{
+    if(!pendingVideoFrames) return;
+    const btn = document.getElementById('videoDownloadBtn');
+    const wrap = document.getElementById('videoDownloadProgress');
+    const text = document.getElementById('videoDownloadText');
+    btn.disabled = true;
+    wrap.style.display = 'block';
+    text.textContent = 'Encodage du GIF…';
+    try{
+      const blob = await encodeFramesToGif(pendingVideoFrames, pendingVideoCapW, pendingVideoCapH);
+      if(!blob || blob.size < 200){
+        text.textContent = "Le GIF généré semble vide ou corrompu (fichier anormalement petit) — réessaie.";
+        console.error('gif.js produced a suspiciously small/empty blob:', blob && blob.size);
+        btn.disabled = false;
+        return;
+      }
+      const url = URL.createObjectURL(blob);
+      const link = document.getElementById('videoDownloadLink');
+      link.href = url;
+      link.download = pendingVideoName || 'clip.gif';
+      link.click();
+      text.textContent = `Téléchargé — ${Math.round(blob.size/1024)} Ko`;
+    }catch(err){
+      console.error('standalone gif encode error', err);
+      text.textContent = "Erreur pendant l'encodage — réessaie.";
+    }
+    btn.disabled = false;
+  });
+
+  document.getElementById('videoAddToTimelineBtn').addEventListener('click', ()=>{
+    if(!pendingVideoFrames) return;
+    const id = 'c' + (clipIdCounter++);
+    const totalNativeMs = pendingVideoFrames.reduce((s,f)=>s+f.delay, 0) || 1;
+    const frameCanvas = document.createElement('canvas');
+    frameCanvas.width = pendingVideoCapW;
+    frameCanvas.height = pendingVideoCapH;
+    const frameCtx = frameCanvas.getContext('2d');
+
+    const clip = {
+      id,
+      file: currentVideoFile,
+      url: currentVideoUrl,
+      name: pendingVideoName,
+      type: 'video/converted',
+      duration: pendingVideoDurS,
+      speed: 1,
+      crop: { scale: 1, offsetX: 0.5, offsetY: 0.5, rotation: 0, flipH: false, flipV: false },
+      nativeDuration: totalNativeMs / 1000,
+      frameCount: pendingVideoFrames.length,
+      frames: pendingVideoFrames,
+      totalNativeMs,
+      cutStart: 0,
+      cutEnd: 0,
+      lastFrameIdx: -1,
+      frameCanvas,
+      frameCtx,
+      imgEl: new Image() // unused placeholder — frames are always available for video clips
+    };
+    clips.push(clip);
+    generateBtn.disabled = false;
+    if(clips.length === 1) startPreview();
+    currentVideoUrl = null; // ownership moves to the clip — don't revoke it
+
+    closeVideoModal();
+    renderTimeline();
+  });
+
+  document.getElementById('videoResultCloseBtn').addEventListener('click', closeVideoModal);
+
+  // ---------- Autosave (IndexedDB) ----------
+  // Persists the montage locally so refreshing the page doesn't lose work.
+  // Only image/GIF clips are saved — clips converted from video would need
+  // the whole extraction re-run to restore, which is too heavy to redo
+  // silently on load, so those are intentionally skipped.
+  let autosaveDbPromise = null;
+  let autosaveTimer = null;
+
+  function openAutosaveDB(){
+    if(autosaveDbPromise) return autosaveDbPromise;
+    autosaveDbPromise = new Promise((resolve, reject)=>{
+      if(!window.indexedDB){ reject(new Error('no indexedDB')); return; }
+      const req = indexedDB.open('geekogifio_autosave', 1);
+      req.onupgradeneeded = ()=>{
+        const db = req.result;
+        if(!db.objectStoreNames.contains('clips')) db.createObjectStore('clips', {keyPath:'id'});
+        if(!db.objectStoreNames.contains('settings')) db.createObjectStore('settings', {keyPath:'key'});
+      };
+      req.onsuccess = ()=> resolve(req.result);
+      req.onerror = ()=> reject(req.error);
+    });
+    return autosaveDbPromise;
+  }
+
+  function scheduleAutosave(){
+    clearTimeout(autosaveTimer);
+    autosaveTimer = setTimeout(saveAutosave, 900);
+  }
+
+  async function saveAutosave(){
+    try{
+      const db = await openAutosaveDB();
+      const tx = db.transaction(['clips','settings'], 'readwrite');
+      const store = tx.objectStore('clips');
+      const clearReq = store.clear();
+      await new Promise((res,rej)=>{ clearReq.onsuccess=res; clearReq.onerror=rej; });
+      clips.forEach((clip, idx)=>{
+        if(clip.type === 'video/converted') return; // see note above
+        store.put({
+          id: clip.id, order: idx, file: clip.file, name: clip.name, type: clip.type,
+          duration: clip.duration, speed: clip.speed || 1,
+          crop: clip.crop, cutStart: clip.cutStart || 0, cutEnd: clip.cutEnd || 0
+        });
+      });
+      tx.objectStore('settings').put({
+        key: 'output',
+        value: { sizePreset: sizePreset.value, customW: customW.value, customH: customH.value, fitMode, bgColor: bgColorInput.value }
+      });
+    }catch(err){ /* autosave is best-effort — never interrupt the user over it */ }
+  }
+
+  async function clearAutosave(){
+    try{
+      const db = await openAutosaveDB();
+      const tx = db.transaction(['clips','settings'], 'readwrite');
+      tx.objectStore('clips').clear();
+      tx.objectStore('settings').clear();
+    }catch(err){}
+  }
+
+  async function loadAutosaveRecords(){
+    try{
+      const db = await openAutosaveDB();
+      const tx = db.transaction('clips', 'readonly');
+      const req = tx.objectStore('clips').getAll();
+      return await new Promise((res,rej)=>{ req.onsuccess=()=>res(req.result); req.onerror=rej; });
+    }catch(err){ return []; }
+  }
+
+  async function loadAutosaveSettings(){
+    try{
+      const db = await openAutosaveDB();
+      const tx = db.transaction('settings', 'readonly');
+      const req = tx.objectStore('settings').get('output');
+      const rec = await new Promise((res,rej)=>{ req.onsuccess=()=>res(req.result); req.onerror=rej; });
+      return rec ? rec.value : null;
+    }catch(err){ return null; }
+  }
+
+  async function restoreAutosave(){
+    const records = await loadAutosaveRecords();
+    records.sort((a,b)=> a.order - b.order);
+    records.forEach(r=>{
+      addClipFromFile(r.file, {
+        duration: r.duration, speed: r.speed, crop: r.crop,
+        cutStart: r.cutStart, cutEnd: r.cutEnd
+      });
+    });
+    const settings = await loadAutosaveSettings();
+    if(settings){
+      if(settings.sizePreset){ sizePreset.value = settings.sizePreset; sizePreset.dispatchEvent(new Event('change')); }
+      if(settings.customW) customW.value = settings.customW;
+      if(settings.customH) customH.value = settings.customH;
+      if(settings.bgColor) bgColorInput.value = settings.bgColor;
+      if(settings.fitMode){
+        document.querySelectorAll('.segmented button').forEach(b=>{
+          b.classList.toggle('active', b.dataset.fit === settings.fitMode);
+        });
+        fitMode = settings.fitMode;
+      }
+      applySize();
+    }
+    hideAutosaveBanner();
+  }
+
+  function showAutosaveBanner(count){
+    const banner = document.getElementById('autosaveBanner');
+    document.getElementById('autosaveBannerText').textContent =
+      `💾 Montage précédent retrouvé (${count} clip${count>1?'s':''}) — restaurer ?`;
+    banner.style.display = 'flex';
+  }
+  function hideAutosaveBanner(){
+    document.getElementById('autosaveBanner').style.display = 'none';
+  }
+
+  (async function checkAutosaveOnLoad(){
+    const records = await loadAutosaveRecords();
+    if(records.length) showAutosaveBanner(records.length);
+  })();
+
+  document.getElementById('autosaveRestoreBtn').addEventListener('click', restoreAutosave);
+  document.getElementById('autosaveDismissBtn').addEventListener('click', ()=>{
+    hideAutosaveBanner();
+    clearAutosave();
+  });
+
+  // ---------- Theme (light / dark) ----------
+  const themeToggle = document.getElementById('themeToggle');
+  const themeColorMeta = document.querySelector('meta[name="theme-color"]');
+  const THEME_COLORS = { light: '#5B5FA8', dark: '#8B8FD9' };
+
+  function applyTheme(theme){
+    document.documentElement.setAttribute('data-theme', theme);
+    themeToggle.textContent = theme === 'dark' ? '☀️' : '🌙';
+    themeToggle.title = theme === 'dark' ? 'Passer en thème clair' : 'Passer en thème sombre';
+    if(themeColorMeta) themeColorMeta.setAttribute('content', THEME_COLORS[theme] || THEME_COLORS.light);
+    try{ localStorage.setItem('geekogifio_theme', theme); }catch(err){}
+  }
+
+  themeToggle.addEventListener('click', ()=>{
+    const current = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+    applyTheme(current === 'dark' ? 'light' : 'dark');
+  });
+
+  (function initTheme(){
+    let saved = null;
+    try{ saved = localStorage.getItem('geekogifio_theme'); }catch(err){}
+    let initial = saved;
+    if(initial !== 'light' && initial !== 'dark'){
+      initial = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+    }
+    applyTheme(initial);
+  })();
+
+  // ---------- Language / i18n ----------
+  // Covers the main navigation and always-visible controls. Dynamic hint
+  // text generated inside modals (crop, video) stays in French for now —
+  // translating every generated string reliably across 8 languages was too
+  // large a scope for this pass, so the highest-traffic UI comes first.
+  const TRANSLATIONS = {
+    fr: {
+      tagline: "montage de GIF pour écrans LED pixel — glisser-déposer, tout dans le navigateur",
+      videoTrim: "✂️ Rogner vidéo + la convertir en GIF", installApp: "📲 Installer l'app",
+      settingsTitle: "Réglages de sortie", screenSize: "Taille de l'écran",
+      cropMode: "Cadrage de chaque image", fitCover: "Remplir (crop)", fitContain: "Tout montrer",
+      generateBtn: "✨ Générer le GIF combiné", montageTitle: "Montage",
+      addGif: "🎞️ Ajouter des GIF", addImage: "+ image fixe", splitHere: "✂ Couper ici",
+      dropzoneText: "Glisse tes GIF ou images ici, ou clique pour parcourir — puis réordonne-les et ajuste la durée de chacun",
+      footerText: "Tout le traitement se fait localement dans ton navigateur — rien n'est envoyé sur un serveur.",
+      cancel: "Annuler", reset: "↺ Réinitialiser", validate: "Valider",
+      feedback: "💡 Une idée ?",
+      donate: "☕ Faire un don"
+    },
+    en: {
+      tagline: "GIF editing for LED pixel screens — drag and drop, all in your browser",
+      videoTrim: "✂️ Trim video + convert to GIF", installApp: "📲 Install app",
+      settingsTitle: "Output settings", screenSize: "Screen size",
+      cropMode: "Frame each image", fitCover: "Fill (crop)", fitContain: "Show all",
+      generateBtn: "✨ Generate combined GIF", montageTitle: "Timeline",
+      addGif: "🎞️ Add GIFs", addImage: "+ still image", splitHere: "✂ Split here",
+      dropzoneText: "Drag your GIFs or images here, or click to browse — then reorder them and adjust each duration",
+      footerText: "Everything happens locally in your browser — nothing is sent to a server.",
+      cancel: "Cancel", reset: "↺ Reset", validate: "Apply",
+      feedback: "💡 Got an idea?",
+      donate: "☕ Buy me a coffee"
+    },
+    de: {
+      tagline: "GIF-Montage für LED-Pixel-Bildschirme — Drag & Drop, alles im Browser",
+      videoTrim: "✂️ Video zuschneiden + in GIF umwandeln", installApp: "📲 App installieren",
+      settingsTitle: "Ausgabeeinstellungen", screenSize: "Bildschirmgröße",
+      cropMode: "Bildausschnitt", fitCover: "Ausfüllen (Zuschnitt)", fitContain: "Alles anzeigen",
+      generateBtn: "✨ Kombiniertes GIF erstellen", montageTitle: "Zeitleiste",
+      addGif: "🎞️ GIFs hinzufügen", addImage: "+ Standbild", splitHere: "✂ Hier teilen",
+      dropzoneText: "Ziehe deine GIFs oder Bilder hierher oder klicke zum Durchsuchen — dann anordnen und Dauer anpassen",
+      footerText: "Alles läuft lokal in deinem Browser — nichts wird an einen Server gesendet.",
+      cancel: "Abbrechen", reset: "↺ Zurücksetzen", validate: "Übernehmen",
+      feedback: "💡 Eine Idee?",
+      donate: "☕ Spenden"
+    },
+    it: {
+      tagline: "Montaggio GIF per schermi LED pixel — trascina e rilascia, tutto nel browser",
+      videoTrim: "✂️ Taglia video + convertilo in GIF", installApp: "📲 Installa l'app",
+      settingsTitle: "Impostazioni di output", screenSize: "Dimensione schermo",
+      cropMode: "Inquadratura di ogni immagine", fitCover: "Riempi (ritaglia)", fitContain: "Mostra tutto",
+      generateBtn: "✨ Genera GIF combinata", montageTitle: "Montaggio",
+      addGif: "🎞️ Aggiungi GIF", addImage: "+ immagine fissa", splitHere: "✂ Taglia qui",
+      dropzoneText: "Trascina qui le tue GIF o immagini, o clicca per sfogliare — poi riordinale e regola la durata di ciascuna",
+      footerText: "Tutto avviene localmente nel tuo browser — nulla viene inviato a un server.",
+      cancel: "Annulla", reset: "↺ Reimposta", validate: "Conferma",
+      feedback: "💡 Un'idea?",
+      donate: "☕ Offrimi un caffè"
+    },
+    es: {
+      tagline: "Montaje de GIF para pantallas LED de píxeles — arrastra y suelta, todo en el navegador",
+      videoTrim: "✂️ Recorta vídeo + conviértelo en GIF", installApp: "📲 Instalar app",
+      settingsTitle: "Ajustes de salida", screenSize: "Tamaño de pantalla",
+      cropMode: "Encuadre de cada imagen", fitCover: "Rellenar (recortar)", fitContain: "Mostrar todo",
+      generateBtn: "✨ Generar GIF combinado", montageTitle: "Montaje",
+      addGif: "🎞️ Añadir GIF", addImage: "+ imagen fija", splitHere: "✂ Cortar aquí",
+      dropzoneText: "Arrastra tus GIF o imágenes aquí, o haz clic para explorar — luego reordénalos y ajusta la duración de cada uno",
+      footerText: "Todo ocurre localmente en tu navegador — no se envía nada a un servidor.",
+      cancel: "Cancelar", reset: "↺ Restablecer", validate: "Aplicar",
+      feedback: "💡 ¿Una idea?",
+      donate: "☕ Hacer una donación"
+    },
+    ru: {
+      tagline: "Монтаж GIF для светодиодных пиксельных экранов — перетаскивание, всё в браузере",
+      videoTrim: "✂️ Обрезать видео + конвертировать в GIF", installApp: "📲 Установить приложение",
+      settingsTitle: "Настройки экспорта", screenSize: "Размер экрана",
+      cropMode: "Кадрирование каждого изображения", fitCover: "Заполнить (обрезка)", fitContain: "Показать всё",
+      generateBtn: "✨ Создать общий GIF", montageTitle: "Монтаж",
+      addGif: "🎞️ Добавить GIF", addImage: "+ статичное изображение", splitHere: "✂ Разрезать здесь",
+      dropzoneText: "Перетащи сюда свои GIF или изображения, или нажми, чтобы выбрать — затем переставь их и настрой длительность каждого",
+      footerText: "Всё происходит локально в твоём браузере — ничего не отправляется на сервер.",
+      cancel: "Отмена", reset: "↺ Сбросить", validate: "Применить",
+      feedback: "💡 Есть идея?",
+      donate: "☕ Поддержать"
+    },
+    ja: {
+      tagline: "LEDピクセルスクリーン用GIF編集 — ドラッグ＆ドロップ、すべてブラウザ内で完結",
+      videoTrim: "✂️ 動画をトリミング＋GIFに変換", installApp: "📲 アプリをインストール",
+      settingsTitle: "出力設定", screenSize: "画面サイズ",
+      cropMode: "各画像のフレーム", fitCover: "フィット（切り抜き）", fitContain: "全体を表示",
+      generateBtn: "✨ 結合GIFを生成", montageTitle: "タイムライン",
+      addGif: "🎞️ GIFを追加", addImage: "+ 静止画を追加", splitHere: "✂ ここで分割",
+      dropzoneText: "GIFや画像をここにドラッグ、またはクリックして選択 — その後、並び替えて長さを調整",
+      footerText: "すべての処理はブラウザ内で完結し、サーバーには何も送信されません。",
+      cancel: "キャンセル", reset: "↺ リセット", validate: "適用",
+      feedback: "💡 アイデアがある？",
+      donate: "☕ 寄付する"
+    },
+    zh: {
+      tagline: "为LED像素屏幕制作GIF — 拖放操作，全部在浏览器中完成",
+      videoTrim: "✂️ 裁剪视频 + 转换为GIF", installApp: "📲 安装应用",
+      settingsTitle: "输出设置", screenSize: "屏幕尺寸",
+      cropMode: "每张图片的取景方式", fitCover: "填满（裁剪）", fitContain: "显示全部",
+      generateBtn: "✨ 生成合并GIF", montageTitle: "时间轴",
+      addGif: "🎞️ 添加GIF", addImage: "+ 静态图片", splitHere: "✂ 在此分割",
+      dropzoneText: "将GIF或图片拖到这里，或点击浏览 — 然后重新排序并调整每个片段的时长",
+      footerText: "所有处理都在你的浏览器本地完成 — 不会发送到任何服务器。",
+      cancel: "取消", reset: "↺ 重置", validate: "确认",
+      feedback: "💡 有想法？",
+      donate: "☕ 请我喝咖啡"
+    },
+    ko: {
+      tagline: "LED 픽셀 화면용 GIF 편집 — 드래그 앤 드롭, 브라우저 안에서 모두 처리",
+      videoTrim: "✂️ 동영상 자르기 + GIF로 변환", installApp: "📲 앱 설치",
+      settingsTitle: "출력 설정", screenSize: "화면 크기",
+      cropMode: "이미지 프레이밍", fitCover: "채우기 (자르기)", fitContain: "전체 보기",
+      generateBtn: "✨ 결합된 GIF 생성", montageTitle: "타임라인",
+      addGif: "🎞️ GIF 추가", addImage: "+ 정지 이미지", splitHere: "✂ 여기서 분할",
+      dropzoneText: "GIF나 이미지를 여기에 끌어다 놓거나 클릭해서 찾아보세요 — 그런 다음 순서를 바꾸고 각 길이를 조정하세요",
+      footerText: "모든 처리는 브라우저 안에서 로컬로 이루어지며, 서버로 전송되지 않습니다.",
+      cancel: "취소", reset: "↺ 초기화", validate: "적용",
+      feedback: "💡 아이디어가 있나요?",
+      donate: "☕ 후원하기"
+    },
+    hi: {
+      tagline: "LED पिक्सेल स्क्रीन के लिए GIF एडिटिंग — ड्रैग एंड ड्रॉप, सब कुछ ब्राउज़र में",
+      videoTrim: "✂️ वीडियो ट्रिम करें + GIF में बदलें", installApp: "📲 ऐप इंस्टॉल करें",
+      settingsTitle: "आउटपुट सेटिंग्स", screenSize: "स्क्रीन का आकार",
+      cropMode: "हर इमेज की फ़्रेमिंग", fitCover: "भरें (क्रॉप)", fitContain: "सब दिखाएं",
+      generateBtn: "✨ संयुक्त GIF बनाएं", montageTitle: "टाइमलाइन",
+      addGif: "🎞️ GIF जोड़ें", addImage: "+ स्थिर इमेज", splitHere: "✂ यहाँ काटें",
+      dropzoneText: "अपने GIF या इमेज यहाँ खींचें, या ब्राउज़ करने के लिए क्लिक करें — फिर उन्हें फिर से व्यवस्थित करें और हर एक की अवधि समायोजित करें",
+      footerText: "सारी प्रोसेसिंग आपके ब्राउज़र में स्थानीय रूप से होती है — कुछ भी सर्वर पर नहीं भेजा जाता।",
+      cancel: "रद्द करें", reset: "↺ रीसेट करें", validate: "लागू करें",
+      feedback: "💡 कोई सुझाव है?",
+      donate: "☕ दान करें"
+    }
+  };
+
+  const langSelect = document.getElementById('langSelect');
+
+  function applyLanguage(code){
+    const dict = TRANSLATIONS[code] || TRANSLATIONS.fr;
+    document.querySelectorAll('[data-i18n]').forEach(el=>{
+      const key = el.getAttribute('data-i18n');
+      if(dict[key] !== undefined) el.textContent = dict[key];
+    });
+    document.documentElement.lang = code;
+    try{ localStorage.setItem('geekogifio_lang', code); }catch(err){}
+  }
+
+  langSelect.addEventListener('change', ()=> applyLanguage(langSelect.value));
+
+  (function initLanguage(){
+    let saved = null;
+    try{ saved = localStorage.getItem('geekogifio_lang'); }catch(err){}
+    let initial = saved;
+    if(!initial){
+      const browserLang = (navigator.language || 'fr').slice(0,2).toLowerCase();
+      initial = TRANSLATIONS[browserLang] ? browserLang : 'fr';
+    }
+    langSelect.value = initial;
+    applyLanguage(initial);
+  })();
+
+  // ---------- Init ----------
+  // spawnPetals(22); // disabled — doesn't fit the sober theme
+  applySize();
+  requestAnimationFrame(thumbLoop);
+})();
+</script>
+
+</body>
+</html>
