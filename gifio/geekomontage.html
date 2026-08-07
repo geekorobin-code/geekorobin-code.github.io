@@ -1,0 +1,1265 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>GeekoMontage — Montage vidéo simple, dans le navigateur</title>
+<meta name="description" content="Monte plusieurs vidéos : découpe, vitesse, volume, tout dans le navigateur, rien envoyé sur un serveur.">
+<meta name="keywords" content="montage vidéo, éditeur vidéo en ligne, couper vidéo, vitesse vidéo, video editor, trim video">
+<meta name="theme-color" content="#5B5FA8">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="GeekoMontage">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F4F4F7;
+    --bg2:#EFEFF3;
+    --panel:#FFFFFF;
+    --panel-alt:#F6F6F9;
+    --border:#E1E1E7;
+    --text:#20232E;
+    --muted:#6B7086;
+    --pink:#5B5FA8;
+    --pink-deep:#464A8C;
+    --mint:#3D8F82;
+    --mint-deep:#2E6E64;
+    --peach:#B4813C;
+    --lav:#7D89B0;
+    --lav-deep:#4A5578;
+    --sky:#8CA0B3;
+    --danger:#B3453D;
+    --m3-shape-xs:4px;
+    --m3-shape-sm:8px;
+    --m3-shape-md:12px;
+    --m3-shape-lg:16px;
+    --m3-shape-xl:28px;
+    --m3-shape-full:999px;
+    --m3-elev-1:0 1px 2px rgba(20,20,30,0.10), 0 1px 3px 1px rgba(20,20,30,0.08);
+    --m3-elev-2:0 1px 2px rgba(20,20,30,0.12), 0 2px 6px 2px rgba(20,20,30,0.09);
+    --m3-elev-3:0 1px 3px rgba(20,20,30,0.14), 0 4px 8px 3px rgba(20,20,30,0.10);
+    --m3-elev-4:0 2px 3px rgba(20,20,30,0.16), 0 6px 10px 4px rgba(20,20,30,0.11);
+    --m3-elev-5:0 4px 4px rgba(20,20,30,0.18), 0 8px 12px 6px rgba(20,20,30,0.12);
+  }
+  html[data-theme="dark"]{
+    --bg:#16171D; --bg2:#1C1E26; --panel:#22242E; --panel-alt:#2A2D38; --border:#3A3D4A;
+    --text:#E8E9EE; --muted:#9297A8;
+    --pink:#8B8FD9; --pink-deep:#A5A9E8; --mint:#5FBBA8; --mint-deep:#7DD4C0;
+    --peach:#D4A05C; --lav:#9AA5CC; --lav-deep:#B8C0E0; --sky:#A8BAC9; --danger:#E07268;
+    --m3-elev-1:0 1px 2px rgba(0,0,0,0.35), 0 1px 3px 1px rgba(0,0,0,0.28);
+    --m3-elev-2:0 1px 2px rgba(0,0,0,0.38), 0 2px 6px 2px rgba(0,0,0,0.30);
+    --m3-elev-3:0 1px 3px rgba(0,0,0,0.42), 0 4px 8px 3px rgba(0,0,0,0.32);
+    --m3-elev-4:0 2px 3px rgba(0,0,0,0.46), 0 6px 10px 4px rgba(0,0,0,0.34);
+    --m3-elev-5:0 4px 4px rgba(0,0,0,0.5), 0 8px 12px 6px rgba(0,0,0,0.36);
+  }
+  html{transition:background-color .2s ease;}
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Roboto',system-ui,sans-serif;
+    min-height:100vh; min-height:100dvh;
+    padding:22px;
+    padding-top:calc(22px + env(safe-area-inset-top));
+    padding-bottom:calc(22px + env(safe-area-inset-bottom));
+    padding-left:calc(22px + env(safe-area-inset-left));
+    padding-right:calc(22px + env(safe-area-inset-right));
+    transition:background-color .2s ease, color .2s ease;
+  }
+
+  /* ---- Header ---- */
+  header.topbar{
+    display:flex; align-items:center; flex-wrap:wrap; gap:10px;
+    margin-bottom:20px; padding:10px 6px;
+  }
+  .brand{
+    font-weight:800; font-size:22px; display:flex; align-items:center; gap:10px; color:var(--text);
+  }
+  .brand .dot{width:14px;height:14px;border-radius:50%;background:linear-gradient(135deg,var(--pink),var(--lav));box-shadow:0 0 0 4px var(--panel);}
+  .brand .accent{background:linear-gradient(135deg,var(--pink-deep),var(--lav-deep));-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .nav-link{
+    font-family:'Roboto',sans-serif; font-weight:700; font-size:13px;
+    padding:9px 16px; border-radius:var(--m3-shape-full);
+    background:var(--panel-alt); border:2px solid var(--border); color:var(--text);
+    text-decoration:none; display:inline-flex; align-items:center; gap:6px;
+    transition:border-color .15s, color .15s, box-shadow .15s;
+  }
+  .nav-link:hover{border-color:var(--pink-deep); color:var(--pink-deep); box-shadow:var(--m3-elev-1);}
+  .spacer{flex:1;}
+  button, .btnlink{
+    font-family:'Roboto',sans-serif; cursor:pointer; border:none;
+    border-radius:var(--m3-shape-full); padding:10px 16px; font-size:13px; font-weight:600;
+    position:relative; overflow:hidden; text-decoration:none; display:inline-flex; align-items:center; gap:6px;
+    transition:transform .12s ease, filter .15s ease, box-shadow .15s ease, border-color .15s, color .15s;
+  }
+  button:active{transform:scale(0.97);}
+  button.primary{background:linear-gradient(135deg,var(--pink),var(--lav)); color:#fff; box-shadow:var(--m3-elev-1);}
+  button.primary:hover{filter:brightness(1.05); box-shadow:var(--m3-elev-3);}
+  button.primary:disabled{background:var(--panel-alt); color:#B4B7C4; box-shadow:none; cursor:not-allowed;}
+  button.ghost, .btnlink.ghost{background:var(--panel-alt); border:2px solid var(--border); color:var(--text);}
+  button.ghost:hover, .btnlink.ghost:hover{border-color:var(--mint-deep); color:var(--mint-deep); box-shadow:var(--m3-elev-1);}
+  .icon-btn{font-size:15px; padding:8px 12px;}
+  .m3-ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,0.5);transform:scale(0);pointer-events:none;animation:m3-ripple-anim 550ms ease-out;}
+  @keyframes m3-ripple-anim{to{transform:scale(2.6);opacity:0;}}
+
+  main.layout{max-width:1100px; margin:0 auto;}
+  .panel{
+    background:var(--panel); border-radius:var(--m3-shape-xl); padding:20px;
+    box-shadow:var(--m3-elev-2); margin-bottom:18px;
+  }
+
+  /* ---- Upload zone ---- */
+  #dropzone{
+    border:3px dashed var(--lav); border-radius:var(--m3-shape-xl);
+    padding:34px 20px; text-align:center; color:var(--lav-deep);
+    font-weight:700; font-size:14px; cursor:pointer;
+    transition:border-color .15s, background .15s;
+  }
+  #dropzone:hover, #dropzone.dragover{border-color:var(--pink-deep); color:var(--pink-deep); background:var(--panel-alt);}
+  #dropzone .sub{font-weight:500; font-size:12px; color:var(--muted); margin-top:6px;}
+  .upload-actions{display:flex; gap:10px; justify-content:center; margin-top:14px; flex-wrap:wrap;}
+
+  /* ---- Preview ---- */
+  .preview-wrap{
+    background:#000; border-radius:var(--m3-shape-lg); overflow:hidden;
+    display:flex; align-items:center; justify-content:center;
+    min-height:220px; position:relative;
+  }
+  #previewVideo{max-width:100%; max-height:52vh; display:block;}
+  .preview-empty{color:#8890A0; font-size:13px; font-weight:600; padding:60px 20px;}
+  .film-bar-wrap{margin-top:12px; padding:4px 2px;}
+  .film-bar{
+    position:relative; height:52px; background:var(--panel-alt);
+    border-radius:12px; border:2px solid var(--border);
+    display:flex; cursor:pointer; touch-action:none; overflow:hidden;
+  }
+  .film-bar:empty::after{
+    content:'Ajoute un clip pour voir la bande vidéo';
+    display:flex; align-items:center; justify-content:center; width:100%;
+    color:var(--muted); font-size:11.5px; font-weight:600;
+  }
+  .audio-film-bar{height:40px;}
+  .film-seg{
+    flex:0 0 auto; height:100%; min-width:6px; position:relative;
+    background-size:cover; background-position:center; background-color:#111;
+    border-right:2px solid var(--panel);
+    display:flex; align-items:flex-end; justify-content:flex-start;
+    overflow:hidden;
+  }
+  .film-seg:last-child{border-right:none;}
+  .film-seg.active-seg{outline:3px solid var(--pink-deep); outline-offset:-3px; z-index:2;}
+  .film-seg .seg-label{
+    font-size:8.5px; font-weight:800; color:#fff; background:rgba(0,0,0,0.55);
+    padding:1px 4px; border-radius:0 4px 0 0; white-space:nowrap; max-width:100%; overflow:hidden; text-overflow:ellipsis;
+  }
+  .film-seg.audio-seg{
+    background-color:var(--sky);
+    align-items:center; justify-content:center;
+  }
+  .film-seg.audio-seg .seg-label{background:none; color:#0B2430; padding:0 4px;}
+  .film-playhead{
+    position:absolute; top:0; bottom:0; width:3px; background:#fff;
+    box-shadow:0 0 0 1px var(--pink-deep), var(--m3-elev-2);
+    left:0%; pointer-events:none; z-index:5;
+  }
+  .stage-controls{
+    display:flex; align-items:center; gap:12px; margin-top:12px;
+    background:var(--panel-alt); border-radius:var(--m3-shape-full); padding:8px 16px;
+    font-size:12.5px; font-weight:700; color:var(--muted);
+  }
+  #playheadTime{font-variant-numeric:tabular-nums;}
+
+  .clip-toolbar{
+    display:flex; align-items:center; gap:8px; flex-wrap:wrap;
+    margin-top:12px; padding:10px 14px;
+    background:var(--panel-alt); border-radius:var(--m3-shape-lg);
+    border:2px solid var(--border);
+  }
+  .clip-toolbar label{font-size:10.5px; font-weight:800; color:var(--muted); margin-left:4px;}
+  .clip-toolbar select{
+    background:var(--panel); border:1.5px solid var(--border); border-radius:8px;
+    color:var(--text); font-family:'Roboto',sans-serif; font-weight:700; font-size:11.5px; padding:5px 6px;
+  }
+  .mini-name-input{
+    flex:1; min-width:100px; background:var(--panel); border:1.5px solid var(--border);
+    border-radius:8px; color:var(--text); font-family:'Roboto',sans-serif; font-weight:700;
+    font-size:12px; padding:6px 10px;
+  }
+  .clip-toolbar .icon-btn.danger:hover{background:var(--danger); color:#fff; border-color:transparent;}
+
+  /* ---- Tracks ---- */
+  .track-section{margin-top:18px;}
+  .track-header{display:flex; align-items:center; gap:10px; margin-bottom:8px;}
+  .track-header h3{margin:0; font-size:14px; font-weight:800; color:var(--lav-deep); flex:1;}
+  .track-lane{
+    display:flex; gap:10px; overflow-x:auto; padding:8px 2px 14px 2px; min-height:96px;
+    background:var(--panel-alt); border-radius:var(--m3-shape-lg); padding:12px;
+  }
+  .track-lane:empty::after{
+    content:'Vide — glisse un fichier ci-dessus';
+    color:var(--muted); font-size:12.5px; font-weight:600; align-self:center; padding:20px;
+  }
+  .clip-chip{
+    flex:0 0 168px; background:var(--panel); border-radius:var(--m3-shape-md);
+    padding:8px; box-shadow:var(--m3-elev-1); position:relative; cursor:grab;
+  }
+  .clip-chip.dragging{opacity:0.96; z-index:50; box-shadow:var(--m3-elev-5); transition:none; cursor:grabbing;}
+  .clip-chip.drop-indicator-before{box-shadow:-4px 0 0 0 var(--pink-deep), var(--m3-elev-1);}
+  .clip-chip.drop-indicator-after{box-shadow:4px 0 0 0 var(--pink-deep), var(--m3-elev-1);}
+  .clip-drag-handle{
+    width:100%; height:14px; display:flex; align-items:center; justify-content:center;
+    color:var(--muted); font-size:11px; letter-spacing:2px; cursor:grab; touch-action:none; margin-bottom:5px;
+  }
+  .clip-thumb{
+    width:100%; aspect-ratio:16/9; border-radius:9px; overflow:hidden; margin-bottom:6px;
+    background:repeating-conic-gradient(var(--panel-alt) 0% 25%, var(--panel) 0% 50%) 50%/12px 12px;
+    display:flex; align-items:center; justify-content:center; touch-action:none;
+  }
+  .clip-thumb video, .clip-thumb canvas{width:100%; height:100%; object-fit:cover; display:block;}
+  .clip-thumb .audio-icon{font-size:26px;}
+  .clip-actions{position:absolute; top:20px; right:14px; display:flex; gap:4px; z-index:2;}
+  .clip-mini-btn{
+    width:20px; height:20px; border-radius:50%; padding:0; font-size:10.5px;
+    background:var(--panel-alt); border:none; color:var(--muted); box-shadow:var(--m3-elev-1);
+  }
+  .clip-mini-btn.danger:hover{background:var(--danger); color:#fff;}
+  .clip-mini-btn:hover{background:var(--pink); color:#fff;}
+  .clip-name-row{
+    display:flex; align-items:baseline; gap:3px; overflow:hidden;
+    margin-bottom:6px;
+  }
+  .linked-audio-prefix{
+    font-size:9px; font-weight:800; color:var(--mint-deep); flex-shrink:0;
+  }
+  .clip-name{
+    font-size:10.5px; font-weight:700; color:var(--text); white-space:nowrap; overflow:hidden;
+    text-overflow:ellipsis; cursor:text; border-bottom:1px dashed transparent; display:inline-block;
+  }
+  .clip-name:hover{border-bottom-color:var(--border);}
+  .clip-row{display:flex; align-items:center; gap:5px; margin-top:5px;}
+  .clip-row label{font-size:9px; font-weight:800; color:var(--muted); width:34px; flex-shrink:0;}
+  .clip-row select, .clip-row input[type=number]{
+    flex:1; background:var(--panel-alt); border:1.5px solid var(--border); border-radius:7px;
+    color:var(--text); font-family:'Roboto',sans-serif; font-weight:700; font-size:10.5px; padding:3px 4px;
+  }
+  .clip-dur{font-size:9.5px; color:var(--muted); font-weight:700; margin-top:4px; text-align:center;}
+
+  .track-toolbar{display:flex; align-items:center; gap:8px; margin-bottom:10px; flex-wrap:wrap;}
+  .track-toolbar .tip{font-size:11px; color:var(--muted); font-weight:600;}
+  .trim-mini-wrap{margin-top:8px; padding-top:14px;}
+  .trim-mini-bar-wrap{position:relative; padding:12px 0;}
+  .trim-mini-bar{position:relative; height:20px; background:linear-gradient(135deg,var(--mint),var(--sky)); border-radius:7px; touch-action:none; overflow:hidden;}
+  .trim-mini-region{position:absolute; top:0; bottom:0; left:0; width:0; background:rgba(255,255,255,0.55); border-left:2px solid var(--pink-deep); border-right:2px solid var(--pink-deep); touch-action:none;}
+  .trim-mini-handle{position:absolute; top:0; bottom:0; width:20px; margin-left:-10px; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:9px; font-weight:800; color:#fff; cursor:ew-resize; touch-action:none; z-index:3; box-shadow:var(--m3-elev-1);}
+  .trim-mini-handle-left{background:var(--mint-deep);}
+  .trim-mini-handle-right{background:var(--pink-deep);}
+  .trim-mini-note{font-size:9px; color:var(--muted); font-weight:700; text-align:center; margin-top:6px;}
+
+  /* ---- Export ---- */
+  .export-row{display:flex; align-items:center; gap:12px; flex-wrap:wrap;}
+  #exportProgressWrap{display:none; margin-top:12px;}
+  #exportProgressBar{height:10px; background:var(--panel-alt); border-radius:999px; overflow:hidden; border:2px solid var(--border);}
+  #exportProgressFill{height:100%; width:0%; background:linear-gradient(90deg,var(--pink),var(--lav),var(--sky)); transition:width .15s ease; border-radius:999px;}
+  #exportProgressText{font-size:11.5px; font-weight:700; color:var(--muted); margin-top:8px;}
+  #exportDownloadLink{display:none; margin-top:12px;}
+
+  footer{margin-top:24px; text-align:center; color:var(--muted); font-size:11.5px; font-weight:600;}
+  .visit-counter{display:block; margin-top:4px; font-size:10.5px; color:var(--muted); opacity:0.8;}
+
+  @media (max-width:640px){
+    body{padding:14px;}
+    header.topbar{margin-bottom:14px;}
+    .brand{font-size:19px;}
+    .panel{padding:14px; border-radius:20px;}
+    .clip-chip{flex:0 0 140px;}
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="brand" href="../" style="text-decoration:none;"><span class="dot"></span>Geeko<span class="accent">Montage</span></a>
+  <button id="themeToggle" class="ghost icon-btn" title="Thème clair / sombre">🌙</button>
+  <div class="spacer"></div>
+  <a class="nav-link" href="../gifio/">🎞️ GeekoGifio</a>
+  <a class="nav-link" href="../audio/">🎵 GeekoAudio</a>
+  <a class="btnlink ghost" id="feedbackBtn" href="mailto:geekorobin@gmail.com?subject=Id%C3%A9e%20pour%20GeekoMontage&body=Salut%2C%0A%0AVoici%20mon%20id%C3%A9e%20%3A%20">💡 Une idée ?</a>
+</header>
+
+<main class="layout">
+
+  <div class="panel">
+    <div id="dropzone">
+      🎬 Glisse tes vidéos ou fichiers audio ici
+      <div class="sub">Ou utilise les boutons ci-dessous — tout reste dans ton navigateur, rien n'est envoyé sur un serveur</div>
+    </div>
+    <div class="upload-actions">
+      <button class="primary" id="addVideoBtn">🎬 Ajouter une vidéo</button>
+      <button class="ghost" id="addAudioBtn">🎵 Ajouter un audio</button>
+    </div>
+    <input type="file" id="videoFileInput" accept="video/*" multiple style="display:none;">
+    <input type="file" id="audioFileInput" accept="audio/*" multiple style="display:none;">
+  </div>
+
+  <div class="panel">
+    <div class="preview-wrap">
+      <video id="previewVideo" style="display:none;" playsinline muted></video>
+      <div class="preview-empty" id="previewEmpty">Ton montage apparaîtra ici dès que tu ajoutes un clip</div>
+    </div>
+    <div class="film-bar-wrap">
+      <div class="film-bar" id="videoFilmBar">
+        <div class="film-playhead" id="filmPlayhead"></div>
+      </div>
+    </div>
+    <div class="stage-controls">
+      <button class="ghost icon-btn" id="playBtn" title="Lecture / Pause">▶</button>
+      <span id="playheadTime">0.0s / 0.0s</span>
+      <div class="spacer"></div>
+      <button class="ghost" id="splitBtn" title="Coupe le clip vidéo en deux à la position actuelle">✂ Couper ici</button>
+    </div>
+    <div class="clip-toolbar" id="videoClipToolbar" style="display:none;">
+      <input type="text" id="vSelName" class="mini-name-input" spellcheck="false">
+      <button class="ghost icon-btn" id="vMoveLeft" title="Déplacer avant">◀</button>
+      <button class="ghost icon-btn" id="vMoveRight" title="Déplacer après">▶</button>
+      <label>Vol.</label>
+      <select id="vSelVol">
+        <option value="0">0%</option><option value="0.25">25%</option><option value="0.5">50%</option>
+        <option value="0.75">75%</option><option value="1">100%</option><option value="1.5">150%</option><option value="2">200%</option>
+      </select>
+      <label>Vit.</label>
+      <select id="vSelSpeed">
+        <option value="0.5">0.5×</option><option value="0.75">0.75×</option><option value="1">1×</option>
+        <option value="1.25">1.25×</option><option value="1.5">1.5×</option><option value="2">2×</option>
+      </select>
+      <button class="ghost icon-btn danger" id="vSelDelete" title="Supprimer ce clip">🗑</button>
+    </div>
+  </div>
+
+  <div class="panel" id="audioFilmPanel" style="display:none;">
+    <div class="track-header"><h3>🎵 Piste audio</h3></div>
+    <audio id="previewAudio" style="display:none;"></audio>
+    <div class="film-bar-wrap">
+      <div class="film-bar audio-film-bar" id="audioFilmBar">
+        <div class="film-playhead" id="audioFilmPlayhead"></div>
+      </div>
+    </div>
+    <div class="stage-controls">
+      <button class="ghost icon-btn" id="audioPlayBtn" title="Lecture / Pause (audio)">▶</button>
+      <span id="audioPlayheadTime">0.0s / 0.0s</span>
+      <div class="spacer"></div>
+      <button class="ghost" id="audioSplitBtn" title="Coupe le clip audio en deux à la position actuelle">✂ Couper ici</button>
+    </div>
+    <div class="clip-toolbar" id="audioClipToolbar" style="display:none;">
+      <input type="text" id="aSelName" class="mini-name-input" spellcheck="false">
+      <button class="ghost icon-btn" id="aMoveLeft" title="Déplacer avant">◀</button>
+      <button class="ghost icon-btn" id="aMoveRight" title="Déplacer après">▶</button>
+      <label>Vol.</label>
+      <select id="aSelVol">
+        <option value="0">0%</option><option value="0.25">25%</option><option value="0.5">50%</option>
+        <option value="0.75">75%</option><option value="1">100%</option><option value="1.5">150%</option><option value="2">200%</option>
+      </select>
+      <button class="ghost icon-btn danger" id="aSelDelete" title="Supprimer ce clip">🗑</button>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="export-row">
+      <button class="primary" id="exportBtn" disabled>✨ Exporter le montage</button>
+      <span class="tip" id="exportTip">Ajoute au moins un clip vidéo pour pouvoir exporter</span>
+    </div>
+    <div id="exportProgressWrap">
+      <div id="exportProgressBar"><div id="exportProgressFill"></div></div>
+      <div id="exportProgressText">—</div>
+    </div>
+    <a id="exportDownloadLink" download="montage.mp4"><button class="ghost" style="width:100%;">⬇ Télécharger la vidéo</button></a>
+  </div>
+
+</main>
+
+<footer>Tout le traitement se fait localement dans ton navigateur — rien n'est envoyé sur un serveur.<span class="visit-counter" id="visitCounter"></span></footer>
+
+<div id="videoPool" style="position:fixed;left:-99999px;top:0;pointer-events:none;"></div>
+<div id="audioPool" style="position:fixed;left:-99999px;top:0;pointer-events:none;"></div>
+
+<script>
+(function(){
+  "use strict";
+
+  // ---------- Visit counter ----------
+  // Same free CountAPI service used on GeekoGifio — increments once per
+  // page load, no signup needed, best-effort (never blocks anything else).
+  (function initVisitCounter(){
+    const VISIT_NAMESPACE_KEY = 'geekomontage_site_visits_v1';
+    const el = document.getElementById('visitCounter');
+    if(typeof fetch !== 'function' || !el) return;
+    try{
+      fetch(`https://countapi.mileshilliard.com/api/v1/hit/${VISIT_NAMESPACE_KEY}`)
+        .then(r=>r.json())
+        .then(data=>{ if(typeof data.value === 'number') el.textContent = `👀 ${data.value} visites`; })
+        .catch(()=>{});
+    }catch(err){}
+  })();
+
+  // ---------- Theme ----------
+  const themeToggle = document.getElementById('themeToggle');
+  function applyTheme(t){
+    document.documentElement.setAttribute('data-theme', t);
+    themeToggle.textContent = t === 'dark' ? '☀️' : '🌙';
+    try{ localStorage.setItem('geekomontage_theme', t); }catch(e){}
+  }
+  themeToggle.addEventListener('click', ()=>{
+    const cur = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+    applyTheme(cur === 'dark' ? 'light' : 'dark');
+  });
+  (function initTheme(){
+    let saved = null;
+    try{ saved = localStorage.getItem('geekomontage_theme'); }catch(e){}
+    if(saved !== 'light' && saved !== 'dark'){
+      saved = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+    }
+    applyTheme(saved);
+  })();
+
+  // ---------- Ripple ----------
+  document.addEventListener('pointerdown', (e)=>{
+    const btn = e.target.closest('button');
+    if(!btn) return;
+    const rect = btn.getBoundingClientRect();
+    const size = Math.max(rect.width, rect.height);
+    const ripple = document.createElement('span');
+    ripple.className = 'm3-ripple';
+    ripple.style.width = ripple.style.height = size + 'px';
+    ripple.style.left = (e.clientX - rect.left - size/2) + 'px';
+    ripple.style.top = (e.clientY - rect.top - size/2) + 'px';
+    btn.appendChild(ripple);
+    setTimeout(()=> ripple.remove(), 600);
+  });
+
+  // ---------- State ----------
+  let videoClips = []; // {id, file, url, name, duration, trimStart, trimEnd, speed, volume, el, thumbCanvas}
+  let audioClips = []; // {id, file, url, name, duration, trimStart, trimEnd, volume, el}
+  let clipIdCounter = 0;
+  window.__geekomontageVideoClips = videoClips;
+  window.__geekomontageAudioClips = audioClips;
+
+  const videoPool = document.getElementById('videoPool');
+  const audioPool = document.getElementById('audioPool');
+  const dropzone = document.getElementById('dropzone');
+  const addVideoBtn = document.getElementById('addVideoBtn');
+  const addAudioBtn = document.getElementById('addAudioBtn');
+  const videoFileInput = document.getElementById('videoFileInput');
+  const audioFileInput = document.getElementById('audioFileInput');
+  const exportBtn = document.getElementById('exportBtn');
+  const exportTip = document.getElementById('exportTip');
+
+  addVideoBtn.addEventListener('click', ()=> videoFileInput.click());
+  addAudioBtn.addEventListener('click', ()=> audioFileInput.click());
+  dropzone.addEventListener('click', ()=> videoFileInput.click());
+  videoFileInput.addEventListener('change', e => handleFiles(e.target.files, 'video'));
+  audioFileInput.addEventListener('change', e => handleFiles(e.target.files, 'audio'));
+
+  ['dragenter','dragover'].forEach(evt=>{
+    dropzone.addEventListener(evt, e=>{ e.preventDefault(); dropzone.classList.add('dragover'); });
+  });
+  ['dragleave','drop'].forEach(evt=>{
+    dropzone.addEventListener(evt, e=>{ e.preventDefault(); dropzone.classList.remove('dragover'); });
+  });
+  dropzone.addEventListener('drop', e=>{
+    if(!e.dataTransfer.files || !e.dataTransfer.files.length) return;
+    const files = [...e.dataTransfer.files];
+    const vids = files.filter(f=>f.type.startsWith('video/'));
+    const auds = files.filter(f=>f.type.startsWith('audio/'));
+    if(vids.length) handleFiles(vids, 'video');
+    if(auds.length) handleFiles(auds, 'audio');
+  });
+
+  function handleFiles(fileList, kind){
+    Array.from(fileList).forEach(file=>{
+      if(kind === 'video' && !file.type.startsWith('video/')) return;
+      if(kind === 'audio' && !file.type.startsWith('audio/')) return;
+      addClip(file, kind);
+    });
+  }
+
+  function addClip(file, kind){
+    const id = 'c' + (clipIdCounter++);
+    const url = URL.createObjectURL(file);
+    const el = document.createElement(kind === 'video' ? 'video' : 'audio');
+    el.muted = (kind === 'video'); // video element stays muted in the pool; we play it via the visible preview element instead
+    el.playsInline = true;
+    el.preload = 'metadata';
+    (kind === 'video' ? videoPool : audioPool).appendChild(el);
+
+    const clip = {
+      id, file, url, name: file.name.replace(/\.[^.]+$/, ''), kind,
+      duration: 0, trimStart: 0, trimEnd: 0, speed: 1, volume: 1,
+      el, thumbDataUrl: null, derivedFromVideoId: null
+    };
+    (kind === 'video' ? videoClips : audioClips).push(clip);
+    renderTracks();
+
+    el.addEventListener('loadedmetadata', ()=>{
+      clip.duration = el.duration || 0;
+      clip.trimEnd = clip.duration;
+      if(kind === 'video'){
+        // Grab a thumbnail once we can seek — seeking also requires the
+        // element to be attached and not clipped to zero size (same class
+        // of bug we hit on GeekoGifio with hidden media elements).
+        const grab = ()=>{
+          try{
+            const c = document.createElement('canvas');
+            const w = el.videoWidth || 160, h = el.videoHeight || 90;
+            const scale = Math.min(1, 320/Math.max(w,h));
+            c.width = Math.max(1, Math.round(w*scale));
+            c.height = Math.max(1, Math.round(h*scale));
+            c.getContext('2d').drawImage(el, 0, 0, c.width, c.height);
+            clip.thumbDataUrl = c.toDataURL('image/jpeg', 0.7);
+          }catch(err){}
+          renderTracks();
+          updatePreviewAvailability();
+        };
+        if(el.readyState >= 2){ grab(); }
+        else el.addEventListener('seeked', grab, { once: true });
+        el.currentTime = Math.min(0.15, clip.duration/2);
+        addLinkedAudioClip(clip);
+      } else {
+        renderTracks();
+      }
+      updateExportState();
+    });
+    el.src = url;
+  }
+
+  // A video's own sound is split off into its own audio-track clip — same
+  // source file (so its original audio stream comes along for export), but
+  // from here on it's a fully independent clip: trim it, mute it, replace
+  // it, or delete it without touching the picture.
+  function addLinkedAudioClip(videoClip){
+    const id = 'c' + (clipIdCounter++);
+    const el = document.createElement('audio');
+    el.preload = 'none'; // duration already known from the video — no need to reload it
+    audioPool.appendChild(el);
+    const audioClip = {
+      id, file: videoClip.file, url: videoClip.url,
+      name: videoClip.name, kind: 'audio',
+      duration: videoClip.duration, trimStart: 0, trimEnd: videoClip.duration,
+      speed: 1, volume: 1, el, thumbDataUrl: null,
+      derivedFromVideoId: videoClip.id
+    };
+    audioClips.push(audioClip);
+    renderTracks();
+  }
+
+  function updateExportState(){
+    exportBtn.disabled = videoClips.length === 0;
+    exportTip.textContent = videoClips.length === 0
+      ? 'Ajoute au moins un clip vidéo pour pouvoir exporter'
+      : `${videoClips.length} clip${videoClips.length>1?'s':''} vidéo, ${audioClips.length} clip${audioClips.length>1?'s':''} audio`;
+  }
+
+  function fmtTime(s){
+    s = Math.max(0, s||0);
+    const m = Math.floor(s/60), r = s - m*60;
+    return m>0 ? `${m}:${r.toFixed(1).padStart(4,'0')}` : `${r.toFixed(1)}s`;
+  }
+
+  function effectiveDuration(clip){
+    const trimmed = Math.max(0, (clip.trimEnd||0) - (clip.trimStart||0));
+    return clip.kind === 'video' ? trimmed / (clip.speed||1) : trimmed;
+  }
+
+  function escapeHtml(s){
+    return s.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  }
+
+  function removeClip(id, kind){
+    const arr = kind === 'video' ? videoClips : audioClips;
+    const idx = arr.findIndex(c=>c.id===id);
+    if(idx===-1) return;
+    const clip = arr[idx];
+    clip.el.remove();
+    const stillShared = [...videoClips, ...audioClips].some(c=>c.id!==id && c.url===clip.url);
+    if(!stillShared) URL.revokeObjectURL(clip.url);
+    arr.splice(idx,1);
+
+    if(kind === 'video'){
+      // Deleting a video takes its linked (auto-extracted) audio with it —
+      // it wouldn't make sense on its own without the picture it came from.
+      const linked = audioClips.filter(c=>c.derivedFromVideoId===id);
+      linked.forEach(lc=>{
+        lc.el.remove();
+        const shared2 = [...videoClips, ...audioClips].some(c=>c.id!==lc.id && c.url===lc.url);
+        if(!shared2) URL.revokeObjectURL(lc.url);
+      });
+      audioClips = audioClips.filter(c=>c.derivedFromVideoId!==id);
+      window.__geekomontageAudioClips = audioClips;
+    }
+
+    if(selectedAudioId === id) selectedAudioId = null;
+    renderTracks();
+    updateExportState();
+    updatePreviewAvailability();
+    if(audioClips.length){
+      audioSequencePlaying = false;
+      previewAudio.pause();
+      audioPlayBtn.textContent = '▶';
+      loadAudioClipIntoPreview(activeAudioIdx, true);
+    } else {
+      previewAudio.removeAttribute('src');
+      audioPlayheadTimeEl.textContent = '0.0s / 0.0s';
+      updateAudioSeekUI(0);
+    }
+  }
+
+  // Selecting a clip: for video, "selected" always follows the playhead
+  // (whichever clip you're scrubbed to IS the one the toolbar edits) — for
+  // audio there's no live playhead, so clicking a segment selects it directly.
+  let selectedAudioId = null;
+  let activeAudioIdx = 0;
+  let totalAudioDuration = 0;
+  let audioSequencePlaying = false;
+  let seekingAudio = false;
+
+  function renderTracks(){
+    renderFilmBars();
+    updateExportState();
+  }
+
+  // ---------- Preview player (sequential playback across video clips) ----------
+  const previewVideo = document.getElementById('previewVideo');
+  const previewEmpty = document.getElementById('previewEmpty');
+  const playBtn = document.getElementById('playBtn');
+  const playheadTimeEl = document.getElementById('playheadTime');
+  const splitBtn = document.getElementById('splitBtn');
+  const videoFilmBar = document.getElementById('videoFilmBar');
+  const filmPlayhead = document.getElementById('filmPlayhead');
+  const audioFilmBar = document.getElementById('audioFilmBar');
+  const audioFilmPanel = document.getElementById('audioFilmPanel');
+  const trackColors = ['#5B5FA8','#3D8F82','#B4813C','#7D89B0','#8CA0B3'];
+
+  let sequencePlaying = false;
+  let activeVideoIdx = 0;
+  let totalTimelineDuration = 0;
+  let seeking = false;
+
+  // Builds the proportional, thumbnail-filled timeline bars — this is what
+  // makes it obvious where you're clicking/splitting, instead of a grid of
+  // same-size cards that all look identical after a few splits.
+  function renderFilmBars(){
+    videoFilmBar.querySelectorAll('.film-seg').forEach(s=>s.remove());
+    const totalV = totalTimelineDuration || 1;
+    videoClips.forEach((clip, idx)=>{
+      const seg = document.createElement('div');
+      seg.className = 'film-seg';
+      if(idx === activeVideoIdx) seg.classList.add('active-seg');
+      seg.dataset.id = clip.id;
+      seg.style.width = ((effectiveDuration(clip)/totalV)*100) + '%';
+      if(clip.thumbDataUrl) seg.style.backgroundImage = `url(${clip.thumbDataUrl})`;
+      seg.title = clip.name;
+      seg.innerHTML = `<span class="seg-label">${escapeHtml(clip.name)}</span>`;
+      videoFilmBar.insertBefore(seg, filmPlayhead);
+    });
+
+    audioFilmBar.querySelectorAll('.film-seg').forEach(s=>s.remove());
+    totalAudioDuration = audioClips.reduce((s,c)=>s+effectiveDuration(c),0);
+    if(audioClips.length){
+      audioFilmPanel.style.display = 'block';
+      const totalA = totalAudioDuration || 1;
+      audioClips.forEach((clip, idx)=>{
+        const seg = document.createElement('div');
+        seg.className = 'film-seg audio-seg';
+        if(idx === activeAudioIdx) seg.classList.add('active-seg');
+        seg.dataset.id = clip.id;
+        seg.style.width = ((effectiveDuration(clip)/totalA)*100) + '%';
+        seg.style.background = trackColors[idx % trackColors.length];
+        seg.title = clip.name;
+        seg.innerHTML = `<span class="seg-label">${clip.derivedFromVideoId ? '🔊 ' : '🎵 '}${escapeHtml(clip.name)}</span>`;
+        audioFilmBar.insertBefore(seg, audioFilmPlayhead);
+      });
+      if(activeAudioIdx >= audioClips.length) activeAudioIdx = 0;
+      selectedAudioId = audioClips[activeAudioIdx] ? audioClips[activeAudioIdx].id : null;
+      audioSplitBtn.disabled = false;
+    } else {
+      audioFilmPanel.style.display = 'none';
+      selectedAudioId = null;
+      audioSplitBtn.disabled = true;
+    }
+    updateAudioToolbar();
+  }
+
+  function updatePreviewAvailability(){
+    totalTimelineDuration = videoClips.reduce((s,c)=>s+effectiveDuration(c), 0);
+    if(videoClips.length === 0){
+      previewVideo.style.display = 'none';
+      previewEmpty.style.display = 'block';
+      playheadTimeEl.textContent = '0.0s / 0.0s';
+      splitBtn.disabled = true;
+      updateSeekUI(0);
+    } else {
+      previewEmpty.style.display = 'none';
+      previewVideo.style.display = 'block';
+      if(activeVideoIdx >= videoClips.length) activeVideoIdx = 0;
+      if(!sequencePlaying) loadClipIntoPreview(activeVideoIdx, true);
+      splitBtn.disabled = false;
+      playheadTimeEl.textContent = `${fmtTime(0)} / ${fmtTime(totalTimelineDuration)}`;
+      updateSeekUI(0);
+    }
+    renderFilmBars();
+  }
+
+  function updateSeekUI(globalElapsed){
+    const frac = totalTimelineDuration > 0 ? Math.min(1, Math.max(0, globalElapsed/totalTimelineDuration)) : 0;
+    filmPlayhead.style.left = (frac*100) + '%';
+  }
+
+  function updateActiveSegHighlight(){
+    const activeId = videoClips[activeVideoIdx] ? videoClips[activeVideoIdx].id : null;
+    videoFilmBar.querySelectorAll('.film-seg').forEach(seg=>{
+      seg.classList.toggle('active-seg', seg.dataset.id === activeId);
+    });
+  }
+
+  function loadClipIntoPreview(idx, paused){
+    const clip = videoClips[idx];
+    if(!clip) return;
+    activeVideoIdx = idx;
+    if(previewVideo.src !== clip.url) previewVideo.src = clip.url;
+    previewVideo.currentTime = clip.trimStart;
+    previewVideo.playbackRate = clip.speed || 1;
+    previewVideo.volume = clip.volume;
+    previewVideo.muted = false;
+    if(paused) previewVideo.pause();
+    updateActiveSegHighlight();
+    updateVideoToolbar();
+  }
+
+  // Jumps the preview to an exact point on the WHOLE timeline (across every
+  // video clip), used by dragging the filmstrip bar.
+  function seekToGlobal(sec){
+    if(videoClips.length === 0) return;
+    sec = Math.max(0, Math.min(totalTimelineDuration, sec));
+    let acc = 0, idx = 0, local = 0;
+    for(let i=0; i<videoClips.length; i++){
+      const d = effectiveDuration(videoClips[i]);
+      if(sec < acc + d || i === videoClips.length-1){ idx = i; local = sec - acc; break; }
+      acc += d;
+    }
+    const clip = videoClips[idx];
+    if(!clip) return;
+    activeVideoIdx = idx;
+    if(previewVideo.src !== clip.url) previewVideo.src = clip.url;
+    previewVideo.currentTime = clip.trimStart + Math.max(0, local) * (clip.speed||1);
+    previewVideo.playbackRate = clip.speed || 1;
+    previewVideo.volume = clip.volume;
+    updateSeekUI(sec);
+    playheadTimeEl.textContent = `${fmtTime(sec)} / ${fmtTime(totalTimelineDuration)}`;
+    updateActiveSegHighlight();
+    updateVideoToolbar();
+  }
+
+  videoFilmBar.addEventListener('pointerdown', (e)=>{
+    if(videoClips.length === 0) return;
+    seeking = true;
+    sequencePlaying = false;
+    previewVideo.pause();
+    playBtn.textContent = '▶';
+    try{ videoFilmBar.setPointerCapture(e.pointerId); }catch(err){}
+    const rect = videoFilmBar.getBoundingClientRect();
+    seekToGlobal(((e.clientX-rect.left)/rect.width) * totalTimelineDuration);
+  });
+  window.addEventListener('pointermove', (e)=>{
+    if(!seeking) return;
+    const rect = videoFilmBar.getBoundingClientRect();
+    seekToGlobal(((e.clientX-rect.left)/rect.width) * totalTimelineDuration);
+  });
+  window.addEventListener('pointerup', ()=>{ seeking = false; });
+
+  playBtn.addEventListener('click', ()=>{
+    if(videoClips.length === 0) return;
+    if(sequencePlaying){
+      sequencePlaying = false;
+      previewVideo.pause();
+      playBtn.textContent = '▶';
+    } else {
+      sequencePlaying = true;
+      playBtn.textContent = '⏸';
+      loadClipIntoPreview(activeVideoIdx, false);
+      previewVideo.play().catch(()=>{});
+    }
+  });
+
+  previewVideo.addEventListener('timeupdate', ()=>{
+    if(seeking) return;
+    const clip = videoClips[activeVideoIdx];
+    if(!clip) return;
+    let elapsed = 0;
+    for(let i=0;i<activeVideoIdx;i++) elapsed += effectiveDuration(videoClips[i]);
+    const localPlayed = (previewVideo.currentTime - clip.trimStart) / (clip.speed||1);
+    elapsed += Math.max(0, localPlayed);
+    playheadTimeEl.textContent = `${fmtTime(elapsed)} / ${fmtTime(totalTimelineDuration)}`;
+    updateSeekUI(elapsed);
+
+    if(!sequencePlaying) return;
+    if(previewVideo.currentTime >= clip.trimEnd - 0.03){
+      if(activeVideoIdx < videoClips.length - 1){
+        const next = videoClips[activeVideoIdx+1];
+        const seamless = next.url === clip.url
+          && Math.abs(next.trimStart - clip.trimEnd) < 0.05
+          && (next.speed||1) === (clip.speed||1);
+        if(seamless){
+          // Same source file, clips are butted right up against each other
+          // (this is exactly what a split produces) — just let playback
+          // continue uninterrupted instead of re-seeking to the same spot,
+          // which is what was causing a stutter/replay right at the cut.
+          activeVideoIdx += 1;
+          updateActiveSegHighlight();
+          updateVideoToolbar();
+        } else {
+          loadClipIntoPreview(activeVideoIdx+1, false);
+          previewVideo.play().catch(()=>{});
+        }
+      } else {
+        sequencePlaying = false;
+        playBtn.textContent = '▶';
+        loadClipIntoPreview(0, true);
+      }
+    }
+  });
+
+  // ---------- Split at playhead ----------
+  splitBtn.addEventListener('click', ()=>{
+    const clip = videoClips[activeVideoIdx];
+    if(!clip) return;
+    const t = previewVideo.currentTime;
+    if(t <= clip.trimStart + 0.15 || t >= clip.trimEnd - 0.15) return; // too close to an edge
+    const id = 'c' + (clipIdCounter++);
+    const el = document.createElement('video');
+    el.muted = true; el.playsInline = true; el.preload = 'metadata';
+    videoPool.appendChild(el);
+    const second = {
+      id, file: clip.file, url: clip.url, name: clip.name, kind: 'video',
+      duration: clip.duration, trimStart: t, trimEnd: clip.trimEnd,
+      speed: clip.speed, volume: clip.volume, el, thumbDataUrl: clip.thumbDataUrl
+    };
+    clip.trimEnd = t;
+    const idx = videoClips.indexOf(clip);
+    videoClips.splice(idx+1, 0, second);
+    el.src = second.url;
+    sequencePlaying = false;
+    previewVideo.pause();
+    playBtn.textContent = '▶';
+
+    // Update everything EXCEPT the playhead position — the previous version
+    // called updatePreviewAvailability() here, which resets currentTime
+    // back to the clip's start and is exactly what was causing the jump.
+    totalTimelineDuration = videoClips.reduce((s,c)=>s+effectiveDuration(c), 0);
+    renderFilmBars();
+    updateExportState();
+    splitBtn.disabled = false;
+    updateActiveSegHighlight();
+    updateVideoToolbar();
+    let elapsed = 0;
+    for(let i=0; i<activeVideoIdx; i++) elapsed += effectiveDuration(videoClips[i]);
+    elapsed += Math.max(0, (t - clip.trimStart) / (clip.speed||1));
+    playheadTimeEl.textContent = `${fmtTime(elapsed)} / ${fmtTime(totalTimelineDuration)}`;
+    updateSeekUI(elapsed);
+  });
+
+  // ---------- Audio preview player (mirrors the video player exactly) ----------
+  const previewAudio = document.getElementById('previewAudio');
+  const audioPlayBtn = document.getElementById('audioPlayBtn');
+  const audioPlayheadTimeEl = document.getElementById('audioPlayheadTime');
+  const audioSplitBtn = document.getElementById('audioSplitBtn');
+  const audioFilmPlayhead = document.getElementById('audioFilmPlayhead');
+
+  function updateAudioSeekUI(globalElapsed){
+    const frac = totalAudioDuration > 0 ? Math.min(1, Math.max(0, globalElapsed/totalAudioDuration)) : 0;
+    audioFilmPlayhead.style.left = (frac*100) + '%';
+  }
+
+  function loadAudioClipIntoPreview(idx, paused){
+    const clip = audioClips[idx];
+    if(!clip) return;
+    activeAudioIdx = idx;
+    if(previewAudio.src !== clip.url) previewAudio.src = clip.url;
+    previewAudio.currentTime = clip.trimStart;
+    previewAudio.volume = clip.volume;
+    if(paused) previewAudio.pause();
+    updateAudioActiveHighlight();
+    updateAudioToolbar();
+  }
+
+  function updateAudioActiveHighlight(){
+    const activeId = audioClips[activeAudioIdx] ? audioClips[activeAudioIdx].id : null;
+    audioFilmBar.querySelectorAll('.film-seg').forEach(seg=>{
+      seg.classList.toggle('active-seg', seg.dataset.id === activeId);
+    });
+    selectedAudioId = activeId;
+  }
+
+  function seekAudioToGlobal(sec){
+    if(audioClips.length === 0) return;
+    sec = Math.max(0, Math.min(totalAudioDuration, sec));
+    let acc = 0, idx = 0, local = 0;
+    for(let i=0; i<audioClips.length; i++){
+      const d = effectiveDuration(audioClips[i]);
+      if(sec < acc + d || i === audioClips.length-1){ idx = i; local = sec - acc; break; }
+      acc += d;
+    }
+    const clip = audioClips[idx];
+    if(!clip) return;
+    activeAudioIdx = idx;
+    if(previewAudio.src !== clip.url) previewAudio.src = clip.url;
+    previewAudio.currentTime = clip.trimStart + Math.max(0, local);
+    previewAudio.volume = clip.volume;
+    updateAudioSeekUI(sec);
+    audioPlayheadTimeEl.textContent = `${fmtTime(sec)} / ${fmtTime(totalAudioDuration)}`;
+    updateAudioActiveHighlight();
+    updateAudioToolbar();
+  }
+
+  audioFilmBar.addEventListener('pointerdown', (e)=>{
+    if(audioClips.length === 0) return;
+    seekingAudio = true;
+    audioSequencePlaying = false;
+    previewAudio.pause();
+    audioPlayBtn.textContent = '▶';
+    try{ audioFilmBar.setPointerCapture(e.pointerId); }catch(err){}
+    const rect = audioFilmBar.getBoundingClientRect();
+    seekAudioToGlobal(((e.clientX-rect.left)/rect.width) * totalAudioDuration);
+  });
+  window.addEventListener('pointermove', (e)=>{
+    if(!seekingAudio) return;
+    const rect = audioFilmBar.getBoundingClientRect();
+    seekAudioToGlobal(((e.clientX-rect.left)/rect.width) * totalAudioDuration);
+  });
+  window.addEventListener('pointerup', ()=>{ seekingAudio = false; });
+
+  audioPlayBtn.addEventListener('click', ()=>{
+    if(audioClips.length === 0) return;
+    if(audioSequencePlaying){
+      audioSequencePlaying = false;
+      previewAudio.pause();
+      audioPlayBtn.textContent = '▶';
+    } else {
+      audioSequencePlaying = true;
+      audioPlayBtn.textContent = '⏸';
+      loadAudioClipIntoPreview(activeAudioIdx, false);
+      previewAudio.play().catch(()=>{});
+    }
+  });
+
+  previewAudio.addEventListener('timeupdate', ()=>{
+    if(seekingAudio) return;
+    const clip = audioClips[activeAudioIdx];
+    if(!clip) return;
+    let elapsed = 0;
+    for(let i=0;i<activeAudioIdx;i++) elapsed += effectiveDuration(audioClips[i]);
+    elapsed += Math.max(0, previewAudio.currentTime - clip.trimStart);
+    audioPlayheadTimeEl.textContent = `${fmtTime(elapsed)} / ${fmtTime(totalAudioDuration)}`;
+    updateAudioSeekUI(elapsed);
+
+    if(!audioSequencePlaying) return;
+    if(previewAudio.currentTime >= clip.trimEnd - 0.03){
+      if(activeAudioIdx < audioClips.length - 1){
+        const next = audioClips[activeAudioIdx+1];
+        const seamless = next.url === clip.url && Math.abs(next.trimStart - clip.trimEnd) < 0.05;
+        if(seamless){
+          activeAudioIdx += 1;
+          updateAudioActiveHighlight();
+          updateAudioToolbar();
+        } else {
+          loadAudioClipIntoPreview(activeAudioIdx+1, false);
+          previewAudio.play().catch(()=>{});
+        }
+      } else {
+        audioSequencePlaying = false;
+        audioPlayBtn.textContent = '▶';
+        loadAudioClipIntoPreview(0, true);
+      }
+    }
+  });
+
+  audioSplitBtn.addEventListener('click', ()=>{
+    const clip = audioClips[activeAudioIdx];
+    if(!clip) return;
+    const t = previewAudio.currentTime;
+    if(t <= clip.trimStart + 0.15 || t >= clip.trimEnd - 0.15) return; // too close to an edge
+    const id = 'c' + (clipIdCounter++);
+    const el = document.createElement('audio');
+    el.preload = 'none';
+    audioPool.appendChild(el);
+    const second = {
+      id, file: clip.file, url: clip.url, name: clip.name, kind: 'audio',
+      duration: clip.duration, trimStart: t, trimEnd: clip.trimEnd,
+      speed: 1, volume: clip.volume, el, thumbDataUrl: null,
+      derivedFromVideoId: clip.derivedFromVideoId
+    };
+    clip.trimEnd = t;
+    audioClips.splice(activeAudioIdx+1, 0, second);
+    audioSequencePlaying = false;
+    previewAudio.pause();
+    audioPlayBtn.textContent = '▶';
+
+    // Same fix as the video split: update everything except the playhead
+    // position, so it stays exactly at the cut instead of jumping back.
+    totalAudioDuration = audioClips.reduce((s,c)=>s+effectiveDuration(c), 0);
+    renderFilmBars();
+    updateExportState();
+    let elapsed = 0;
+    for(let i=0; i<activeAudioIdx; i++) elapsed += effectiveDuration(audioClips[i]);
+    elapsed += Math.max(0, t - clip.trimStart);
+    audioPlayheadTimeEl.textContent = `${fmtTime(elapsed)} / ${fmtTime(totalAudioDuration)}`;
+    updateAudioSeekUI(elapsed);
+    updateAudioActiveHighlight();
+    updateAudioToolbar();
+  });
+
+  // ---------- Video clip toolbar (always reflects the clip under the playhead) ----------
+  const videoClipToolbar = document.getElementById('videoClipToolbar');
+  const vSelName = document.getElementById('vSelName');
+  const vSelVol = document.getElementById('vSelVol');
+  const vSelSpeed = document.getElementById('vSelSpeed');
+  const vMoveLeft = document.getElementById('vMoveLeft');
+  const vMoveRight = document.getElementById('vMoveRight');
+  const vSelDelete = document.getElementById('vSelDelete');
+
+  function updateVideoToolbar(){
+    const clip = videoClips[activeVideoIdx];
+    if(!clip){ videoClipToolbar.style.display = 'none'; return; }
+    videoClipToolbar.style.display = 'flex';
+    vSelName.value = clip.name;
+    vSelVol.value = String(clip.volume);
+    vSelSpeed.value = String(clip.speed);
+    vMoveLeft.disabled = activeVideoIdx === 0;
+    vMoveRight.disabled = activeVideoIdx === videoClips.length - 1;
+  }
+  vSelName.addEventListener('change', ()=>{
+    const clip = videoClips[activeVideoIdx];
+    if(!clip) return;
+    clip.name = vSelName.value.trim() || clip.name;
+    vSelName.value = clip.name;
+    renderFilmBars();
+  });
+  vSelVol.addEventListener('change', ()=>{
+    const clip = videoClips[activeVideoIdx];
+    if(!clip) return;
+    clip.volume = parseFloat(vSelVol.value);
+    previewVideo.volume = clip.volume;
+  });
+  vSelSpeed.addEventListener('change', ()=>{
+    const clip = videoClips[activeVideoIdx];
+    if(!clip) return;
+    clip.speed = parseFloat(vSelSpeed.value) || 1;
+    previewVideo.playbackRate = clip.speed;
+    updatePreviewAvailability();
+  });
+  vMoveLeft.addEventListener('click', ()=>{
+    if(activeVideoIdx <= 0) return;
+    const tmp = videoClips[activeVideoIdx-1];
+    videoClips[activeVideoIdx-1] = videoClips[activeVideoIdx];
+    videoClips[activeVideoIdx] = tmp;
+    activeVideoIdx -= 1;
+    updatePreviewAvailability();
+    loadClipIntoPreview(activeVideoIdx, true);
+  });
+  vMoveRight.addEventListener('click', ()=>{
+    if(activeVideoIdx >= videoClips.length-1) return;
+    const tmp = videoClips[activeVideoIdx+1];
+    videoClips[activeVideoIdx+1] = videoClips[activeVideoIdx];
+    videoClips[activeVideoIdx] = tmp;
+    activeVideoIdx += 1;
+    updatePreviewAvailability();
+    loadClipIntoPreview(activeVideoIdx, true);
+  });
+  vSelDelete.addEventListener('click', ()=>{
+    const clip = videoClips[activeVideoIdx];
+    if(!clip) return;
+    removeClip(clip.id, 'video');
+  });
+
+  // ---------- Audio clip toolbar (always reflects the clip under the audio playhead) ----------
+  const audioClipToolbar = document.getElementById('audioClipToolbar');
+  const aSelName = document.getElementById('aSelName');
+  const aSelVol = document.getElementById('aSelVol');
+  const aMoveLeft = document.getElementById('aMoveLeft');
+  const aMoveRight = document.getElementById('aMoveRight');
+  const aSelDelete = document.getElementById('aSelDelete');
+
+  function updateAudioToolbar(){
+    const clip = audioClips[activeAudioIdx];
+    if(!clip){ audioClipToolbar.style.display = 'none'; return; }
+    audioClipToolbar.style.display = 'flex';
+    aSelName.value = clip.name;
+    aSelVol.value = String(clip.volume);
+    aMoveLeft.disabled = activeAudioIdx === 0;
+    aMoveRight.disabled = activeAudioIdx === audioClips.length - 1;
+  }
+  aSelName.addEventListener('change', ()=>{
+    const clip = audioClips[activeAudioIdx];
+    if(!clip) return;
+    clip.name = aSelName.value.trim() || clip.name;
+    aSelName.value = clip.name;
+    renderFilmBars();
+  });
+  aSelVol.addEventListener('change', ()=>{
+    const clip = audioClips[activeAudioIdx];
+    if(!clip) return;
+    clip.volume = parseFloat(aSelVol.value);
+    previewAudio.volume = clip.volume;
+  });
+  aMoveLeft.addEventListener('click', ()=>{
+    if(activeAudioIdx <= 0) return;
+    const tmp = audioClips[activeAudioIdx-1];
+    audioClips[activeAudioIdx-1] = audioClips[activeAudioIdx];
+    audioClips[activeAudioIdx] = tmp;
+    activeAudioIdx -= 1;
+    renderFilmBars();
+    loadAudioClipIntoPreview(activeAudioIdx, true);
+  });
+  aMoveRight.addEventListener('click', ()=>{
+    if(activeAudioIdx >= audioClips.length-1) return;
+    const tmp = audioClips[activeAudioIdx+1];
+    audioClips[activeAudioIdx+1] = audioClips[activeAudioIdx];
+    audioClips[activeAudioIdx] = tmp;
+    activeAudioIdx += 1;
+    renderFilmBars();
+    loadAudioClipIntoPreview(activeAudioIdx, true);
+  });
+  aSelDelete.addEventListener('click', ()=>{
+    const clip = audioClips[activeAudioIdx];
+    if(!clip) return;
+    removeClip(clip.id, 'audio');
+  });
+
+  // ---------- Init ----------
+  updatePreviewAvailability();
+})();
+</script>
+
+<script type="module">
+  // ---------- Export (FFmpeg.wasm, single-thread core — works on GitHub
+  // Pages without the cross-origin-isolation headers the multi-thread core
+  // requires, which static hosting can't set). This is the least-tested
+  // part of GeekoMontage — I couldn't run a real browser to verify it end
+  // to end, so treat it as the first thing to check carefully.
+  const exportBtn = document.getElementById('exportBtn');
+  const exportProgressWrap = document.getElementById('exportProgressWrap');
+  const exportProgressFill = document.getElementById('exportProgressFill');
+  const exportProgressText = document.getElementById('exportProgressText');
+  const exportDownloadLink = document.getElementById('exportDownloadLink');
+
+  let ffmpegInstance = null;
+  let fetchFileFn = null;
+
+  function extFromType(type){
+    if(!type) return '.dat';
+    if(type.includes('mp4')) return '.mp4';
+    if(type.includes('webm')) return '.webm';
+    if(type.includes('quicktime')) return '.mov';
+    if(type.includes('mpeg')) return '.mp3';
+    if(type.includes('wav')) return '.wav';
+    if(type.includes('ogg')) return '.ogg';
+    if(type.includes('aac')) return '.aac';
+    return '.dat';
+  }
+
+  async function ensureFFmpeg(){
+    if(ffmpegInstance) return ffmpegInstance;
+    exportProgressText.textContent = 'Chargement du moteur vidéo (environ 30 Mo la première fois)…';
+    const { FFmpeg } = await import('https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.12.10/dist/esm/index.js');
+    const { toBlobURL, fetchFile } = await import('https://cdn.jsdelivr.net/npm/@ffmpeg/util@0.12.1/dist/esm/index.js');
+    fetchFileFn = fetchFile;
+    const instance = new FFmpeg();
+    instance.on('progress', ({ progress })=>{
+      const pct = Math.min(100, Math.max(0, Math.round((progress||0)*100)));
+      exportProgressFill.style.width = pct + '%';
+      exportProgressText.textContent = `Export en cours… ${pct}%`;
+    });
+    const baseURL = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.6/dist/esm';
+    const loadPromise = instance.load({
+      coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
+      wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm'),
+    });
+    // Guards against a silent hang (seen with some CDN/worker combinations)
+    // instead of leaving the person staring at a stuck progress bar forever.
+    const timeoutPromise = new Promise((_, reject)=>{
+      setTimeout(()=> reject(new Error("Le moteur vidéo n'a pas répondu à temps (30s) — réessaie, ou vérifie ta connexion.")), 30000);
+    });
+    await Promise.race([loadPromise, timeoutPromise]);
+    ffmpegInstance = instance;
+    return ffmpegInstance;
+  }
+
+  exportBtn.addEventListener('click', async ()=>{
+    const videoClips = window.__geekomontageVideoClips || [];
+    const audioClips = window.__geekomontageAudioClips || [];
+    if(videoClips.length === 0) return;
+
+    exportBtn.disabled = true;
+    exportProgressWrap.style.display = 'block';
+    exportProgressFill.style.width = '0%';
+    exportDownloadLink.style.display = 'none';
+
+    try{
+      const ff = await ensureFFmpeg();
+
+      exportProgressText.textContent = 'Préparation des clips vidéo…';
+      const listLines = [];
+      for(let i=0; i<videoClips.length; i++){
+        const clip = videoClips[i];
+        const inName = `in${i}${extFromType(clip.file.type)}`;
+        await ff.writeFile(inName, await fetchFileFn(clip.file));
+        const outName = `seg${i}.mp4`;
+        const dur = Math.max(0.1, clip.trimEnd - clip.trimStart);
+        const pts = (1/(clip.speed||1)).toFixed(4);
+        await ff.exec(['-i', inName, '-ss', String(clip.trimStart), '-t', String(dur),
+          '-filter:v', `setpts=${pts}*PTS`, '-an', '-r', '30', '-preset', 'ultrafast', outName]);
+        listLines.push(`file '${outName}'`);
+      }
+      await ff.writeFile('list.txt', new TextEncoder().encode(listLines.join('\n')));
+
+      exportProgressText.textContent = 'Assemblage des clips…';
+      await ff.exec(['-f','concat','-safe','0','-i','list.txt','-c','copy','concat.mp4']);
+
+      let finalOut = 'concat.mp4';
+      if(audioClips.length){
+        exportProgressText.textContent = 'Ajout de la piste audio…';
+        const audioListLines = [];
+        for(let i=0; i<audioClips.length; i++){
+          const clip = audioClips[i];
+          const inName = `ain${i}${extFromType(clip.file.type)}`;
+          await ff.writeFile(inName, await fetchFileFn(clip.file));
+          const outName = `aseg${i}.m4a`;
+          const dur = Math.max(0.1, clip.trimEnd - clip.trimStart);
+          await ff.exec(['-i', inName, '-ss', String(clip.trimStart), '-t', String(dur),
+            '-filter:a', `volume=${clip.volume}`, '-c:a', 'aac', outName]);
+          audioListLines.push(`file '${outName}'`);
+        }
+        await ff.writeFile('alist.txt', new TextEncoder().encode(audioListLines.join('\n')));
+        await ff.exec(['-f','concat','-safe','0','-i','alist.txt','-c','copy','audiotrack.m4a']);
+        await ff.exec(['-i','concat.mp4','-i','audiotrack.m4a','-c:v','copy','-c:a','aac','-shortest','final.mp4']);
+        finalOut = 'final.mp4';
+      }
+
+      exportProgressText.textContent = 'Finalisation…';
+      const data = await ff.readFile(finalOut);
+      const blob = new Blob([data.buffer], { type: 'video/mp4' });
+      const url = URL.createObjectURL(blob);
+      exportDownloadLink.href = url;
+      exportDownloadLink.style.display = 'block';
+      exportProgressFill.style.width = '100%';
+      exportProgressText.textContent = `Terminé — ${(blob.size/1024/1024).toFixed(1)} Mo`;
+    }catch(err){
+      console.error('export error', err);
+      exportProgressText.textContent = "Erreur pendant l'export — essaie avec des vidéos plus courtes, ou vérifie ta connexion (le moteur vidéo se télécharge la première fois).";
+    }
+    exportBtn.disabled = false;
+  });
+</script>
+</body>
+</html>
