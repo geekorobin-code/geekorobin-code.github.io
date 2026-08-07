@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>GeekoAudio — Couper et monter du son, dans le navigateur</title>
+<meta name="description" content="Coupe, assemble et règle le volume de tes fichiers audio — tout dans le navigateur, rien envoyé sur un serveur.">
+<meta name="keywords" content="couper mp3, éditeur audio en ligne, assembler audio, trim mp3, audio editor">
+<meta name="theme-color" content="#5B5FA8">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="GeekoAudio">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F4F4F7; --bg2:#EFEFF3; --panel:#FFFFFF; --panel-alt:#F6F6F9; --border:#E1E1E7;
+    --text:#20232E; --muted:#6B7086;
+    --pink:#5B5FA8; --pink-deep:#464A8C; --mint:#3D8F82; --mint-deep:#2E6E64;
+    --peach:#B4813C; --lav:#7D89B0; --lav-deep:#4A5578; --sky:#8CA0B3; --danger:#B3453D;
+    --m3-shape-xs:4px; --m3-shape-sm:8px; --m3-shape-md:12px; --m3-shape-lg:16px;
+    --m3-shape-xl:28px; --m3-shape-full:999px;
+    --m3-elev-1:0 1px 2px rgba(20,20,30,0.10), 0 1px 3px 1px rgba(20,20,30,0.08);
+    --m3-elev-2:0 1px 2px rgba(20,20,30,0.12), 0 2px 6px 2px rgba(20,20,30,0.09);
+    --m3-elev-3:0 1px 3px rgba(20,20,30,0.14), 0 4px 8px 3px rgba(20,20,30,0.10);
+    --m3-elev-4:0 2px 3px rgba(20,20,30,0.16), 0 6px 10px 4px rgba(20,20,30,0.11);
+  }
+  html[data-theme="dark"]{
+    --bg:#16171D; --bg2:#1C1E26; --panel:#22242E; --panel-alt:#2A2D38; --border:#3A3D4A;
+    --text:#E8E9EE; --muted:#9297A8;
+    --pink:#8B8FD9; --pink-deep:#A5A9E8; --mint:#5FBBA8; --mint-deep:#7DD4C0;
+    --peach:#D4A05C; --lav:#9AA5CC; --lav-deep:#B8C0E0; --sky:#A8BAC9; --danger:#E07268;
+    --m3-elev-1:0 1px 2px rgba(0,0,0,0.35), 0 1px 3px 1px rgba(0,0,0,0.28);
+    --m3-elev-2:0 1px 2px rgba(0,0,0,0.38), 0 2px 6px 2px rgba(0,0,0,0.30);
+    --m3-elev-3:0 1px 3px rgba(0,0,0,0.42), 0 4px 8px 3px rgba(0,0,0,0.32);
+    --m3-elev-4:0 2px 3px rgba(0,0,0,0.46), 0 6px 10px 4px rgba(0,0,0,0.34);
+  }
+  html{transition:background-color .2s ease;}
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg); color:var(--text); font-family:'Roboto',system-ui,sans-serif;
+    min-height:100vh; min-height:100dvh;
+    padding:22px; padding-top:calc(22px + env(safe-area-inset-top));
+    padding-bottom:calc(22px + env(safe-area-inset-bottom));
+    transition:background-color .2s ease, color .2s ease;
+  }
+
+  header.topbar{display:flex; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:20px; padding:10px 6px;}
+  .brand{font-weight:800; font-size:22px; display:flex; align-items:center; gap:10px; color:var(--text); text-decoration:none;}
+  .brand .dot{width:14px;height:14px;border-radius:50%;background:linear-gradient(135deg,var(--pink),var(--lav));box-shadow:0 0 0 4px var(--panel);}
+  .brand .accent{background:linear-gradient(135deg,var(--pink-deep),var(--lav-deep));-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .nav-link, .btnlink{
+    font-family:'Roboto',sans-serif; font-weight:700; font-size:13px;
+    padding:9px 16px; border-radius:var(--m3-shape-full);
+    background:var(--panel-alt); border:2px solid var(--border); color:var(--text);
+    text-decoration:none; display:inline-flex; align-items:center; gap:6px;
+    transition:border-color .15s, color .15s, box-shadow .15s;
+  }
+  .nav-link:hover, .btnlink:hover{border-color:var(--pink-deep); color:var(--pink-deep); box-shadow:var(--m3-elev-1);}
+  .spacer{flex:1;}
+  button{
+    font-family:'Roboto',sans-serif; cursor:pointer; border:none;
+    border-radius:var(--m3-shape-full); padding:10px 16px; font-size:13px; font-weight:600;
+    position:relative; overflow:hidden;
+    transition:transform .12s ease, filter .15s ease, box-shadow .15s ease, border-color .15s, color .15s;
+  }
+  button:active{transform:scale(0.97);}
+  button.primary{background:linear-gradient(135deg,var(--pink),var(--lav)); color:#fff; box-shadow:var(--m3-elev-1);}
+  button.primary:hover{filter:brightness(1.05); box-shadow:var(--m3-elev-3);}
+  button.primary:disabled{background:var(--panel-alt); color:#B4B7C4; box-shadow:none; cursor:not-allowed;}
+  button.ghost{background:var(--panel-alt); border:2px solid var(--border); color:var(--text);}
+  button.ghost:hover{border-color:var(--mint-deep); color:var(--mint-deep); box-shadow:var(--m3-elev-1);}
+  button.ghost:disabled{opacity:0.5; cursor:not-allowed;}
+  .icon-btn{font-size:15px; padding:8px 12px;}
+  .m3-ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,0.5);transform:scale(0);pointer-events:none;animation:m3-ripple-anim 550ms ease-out;}
+  @keyframes m3-ripple-anim{to{transform:scale(2.6);opacity:0;}}
+
+  main.layout{max-width:900px; margin:0 auto;}
+  .panel{background:var(--panel); border-radius:var(--m3-shape-xl); padding:20px; box-shadow:var(--m3-elev-2); margin-bottom:18px;}
+
+  #dropzone{
+    border:3px dashed var(--lav); border-radius:var(--m3-shape-lg);
+    padding:14px 16px; text-align:center; color:var(--lav-deep); font-weight:700; font-size:13px; cursor:pointer;
+    transition:border-color .15s, background .15s;
+  }
+  #dropzone:hover, #dropzone.dragover{border-color:var(--pink-deep); color:var(--pink-deep); background:var(--panel-alt);}
+  #dropzone .sub{font-weight:500; font-size:11.5px; color:var(--muted);}
+
+  .film-bar-wrap{
+    margin-top:4px; padding:4px 2px;
+    overflow-x:auto; overflow-y:hidden;
+    border-radius:14px;
+  }
+  .film-bar{
+    position:relative; display:flex; height:128px; border-radius:14px; overflow:hidden;
+    background:var(--panel-alt); cursor:pointer; touch-action:none;
+  }
+  .film-bar:empty::after{
+    content:'Ajoute un audio pour voir la piste'; display:flex; align-items:center; justify-content:center;
+    width:100%; color:var(--muted); font-size:12.5px; font-weight:600;
+  }
+  .film-seg{
+    flex:0 0 auto; height:100%; min-width:6px; position:relative;
+    display:flex; align-items:center; justify-content:flex-start; overflow:hidden;
+    border-right:2px solid var(--panel);
+  }
+  .film-seg:last-child{border-right:none;}
+  .film-seg.active-seg{outline:3px solid var(--pink-deep); outline-offset:-3px; z-index:2;}
+  .film-seg.dragging{opacity:0.92; box-shadow:var(--m3-elev-4); transition:none;}
+  .film-seg.drop-before{box-shadow:inset 3px 0 0 0 #fff;}
+  .film-seg.drop-after{box-shadow:inset -3px 0 0 0 #fff;}
+  .seg-drag-handle{
+    position:absolute; top:2px; left:2px; z-index:2;
+    width:16px; height:14px; border-radius:4px;
+    background:rgba(0,0,0,0.35); color:#fff; font-size:10px; line-height:1;
+    display:flex; align-items:center; justify-content:center;
+    cursor:grab; touch-action:none;
+  }
+  .seg-drag-handle:active{cursor:grabbing;}
+  .film-seg .wave-svg{
+    position:absolute; inset:0; width:100%; height:100%;
+    fill:rgba(255,255,255,0.9); opacity:0.75; pointer-events:none;
+  }
+  .film-seg .seg-label{
+    position:relative; z-index:1;
+    font-size:9.5px; font-weight:800; color:#fff; text-shadow:0 1px 3px rgba(0,0,0,0.6);
+    padding:0 8px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .film-playhead{
+    position:absolute; top:0; bottom:0; width:3px; background:#fff;
+    box-shadow:0 0 0 1px var(--pink-deep), var(--m3-elev-2); left:0%; pointer-events:none; z-index:5;
+  }
+
+  .stage-controls{
+    display:flex; align-items:center; gap:12px; margin-top:12px;
+    background:var(--panel-alt); border-radius:var(--m3-shape-full); padding:8px 16px;
+    font-size:12.5px; font-weight:700; color:var(--muted);
+  }
+  #playheadTime{font-variant-numeric:tabular-nums;}
+
+  .clip-toolbar{
+    display:flex; align-items:center; gap:8px; flex-wrap:wrap;
+    margin-top:12px; padding:10px 14px; background:var(--panel-alt);
+    border-radius:var(--m3-shape-lg); border:2px solid var(--border);
+  }
+  .clip-toolbar label{font-size:10.5px; font-weight:800; color:var(--muted); margin-left:4px;}
+  .clip-toolbar select{
+    background:var(--panel); border:1.5px solid var(--border); border-radius:8px;
+    color:var(--text); font-family:'Roboto',sans-serif; font-weight:700; font-size:11.5px; padding:5px 6px;
+  }
+  .mini-name-input{
+    flex:1; min-width:100px; background:var(--panel); border:1.5px solid var(--border);
+    border-radius:8px; color:var(--text); font-family:'Roboto',sans-serif; font-weight:700; font-size:12px; padding:6px 10px;
+  }
+  .icon-btn.danger:hover{background:var(--danger); color:#fff; border-color:transparent;}
+
+  .export-row{display:flex; align-items:center; gap:12px; flex-wrap:wrap;}
+  #exportProgressWrap{display:none; margin-top:12px;}
+  #exportProgressBar{height:10px; background:var(--panel-alt); border-radius:999px; overflow:hidden; border:2px solid var(--border);}
+  #exportProgressFill{height:100%; width:0%; background:linear-gradient(90deg,var(--pink),var(--lav),var(--sky)); transition:width .15s ease; border-radius:999px;}
+  #exportProgressText{font-size:11.5px; font-weight:700; color:var(--muted); margin-top:8px;}
+  #exportDownloadLink{display:none; margin-top:12px;}
+
+  .tip{font-size:11px; color:var(--muted); font-weight:600;}
+  footer{margin-top:24px; text-align:center; color:var(--muted); font-size:11.5px; font-weight:600;}
+  .visit-counter{display:block; margin-top:4px; font-size:10.5px; color:var(--muted); opacity:0.8;}
+
+  @media (max-width:640px){
+    body{padding:14px;}
+    header.topbar{margin-bottom:14px;}
+    .brand{font-size:19px;}
+    .panel{padding:14px; border-radius:20px;}
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="brand" href="../"><span class="dot"></span>Geeko<span class="accent">Audio</span></a>
+  <button id="themeToggle" class="ghost icon-btn" title="Thème clair / sombre">🌙</button>
+  <div class="spacer"></div>
+  <a class="nav-link" href="../gifio/">🎞️ GeekoGifio</a>
+  <a class="nav-link" href="../montage/">🎬 GeekoMontage</a>
+  <button id="likeBtn" class="ghost like-btn" title="J'aime ce site"><span id="likeIcon">🤍</span> <span id="likeCount"></span></button>
+  <a class="btnlink" id="feedbackBtn" href="mailto:geekorobin@gmail.com?subject=Id%C3%A9e%20pour%20GeekoAudio&body=Salut%2C%0A%0AVoici%20mon%20id%C3%A9e%20%3A%20">💡 Une idée ?</a>
+  <a class="btnlink" id="donateBtn" href="https://paypal.me/Geekorobin56" target="_blank" rel="noopener noreferrer">☕ Faire un don</a>
+</header>
+
+<main class="layout">
+
+  <div class="panel" style="padding:14px 18px;">
+    <div id="dropzone" style="display:flex; align-items:center; justify-content:center; gap:14px; flex-wrap:wrap;">
+      <span>🎵 Glisse tes fichiers audio ici <span class="sub" style="display:inline; margin:0;">— MP3, WAV, M4A...</span></span>
+      <button class="primary" id="addAudioBtn">🎵 Ajouter un audio</button>
+    </div>
+    <input type="file" id="audioFileInput" accept="audio/*" multiple style="display:none;">
+  </div>
+
+  <div class="panel">
+    <audio id="previewAudio" style="display:none;"></audio>
+    <div class="film-bar-wrap">
+      <div class="film-bar" id="audioFilmBar">
+        <div class="film-playhead" id="filmPlayhead"></div>
+      </div>
+    </div>
+    <div class="stage-controls">
+      <button class="ghost icon-btn" id="restartBtn" title="Revenir au début">⏮</button>
+      <button class="ghost icon-btn" id="playBtn" title="Lecture / Pause">▶</button>
+      <span id="playheadTime">0.0s / 0.0s</span>
+      <div class="spacer"></div>
+      <button class="ghost icon-btn" id="zoomOutBtn" title="Zoom arrière">🔍−</button>
+      <button class="ghost icon-btn" id="zoomInBtn" title="Zoom avant">🔍+</button>
+      <button class="ghost" id="splitBtn" title="Coupe le clip en deux à la position actuelle">✂ Couper ici</button>
+      <button class="ghost" id="undoBtn" style="display:none;" title="Remet le dernier clip supprimé (Ctrl+Z)">↩ Annuler</button>
+    </div>
+    <div class="clip-toolbar" id="clipToolbar" style="display:none;">
+      <input type="text" id="selName" class="mini-name-input" spellcheck="false">
+      <label>Vol.</label>
+      <select id="selVol">
+        <option value="0">0%</option><option value="0.25">25%</option><option value="0.5">50%</option>
+        <option value="0.75">75%</option><option value="1">100%</option><option value="1.5">150%</option><option value="2">200%</option>
+      </select>
+      <label>Vit.</label>
+      <select id="selSpeed">
+        <option value="0.5">0.5×</option><option value="0.75">0.75×</option><option value="1">1×</option>
+        <option value="1.25">1.25×</option><option value="1.5">1.5×</option><option value="2">2×</option>
+      </select>
+      <button class="ghost icon-btn danger" id="selDelete" title="Supprimer ce clip">🗑</button>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="export-row">
+      <button class="primary" id="exportBtn" disabled>✨ Exporter le montage audio</button>
+      <span class="tip" id="exportTip">Ajoute au moins un fichier audio pour pouvoir exporter</span>
+    </div>
+    <div id="exportProgressWrap">
+      <div id="exportProgressBar"><div id="exportProgressFill"></div></div>
+      <div id="exportProgressText">—</div>
+    </div>
+    <a id="exportDownloadLink" download="montage.mp3"><button class="ghost" style="width:100%;">⬇ Télécharger l'audio</button></a>
+  </div>
+
+</main>
+
+<footer>Tout le traitement se fait localement dans ton navigateur — rien n'est envoyé sur un serveur.<span class="visit-counter" id="visitCounter"></span></footer>
+
+<div id="audioPool" style="position:fixed;left:-99999px;top:0;pointer-events:none;"></div>
+
+<script>
+(function(){
+  "use strict";
+
+  // ---------- Visit counter ----------
+  (function initVisitCounter(){
+    const KEY = 'geekoaudio_site_visits_v1';
+    const el = document.getElementById('visitCounter');
+    if(typeof fetch !== 'function' || !el) return;
+    try{
+      fetch(`https://countapi.mileshilliard.com/api/v1/hit/${KEY}`)
+        .then(r=>r.json())
+        .then(data=>{ if(typeof data.value === 'number') el.textContent = `👀 ${data.value} visites`; })
+        .catch(()=>{});
+    }catch(err){}
+  })();
+
+  // ---------- Like button ----------
+  (function initLikeButton(){
+    const LIKE_KEY = 'geekoaudio_site_likes_v1';
+    const likeBtn = document.getElementById('likeBtn');
+    const likeIcon = document.getElementById('likeIcon');
+    const likeCountEl = document.getElementById('likeCount');
+    const canFetch = typeof fetch === 'function';
+    let hasLiked = false;
+    try{ hasLiked = localStorage.getItem('geekoaudio_liked') === '1'; }catch(err){}
+    if(hasLiked){ likeIcon.textContent = '❤️'; likeBtn.classList.add('liked'); }
+    if(canFetch){
+      try{
+        fetch(`https://countapi.mileshilliard.com/api/v1/get/${LIKE_KEY}`)
+          .then(r=>r.json())
+          .then(data=>{ if(typeof data.value === 'number') likeCountEl.textContent = data.value; })
+          .catch(()=>{});
+      }catch(err){}
+    }
+    likeBtn.addEventListener('click', ()=>{
+      if(hasLiked) return;
+      hasLiked = true;
+      likeIcon.textContent = '❤️';
+      likeBtn.classList.add('liked');
+      try{ localStorage.setItem('geekoaudio_liked', '1'); }catch(err){}
+      const current = parseInt(likeCountEl.textContent, 10);
+      likeCountEl.textContent = isNaN(current) ? '' : (current + 1);
+      if(canFetch){
+        try{
+          fetch(`https://countapi.mileshilliard.com/api/v1/hit/${LIKE_KEY}`)
+            .then(r=>r.json())
+            .then(data=>{ if(typeof data.value === 'number') likeCountEl.textContent = data.value; })
+            .catch(()=>{});
+        }catch(err){}
+      }
+    });
+  })();
+
+  // ---------- Theme ----------
+  const themeToggle = document.getElementById('themeToggle');
+  function applyTheme(t){
+    document.documentElement.setAttribute('data-theme', t);
+    themeToggle.textContent = t === 'dark' ? '☀️' : '🌙';
+    try{ localStorage.setItem('geekoaudio_theme', t); }catch(e){}
+  }
+  themeToggle.addEventListener('click', ()=>{
+    const cur = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+    applyTheme(cur === 'dark' ? 'light' : 'dark');
+  });
+  (function initTheme(){
+    let saved = null;
+    try{ saved = localStorage.getItem('geekoaudio_theme'); }catch(e){}
+    if(saved !== 'light' && saved !== 'dark'){
+      saved = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+    }
+    applyTheme(saved);
+  })();
+
+  // ---------- Ripple ----------
+  document.addEventListener('pointerdown', (e)=>{
+    const btn = e.target.closest('button');
+    if(!btn) return;
+    const rect = btn.getBoundingClientRect();
+    const size = Math.max(rect.width, rect.height);
+    const ripple = document.createElement('span');
+    ripple.className = 'm3-ripple';
+    ripple.style.width = ripple.style.height = size + 'px';
+    ripple.style.left = (e.clientX - rect.left - size/2) + 'px';
+    ripple.style.top = (e.clientY - rect.top - size/2) + 'px';
+    btn.appendChild(ripple);
+    setTimeout(()=> ripple.remove(), 600);
+  });
+
+  // ---------- State ----------
+  let clips = []; // {id, file, url, name, duration, trimStart, trimEnd, volume, el}
+  let clipIdCounter = 0;
+  window.__geekoAudioClips = clips;
+
+  const audioPool = document.getElementById('audioPool');
+  const dropzone = document.getElementById('dropzone');
+  const addAudioBtn = document.getElementById('addAudioBtn');
+  const audioFileInput = document.getElementById('audioFileInput');
+  const exportBtn = document.getElementById('exportBtn');
+  const exportTip = document.getElementById('exportTip');
+  const trackColors = ['#5B5FA8', '#3D8F82', '#B4813C', '#7D89B0', '#8CA0B3'];
+
+  addAudioBtn.addEventListener('click', (e)=>{ e.stopPropagation(); audioFileInput.click(); });
+  dropzone.addEventListener('click', ()=> audioFileInput.click());
+  audioFileInput.addEventListener('change', e => handleFiles(e.target.files));
+
+  ['dragenter','dragover'].forEach(evt=>{
+    dropzone.addEventListener(evt, e=>{ e.preventDefault(); dropzone.classList.add('dragover'); });
+  });
+  ['dragleave','drop'].forEach(evt=>{
+    dropzone.addEventListener(evt, e=>{ e.preventDefault(); dropzone.classList.remove('dragover'); });
+  });
+  dropzone.addEventListener('drop', e=>{
+    if(!e.dataTransfer.files || !e.dataTransfer.files.length) return;
+    handleFiles([...e.dataTransfer.files].filter(f=>f.type.startsWith('audio/')));
+  });
+
+  function handleFiles(fileList){
+    Array.from(fileList).forEach(file=>{
+      if(!file.type.startsWith('audio/')) return;
+      addClip(file);
+    });
+  }
+
+  function addClip(file){
+    const id = 'c' + (clipIdCounter++);
+    const url = URL.createObjectURL(file);
+    const el = document.createElement('audio');
+    el.preload = 'metadata';
+    audioPool.appendChild(el);
+
+    const clip = {
+      id, file, url, name: file.name.replace(/\.[^.]+$/, ''),
+      duration: 0, trimStart: 0, trimEnd: 0, volume: 1, speed: 1, el, _waveform: null
+    };
+    clips.push(clip);
+    renderTrack();
+    computeWaveform(clip);
+
+    el.addEventListener('loadedmetadata', ()=>{
+      clip.duration = el.duration || 0;
+      clip.trimEnd = clip.duration;
+      renderTrack();
+      updateExportState();
+      updatePlayerAvailability();
+    });
+    el.src = url;
+  }
+
+  function fmtTime(s){
+    s = Math.max(0, s||0);
+    const m = Math.floor(s/60), r = s - m*60;
+    return m>0 ? `${m}:${r.toFixed(1).padStart(4,'0')}` : `${r.toFixed(1)}s`;
+  }
+
+  function effectiveDuration(clip){
+    return Math.max(0, (clip.trimEnd||0) - (clip.trimStart||0)) / (clip.speed||1);
+  }
+
+  function updateExportState(){
+    exportBtn.disabled = clips.length === 0;
+    exportTip.textContent = clips.length === 0
+      ? 'Ajoute au moins un fichier audio pour pouvoir exporter'
+      : `${clips.length} clip${clips.length>1?'s':''} audio`;
+  }
+
+  let lastDeletedClip = null; // { clip, index } — kept alive until overwritten, so Undo can restore it
+
+  function removeClip(id){
+    const idx = clips.findIndex(c=>c.id===id);
+    if(idx === -1) return;
+    const clip = clips[idx];
+
+    // Free the PREVIOUS undo buffer now that it's about to be replaced.
+    if(lastDeletedClip){
+      const stillShared = clips.some(c=>c.url===lastDeletedClip.clip.url) || lastDeletedClip.clip.url===clip.url;
+      if(!stillShared) URL.revokeObjectURL(lastDeletedClip.clip.url);
+      if(lastDeletedClip.clip.el) lastDeletedClip.clip.el.remove();
+    }
+
+    clip.el.remove(); // detach from the pool, but keep the object + blob URL alive for undo
+    clips.splice(idx, 1);
+    lastDeletedClip = { clip, index: idx };
+    undoBtn.style.display = 'inline-flex';
+
+    if(activeIdx >= clips.length) activeIdx = Math.max(0, clips.length-1);
+    renderTrack();
+    updateExportState();
+    updatePlayerAvailability();
+  }
+
+  function undoDelete(){
+    if(!lastDeletedClip) return;
+    const { clip, index } = lastDeletedClip;
+    const insertAt = Math.min(index, clips.length);
+    clips.splice(insertAt, 0, clip);
+    audioPool.appendChild(clip.el);
+    lastDeletedClip = null;
+    undoBtn.style.display = 'none';
+    renderTrack();
+    updateExportState();
+    updatePlayerAvailability();
+  }
+
+  function escapeHtml(s){
+    return s.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  }
+
+  // ---------- Waveform ----------
+  // Decoded once per clip via the Web Audio API, cached as a small peaks
+  // array covering the WHOLE original file — segments then slice out just
+  // their trimmed portion when drawing, so a split/trim never needs a
+  // re-decode.
+  const WAVEFORM_SAMPLES = 2000;
+  async function computeWaveform(clip){
+    try{
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if(!AC) return;
+      const buf = await clip.file.arrayBuffer();
+      const audioCtx = new AC();
+      const audioBuffer = await audioCtx.decodeAudioData(buf.slice(0));
+      const raw = audioBuffer.getChannelData(0);
+      const blockSize = Math.max(1, Math.floor(raw.length / WAVEFORM_SAMPLES));
+      const peaks = new Float32Array(WAVEFORM_SAMPLES);
+      for(let i=0; i<WAVEFORM_SAMPLES; i++){
+        let max = 0;
+        const start = i*blockSize;
+        for(let j=0; j<blockSize; j++){
+          const v = Math.abs(raw[start+j] || 0);
+          if(v>max) max = v;
+        }
+        peaks[i] = max;
+      }
+      clip._waveform = peaks;
+      try{ audioCtx.close(); }catch(err){}
+      renderTrack();
+    }catch(err){
+      clip._waveform = null; // decode failed — segment just shows the flat colour, no oscillation
+    }
+  }
+
+  function waveformSvg(peaks, startFrac, endFrac){
+    if(!peaks || !peaks.length) return '';
+    const total = peaks.length;
+    const i0 = Math.max(0, Math.floor(startFrac*total));
+    const i1 = Math.min(total, Math.max(i0+1, Math.ceil(endFrac*total)));
+    const slice = peaks.slice(i0, i1);
+    const n = slice.length || 1;
+    const W = 800, H = 64;
+    const PAD = 10; // vertical breathing room so bars never touch the edges
+    const usableH = H - PAD*2;
+    const barW = W / n;
+    let bars = '';
+    for(let i=0; i<n; i++){
+      const amp = Math.min(1, slice[i] * 1.7);
+      const barH = Math.max(1.5, amp * usableH);
+      const x = i*barW;
+      const y = PAD + (usableH-barH)/2;
+      bars += `<rect x="${x.toFixed(2)}" y="${y.toFixed(1)}" width="${barW.toFixed(2)}" height="${barH.toFixed(1)}"/>`;
+    }
+    return `<svg class="wave-svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">${bars}</svg>`;
+  }
+
+  // ---------- Track bar ----------
+  const audioFilmBar = document.getElementById('audioFilmBar');
+  const filmPlayhead = document.getElementById('filmPlayhead');
+
+  function renderTrack(){
+    audioFilmBar.querySelectorAll('.film-seg').forEach(s=>s.remove());
+    const total = clips.reduce((s,c)=>s+effectiveDuration(c), 0) || 1;
+    const wrapWidth = (audioFilmBar.parentElement && audioFilmBar.parentElement.clientWidth) || 0;
+    // By default everything fits in the visible bar (no scrollbar) — the
+    // scale auto-adjusts to the total duration. Zooming in switches to a
+    // fixed, larger scale for precision, which can then need scrolling.
+    const pxPerSecond = zoomOverride !== null ? zoomOverride : (wrapWidth > 0 ? wrapWidth / total : 60);
+    audioFilmBar.style.width = Math.max(wrapWidth, total * pxPerSecond) + 'px';
+    clips.forEach((clip, idx)=>{
+      const seg = document.createElement('div');
+      seg.className = 'film-seg';
+      if(idx === activeIdx) seg.classList.add('active-seg');
+      seg.dataset.id = clip.id;
+      seg.style.width = (effectiveDuration(clip) * pxPerSecond) + 'px';
+      seg.style.background = trackColors[idx % trackColors.length];
+      const startFrac = clip.duration > 0 ? clip.trimStart / clip.duration : 0;
+      const endFrac = clip.duration > 0 ? clip.trimEnd / clip.duration : 1;
+      seg.innerHTML = waveformSvg(clip._waveform, startFrac, endFrac) +
+        `<div class="seg-drag-handle" title="Glisser pour réordonner">⠿</div>` +
+        `<span class="seg-label">${escapeHtml(clip.name)} · ${effectiveDuration(clip).toFixed(1)}s</span>`;
+      audioFilmBar.insertBefore(seg, filmPlayhead);
+      attachSegmentReorderDrag(seg, clip);
+    });
+    updateExportState();
+  }
+
+  // Dragging a segment's handle reorders clips directly on the bar — the
+  // rest of the bar (background, waveform) still just seeks on click, only
+  // the handle initiates a reorder, so the two gestures never conflict.
+  function attachSegmentReorderDrag(seg, clip){
+    const handle = seg.querySelector('.seg-drag-handle');
+    handle.addEventListener('pointerdown', (e)=>{
+      e.preventDefault();
+      e.stopPropagation();
+      seg.classList.add('dragging');
+      try{ handle.setPointerCapture(e.pointerId); }catch(err){}
+      const startX = e.clientX;
+      let moved = false;
+      let currentAfterEl = null;
+
+      function clearIndicators(){
+        audioFilmBar.querySelectorAll('.film-seg').forEach(s=>s.classList.remove('drop-before','drop-after'));
+      }
+      function getAfterElement(x){
+        const segs = [...audioFilmBar.querySelectorAll('.film-seg:not(.dragging)')];
+        return segs.reduce((closest, child)=>{
+          const box = child.getBoundingClientRect();
+          const offset = x - box.left - box.width/2;
+          if(offset < 0 && offset > closest.offset) return {offset, element: child};
+          return closest;
+        }, {offset:-Infinity}).element;
+      }
+      function onMove(ev){
+        moved = true;
+        seg.style.transform = `translateX(${ev.clientX-startX}px)`;
+        seg.style.zIndex = 10;
+        const afterEl = getAfterElement(ev.clientX);
+        if(afterEl === currentAfterEl) return;
+        currentAfterEl = afterEl;
+        clearIndicators();
+        if(afterEl) afterEl.classList.add('drop-before');
+        else {
+          const segs = [...audioFilmBar.querySelectorAll('.film-seg:not(.dragging)')];
+          const last = segs[segs.length-1];
+          if(last) last.classList.add('drop-after');
+        }
+      }
+      function onUp(){
+        window.removeEventListener('pointermove', onMove);
+        window.removeEventListener('pointerup', onUp);
+        clearIndicators();
+        seg.classList.remove('dragging');
+        seg.style.transform = '';
+        seg.style.zIndex = '';
+        if(moved){
+          if(currentAfterEl){ audioFilmBar.insertBefore(seg, currentAfterEl); }
+          else { audioFilmBar.insertBefore(seg, filmPlayhead); } // playhead is always last, so this = end of list
+          const ids = [...audioFilmBar.querySelectorAll('.film-seg')].map(s=>s.dataset.id);
+          clips.sort((a,b)=> ids.indexOf(a.id) - ids.indexOf(b.id));
+          activeIdx = clips.indexOf(clip);
+          renderTrack();
+          loadClipIntoPlayer(activeIdx, true);
+        }
+      }
+      window.addEventListener('pointermove', onMove);
+      window.addEventListener('pointerup', onUp);
+    });
+  }
+
+  let zoomOverride = null; // null = auto-fit; a number once the person has manually zoomed
+  const zoomInBtn = document.getElementById('zoomInBtn');
+  const zoomOutBtn = document.getElementById('zoomOutBtn');
+  function currentScale(){
+    if(zoomOverride !== null) return zoomOverride;
+    const total = clips.reduce((s,c)=>s+effectiveDuration(c), 0) || 1;
+    const wrapWidth = (audioFilmBar.parentElement && audioFilmBar.parentElement.clientWidth) || 0;
+    return wrapWidth > 0 ? wrapWidth / total : 60;
+  }
+  zoomInBtn.addEventListener('click', ()=>{
+    zoomOverride = Math.min(200, currentScale() + 20);
+    renderTrack();
+  });
+  zoomOutBtn.addEventListener('click', ()=>{
+    const next = currentScale() - 20;
+    const total = clips.reduce((s,c)=>s+effectiveDuration(c), 0) || 1;
+    const wrapWidth = (audioFilmBar.parentElement && audioFilmBar.parentElement.clientWidth) || 0;
+    const fitScale = wrapWidth > 0 ? wrapWidth / total : 60;
+    // Zooming back out past the "everything fits" point returns to auto-fit.
+    zoomOverride = next <= fitScale ? null : next;
+    renderTrack();
+  });
+
+  // ---------- Player (sequential playback across clips) ----------
+  const previewAudio = document.getElementById('previewAudio');
+  const playBtn = document.getElementById('playBtn');
+  const playheadTimeEl = document.getElementById('playheadTime');
+  const splitBtn = document.getElementById('splitBtn');
+
+  // Native <audio>.volume is capped at 1.0 by every browser — there's no
+  // way to boost past 100% with it. A Web Audio gain node has no such
+  // ceiling, so that's what actually drives volume for preview playback;
+  // native .volume stays fixed at 1 and just lets the gain node do the work.
+  let audioCtx = null, gainNode = null, sourceNode = null;
+  function ensureAudioGraph(){
+    if(gainNode) return gainNode;
+    try{
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if(!AC) return null;
+      audioCtx = new AC();
+      sourceNode = audioCtx.createMediaElementSource(previewAudio);
+      gainNode = audioCtx.createGain();
+      sourceNode.connect(gainNode).connect(audioCtx.destination);
+      audioCtx.resume().catch(()=>{});
+    }catch(err){ return null; }
+    return gainNode;
+  }
+  function setPreviewVolume(v){
+    const gain = ensureAudioGraph();
+    if(gain){
+      gain.gain.value = v;
+      previewAudio.volume = 1;
+    } else {
+      previewAudio.volume = Math.min(1, v); // fallback if Web Audio API is unavailable
+    }
+  }
+
+  let sequencePlaying = false;
+  let activeIdx = 0;
+  let totalDuration = 0;
+  let seeking = false;
+
+  function updatePlayerAvailability(){
+    totalDuration = clips.reduce((s,c)=>s+effectiveDuration(c), 0);
+    if(clips.length === 0){
+      playheadTimeEl.textContent = '0.0s / 0.0s';
+      splitBtn.disabled = true;
+      updateSeekUI(0);
+    } else {
+      if(activeIdx >= clips.length) activeIdx = 0;
+      if(!sequencePlaying) loadClipIntoPlayer(activeIdx, true);
+      splitBtn.disabled = false;
+      playheadTimeEl.textContent = `${fmtTime(0)} / ${fmtTime(totalDuration)}`;
+      updateSeekUI(0);
+    }
+    renderTrack();
+    updateToolbar();
+  }
+
+  function updateSeekUI(elapsed){
+    const frac = totalDuration > 0 ? Math.min(1, Math.max(0, elapsed/totalDuration)) : 0;
+    filmPlayhead.style.left = (frac*100) + '%';
+  }
+
+  function updateActiveHighlight(){
+    const activeId = clips[activeIdx] ? clips[activeIdx].id : null;
+    audioFilmBar.querySelectorAll('.film-seg').forEach(seg=>{
+      seg.classList.toggle('active-seg', seg.dataset.id === activeId);
+    });
+  }
+
+  function loadClipIntoPlayer(idx, paused){
+    const clip = clips[idx];
+    if(!clip) return;
+    activeIdx = idx;
+    if(previewAudio.src !== clip.url) previewAudio.src = clip.url;
+    previewAudio.currentTime = clip.trimStart;
+    setPreviewVolume(clip.volume);
+    previewAudio.playbackRate = clip.speed || 1;
+    if(paused) previewAudio.pause();
+    updateActiveHighlight();
+    updateToolbar();
+  }
+
+  function seekToGlobal(sec){
+    if(clips.length === 0) return;
+    sec = Math.max(0, Math.min(totalDuration, sec));
+    let acc = 0, idx = 0, local = 0;
+    for(let i=0; i<clips.length; i++){
+      const d = effectiveDuration(clips[i]);
+      if(sec < acc + d || i === clips.length-1){ idx = i; local = sec - acc; break; }
+      acc += d;
+    }
+    const clip = clips[idx];
+    if(!clip) return;
+    activeIdx = idx;
+    if(previewAudio.src !== clip.url) previewAudio.src = clip.url;
+    previewAudio.currentTime = clip.trimStart + Math.max(0, local);
+    setPreviewVolume(clip.volume);
+    previewAudio.playbackRate = clip.speed || 1;
+    updateSeekUI(sec);
+    playheadTimeEl.textContent = `${fmtTime(sec)} / ${fmtTime(totalDuration)}`;
+    updateActiveHighlight();
+    updateToolbar();
+  }
+
+  let wasPlayingBeforeSeek = false;
+  audioFilmBar.addEventListener('pointerdown', (e)=>{
+    if(clips.length === 0) return;
+    seeking = true;
+    wasPlayingBeforeSeek = sequencePlaying;
+    sequencePlaying = false;
+    previewAudio.pause();
+    playBtn.textContent = '▶';
+    try{ audioFilmBar.setPointerCapture(e.pointerId); }catch(err){}
+    const rect = audioFilmBar.getBoundingClientRect();
+    seekToGlobal(((e.clientX-rect.left)/rect.width) * totalDuration);
+  });
+  window.addEventListener('pointermove', (e)=>{
+    if(!seeking) return;
+    const rect = audioFilmBar.getBoundingClientRect();
+    seekToGlobal(((e.clientX-rect.left)/rect.width) * totalDuration);
+  });
+  window.addEventListener('pointerup', ()=>{
+    // Resume playing from the new spot if it was already playing — clicking
+    // further along the bar shouldn't silently cut the sound.
+    if(seeking && wasPlayingBeforeSeek){
+      sequencePlaying = true;
+      playBtn.textContent = '⏸';
+      previewAudio.play().catch(()=>{});
+    }
+    seeking = false;
+  });
+
+  playBtn.addEventListener('click', ()=>{
+    if(clips.length === 0) return;
+    // Trust the audio element's own paused state as the source of truth —
+    // if our tracked flag ever gets out of sync with reality (e.g. after
+    // an unexpected error mid-playback), this still guarantees the button
+    // does the right thing instead of becoming unresponsive.
+    if(!previewAudio.paused){
+      sequencePlaying = false;
+      previewAudio.pause();
+      playBtn.textContent = '▶';
+    } else {
+      sequencePlaying = true;
+      playBtn.textContent = '⏸';
+      // Resume from wherever currentTime already is — do NOT reload the
+      // clip here, that was resetting playback back to the clip's start
+      // every time instead of continuing from where it was left off.
+      previewAudio.play().catch(()=>{});
+    }
+  });
+
+  const restartBtn = document.getElementById('restartBtn');
+  restartBtn.addEventListener('click', ()=>{
+    if(clips.length === 0) return;
+    seekToGlobal(0);
+    if(sequencePlaying) previewAudio.play().catch(()=>{});
+  });
+
+  previewAudio.addEventListener('timeupdate', ()=>{
+    try{
+      if(seeking) return;
+      const clip = clips[activeIdx];
+      if(!clip) return;
+      let elapsed = 0;
+      for(let i=0;i<activeIdx;i++) elapsed += effectiveDuration(clips[i]);
+      elapsed += Math.max(0, (previewAudio.currentTime - clip.trimStart) / (clip.speed||1));
+      playheadTimeEl.textContent = `${fmtTime(elapsed)} / ${fmtTime(totalDuration)}`;
+      updateSeekUI(elapsed);
+
+      if(!sequencePlaying) return;
+      if(previewAudio.currentTime >= clip.trimEnd - 0.03){
+        if(activeIdx < clips.length - 1){
+          const next = clips[activeIdx+1];
+          const seamless = next.url === clip.url && Math.abs(next.trimStart - clip.trimEnd) < 0.05;
+          if(seamless){
+            activeIdx += 1;
+            setPreviewVolume(next.volume);
+          previewAudio.playbackRate = next.speed || 1;
+            updateActiveHighlight();
+            updateToolbar();
+          } else {
+            loadClipIntoPlayer(activeIdx+1, false);
+            previewAudio.play().catch(()=>{});
+          }
+        } else {
+          sequencePlaying = false;
+          playBtn.textContent = '▶';
+          loadClipIntoPlayer(0, true);
+        }
+      }
+    }catch(err){
+      console.error('timeupdate handler error', err);
+    }
+  });
+
+  // Last-resort safety net: whatever actually causes the audio to pause or
+  // play (our own code, a browser auto-pause, an error elsewhere), the
+  // button icon follows the real state instead of possibly getting stuck.
+  previewAudio.addEventListener('pause', ()=>{
+    sequencePlaying = false;
+    playBtn.textContent = '▶';
+  });
+  previewAudio.addEventListener('play', ()=>{
+    sequencePlaying = true;
+    playBtn.textContent = '⏸';
+  });
+
+  splitBtn.addEventListener('click', ()=>{
+    const clip = clips[activeIdx];
+    if(!clip) return;
+    const t = previewAudio.currentTime;
+    if(t <= clip.trimStart + 0.15 || t >= clip.trimEnd - 0.15) return;
+    const id = 'c' + (clipIdCounter++);
+    const el = document.createElement('audio');
+    el.preload = 'none';
+    audioPool.appendChild(el);
+    const second = {
+      id, file: clip.file, url: clip.url, name: clip.name,
+      duration: clip.duration, trimStart: t, trimEnd: clip.trimEnd, volume: clip.volume, speed: clip.speed, el,
+      _waveform: clip._waveform
+    };
+    clip.trimEnd = t;
+    clips.splice(activeIdx+1, 0, second);
+    sequencePlaying = false;
+    previewAudio.pause();
+    playBtn.textContent = '▶';
+
+    totalDuration = clips.reduce((s,c)=>s+effectiveDuration(c), 0);
+    renderTrack();
+    updateExportState();
+    let elapsed = 0;
+    for(let i=0; i<activeIdx; i++) elapsed += effectiveDuration(clips[i]);
+    elapsed += Math.max(0, (t - clip.trimStart) / (clip.speed||1));
+    playheadTimeEl.textContent = `${fmtTime(elapsed)} / ${fmtTime(totalDuration)}`;
+    updateSeekUI(elapsed);
+    updateActiveHighlight();
+    updateToolbar();
+  });
+
+  // ---------- Clip toolbar ----------
+  const clipToolbar = document.getElementById('clipToolbar');
+  const selName = document.getElementById('selName');
+  const selVol = document.getElementById('selVol');
+  const selSpeed = document.getElementById('selSpeed');
+  const selDelete = document.getElementById('selDelete');
+
+  function updateToolbar(){
+    const clip = clips[activeIdx];
+    if(!clip){ clipToolbar.style.display = 'none'; return; }
+    clipToolbar.style.display = 'flex';
+    selName.value = clip.name;
+    selVol.value = String(clip.volume);
+    selSpeed.value = String(clip.speed || 1);
+  }
+  selName.addEventListener('change', ()=>{
+    const clip = clips[activeIdx];
+    if(!clip) return;
+    clip.name = selName.value.trim() || clip.name;
+    selName.value = clip.name;
+    renderTrack();
+  });
+  selVol.addEventListener('change', ()=>{
+    const clip = clips[activeIdx];
+    if(!clip) return;
+    clip.volume = parseFloat(selVol.value);
+    setPreviewVolume(clip.volume);
+  });
+  selSpeed.addEventListener('change', ()=>{
+    const clip = clips[activeIdx];
+    if(!clip) return;
+    clip.speed = parseFloat(selSpeed.value) || 1;
+    previewAudio.playbackRate = clip.speed;
+    totalDuration = clips.reduce((s,c)=>s+effectiveDuration(c), 0);
+    renderTrack();
+  });
+  selDelete.addEventListener('click', ()=>{
+    const clip = clips[activeIdx];
+    if(!clip) return;
+    removeClip(clip.id);
+  });
+
+  // Delete/Backspace removes whichever clip the playhead is on.
+  window.addEventListener('keydown', (e)=>{
+    if(e.key !== 'Delete' && e.key !== 'Backspace') return;
+    const tag = (e.target.tagName || '').toLowerCase();
+    const isEditable = tag === 'input' || tag === 'textarea' || tag === 'select' || e.target.isContentEditable;
+    if(isEditable) return;
+    if(clips.length === 0) return;
+    e.preventDefault();
+    const clip = clips[activeIdx];
+    if(clip) removeClip(clip.id);
+  });
+
+  const undoBtn = document.getElementById('undoBtn');
+  undoBtn.addEventListener('click', undoDelete);
+
+  // Ctrl+Z / Cmd+Z undoes the last deletion (single level — the click ×,
+  // Suppr key, and Ctrl+Z all feed the same undo buffer).
+  window.addEventListener('keydown', (e)=>{
+    if(!(e.key === 'z' || e.key === 'Z') || !(e.ctrlKey || e.metaKey)) return;
+    const tag = (e.target.tagName || '').toLowerCase();
+    const isEditable = tag === 'input' || tag === 'textarea' || tag === 'select' || e.target.isContentEditable;
+    if(isEditable) return;
+    e.preventDefault();
+    undoDelete();
+  });
+
+  // ---------- Init ----------
+  updatePlayerAvailability();
+})();
+</script>
+
+<script type="module">
+  // ---------- Export (FFmpeg.wasm, single-thread core) ----------
+  // Same setup as GeekoMontage — no classWorkerURL (its blob-ified worker.js
+  // has broken relative imports that cause a silent hang, confirmed on
+  // GeekoGifio's identical setup), plus a 30s timeout so a stuck load fails
+  // clearly instead of leaving the person staring at a frozen progress bar.
+  const exportBtn = document.getElementById('exportBtn');
+  const exportProgressWrap = document.getElementById('exportProgressWrap');
+  const exportProgressFill = document.getElementById('exportProgressFill');
+  const exportProgressText = document.getElementById('exportProgressText');
+  const exportDownloadLink = document.getElementById('exportDownloadLink');
+
+  let ffmpegInstance = null;
+  let fetchFileFn = null;
+
+  function extFromType(type){
+    if(!type) return '.dat';
+    if(type.includes('mpeg')) return '.mp3';
+    if(type.includes('wav')) return '.wav';
+    if(type.includes('ogg')) return '.ogg';
+    if(type.includes('aac')) return '.aac';
+    if(type.includes('mp4')) return '.m4a';
+    if(type.includes('flac')) return '.flac';
+    return '.dat';
+  }
+
+  // A naive blob-ify of worker.js alone leaves its own relative imports
+  // (e.g. "./const.js") pointing nowhere once it's running from a blob:
+  // URL — that's the likely reason a first attempt at this hung instead of
+  // failing cleanly. This patches those imports to point at their own
+  // blob URLs first.
+  async function toPatchedWorkerBlobURL(workerUrl, baseDir){
+    const resp = await fetch(workerUrl);
+    let code = await resp.text();
+    const importRegex = /from\s*["'](\.\/[^"']+)["']/g;
+    const seen = new Set();
+    for(const m of [...code.matchAll(importRegex)]){
+      const relPath = m[1];
+      if(seen.has(relPath)) continue;
+      seen.add(relPath);
+      try{
+        const depUrl = `${baseDir}/${relPath.replace('./','')}`;
+        const depResp = await fetch(depUrl);
+        const depCode = await depResp.text();
+        const depBlobUrl = URL.createObjectURL(new Blob([depCode], {type:'text/javascript'}));
+        code = code.split(relPath).join(depBlobUrl);
+      }catch(err){ /* leave this import as-is if it can't be fetched */ }
+    }
+    return URL.createObjectURL(new Blob([code], {type:'text/javascript'}));
+  }
+
+  async function ensureFFmpeg(){
+    if(ffmpegInstance) return ffmpegInstance;
+    exportProgressText.textContent = 'Chargement du moteur audio (première fois seulement)…';
+    const { FFmpeg } = await import('https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.12.10/dist/esm/index.js');
+    const { toBlobURL, fetchFile } = await import('https://cdn.jsdelivr.net/npm/@ffmpeg/util@0.12.1/dist/esm/index.js');
+    fetchFileFn = fetchFile;
+    const instance = new FFmpeg();
+    instance.on('progress', ({ progress })=>{
+      const pct = Math.min(100, Math.max(0, Math.round((progress||0)*100)));
+      exportProgressFill.style.width = pct + '%';
+      exportProgressText.textContent = `Export en cours… ${pct}%`;
+    });
+    const baseURL = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.6/dist/esm';
+    const ffmpegBaseURL = 'https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.12.10/dist/esm';
+    const loadPromise = instance.load({
+      coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
+      wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm'),
+      classWorkerURL: await toPatchedWorkerBlobURL(`${ffmpegBaseURL}/worker.js`, ffmpegBaseURL),
+    });
+    const timeoutPromise = new Promise((_, reject)=>{
+      setTimeout(()=> reject(new Error("Le moteur audio n'a pas répondu à temps (30s) — réessaie, ou vérifie ta connexion.")), 30000);
+    });
+    await Promise.race([loadPromise, timeoutPromise]);
+    ffmpegInstance = instance;
+    return ffmpegInstance;
+  }
+
+  exportBtn.addEventListener('click', async ()=>{
+    const clips = window.__geekoAudioClips || [];
+    if(clips.length === 0) return;
+
+    exportBtn.disabled = true;
+    exportProgressWrap.style.display = 'block';
+    exportProgressFill.style.width = '0%';
+    exportDownloadLink.style.display = 'none';
+
+    try{
+      const ff = await ensureFFmpeg();
+
+      exportProgressText.textContent = 'Préparation des clips…';
+      const listLines = [];
+      for(let i=0; i<clips.length; i++){
+        const clip = clips[i];
+        const inName = `in${i}${extFromType(clip.file.type)}`;
+        await ff.writeFile(inName, await fetchFileFn(clip.file));
+        const outName = `seg${i}.mp3`;
+        const dur = Math.max(0.1, clip.trimEnd - clip.trimStart);
+        const speed = clip.speed || 1;
+        await ff.exec(['-i', inName, '-ss', String(clip.trimStart), '-t', String(dur),
+          '-filter:a', `volume=${clip.volume},atempo=${speed}`, '-c:a', 'libmp3lame', '-q:a', '2', outName]);
+        listLines.push(`file '${outName}'`);
+      }
+      await ff.writeFile('list.txt', new TextEncoder().encode(listLines.join('\n')));
+
+      exportProgressText.textContent = 'Assemblage…';
+      await ff.exec(['-f','concat','-safe','0','-i','list.txt','-c','copy','out.mp3']);
+
+      exportProgressText.textContent = 'Finalisation…';
+      const data = await ff.readFile('out.mp3');
+      const blob = new Blob([data.buffer], { type: 'audio/mpeg' });
+      if(!blob || blob.size < 200){
+        exportProgressText.textContent = "Le fichier généré semble vide ou corrompu — réessaie.";
+      } else {
+        const url = URL.createObjectURL(blob);
+        exportDownloadLink.href = url;
+        exportDownloadLink.style.display = 'block';
+        exportProgressFill.style.width = '100%';
+        exportProgressText.textContent = `Terminé — ${(blob.size/1024/1024).toFixed(1)} Mo`;
+      }
+    }catch(err){
+      console.error('export error', err);
+      const detail = (err && err.message) ? err.message : String(err);
+      exportProgressText.textContent = `Erreur pendant l'export : ${detail} — réessaie, ou dis-le moi si ça se reproduit.`;
+    }
+    exportBtn.disabled = false;
+  });
+</script>
+</body>
+</html>
