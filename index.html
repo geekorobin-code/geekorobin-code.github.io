@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>GeekoRobin — Outils créatifs gratuits, tout dans le navigateur</title>
+<meta name="description" content="GeekoGifio, GeekoMontage et plus — des outils créatifs gratuits qui tournent entièrement dans ton navigateur, rien n'est envoyé sur un serveur.">
+<meta name="theme-color" content="#5B5FA8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F4F4F7; --bg2:#EFEFF3; --panel:#FFFFFF; --panel-alt:#F6F6F9; --border:#E1E1E7;
+    --text:#20232E; --muted:#6B7086;
+    --pink:#5B5FA8; --pink-deep:#464A8C; --mint:#3D8F82; --mint-deep:#2E6E64;
+    --peach:#B4813C; --lav:#7D89B0; --lav-deep:#4A5578; --sky:#8CA0B3; --danger:#B3453D;
+    --m3-shape-xs:4px; --m3-shape-sm:8px; --m3-shape-md:12px; --m3-shape-lg:16px;
+    --m3-shape-xl:28px; --m3-shape-full:999px;
+    --m3-elev-1:0 1px 2px rgba(20,20,30,0.10), 0 1px 3px 1px rgba(20,20,30,0.08);
+    --m3-elev-2:0 1px 2px rgba(20,20,30,0.12), 0 2px 6px 2px rgba(20,20,30,0.09);
+    --m3-elev-3:0 1px 3px rgba(20,20,30,0.14), 0 4px 8px 3px rgba(20,20,30,0.10);
+    --m3-elev-4:0 2px 3px rgba(20,20,30,0.16), 0 6px 10px 4px rgba(20,20,30,0.11);
+  }
+  html[data-theme="dark"]{
+    --bg:#16171D; --bg2:#1C1E26; --panel:#22242E; --panel-alt:#2A2D38; --border:#3A3D4A;
+    --text:#E8E9EE; --muted:#9297A8;
+    --pink:#8B8FD9; --pink-deep:#A5A9E8; --mint:#5FBBA8; --mint-deep:#7DD4C0;
+    --peach:#D4A05C; --lav:#9AA5CC; --lav-deep:#B8C0E0; --sky:#A8BAC9; --danger:#E07268;
+    --m3-elev-1:0 1px 2px rgba(0,0,0,0.35), 0 1px 3px 1px rgba(0,0,0,0.28);
+    --m3-elev-2:0 1px 2px rgba(0,0,0,0.38), 0 2px 6px 2px rgba(0,0,0,0.30);
+    --m3-elev-3:0 1px 3px rgba(0,0,0,0.42), 0 4px 8px 3px rgba(0,0,0,0.32);
+    --m3-elev-4:0 2px 3px rgba(0,0,0,0.46), 0 6px 10px 4px rgba(0,0,0,0.34);
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg); color:var(--text); font-family:'Roboto',system-ui,sans-serif;
+    min-height:100vh; min-height:100dvh;
+    padding:22px; padding-top:calc(22px + env(safe-area-inset-top));
+    padding-bottom:calc(22px + env(safe-area-inset-bottom));
+    transition:background-color .2s ease, color .2s ease;
+  }
+  header.topbar{display:flex; align-items:center; justify-content:space-between; max-width:960px; margin:0 auto 8px; padding:10px 4px;}
+  .brand{font-weight:800; font-size:22px; display:flex; align-items:center; gap:10px;}
+  .brand .dot{width:14px; height:14px; border-radius:50%; background:linear-gradient(135deg,var(--pink),var(--lav)); box-shadow:0 0 0 4px var(--panel);}
+  .brand .accent{background:linear-gradient(135deg,var(--pink-deep),var(--lav-deep)); -webkit-background-clip:text; background-clip:text; color:transparent;}
+  button.ghost{
+    font-family:'Roboto',sans-serif; font-size:14px; padding:9px 12px; border-radius:var(--m3-shape-full);
+    background:var(--panel-alt); border:2px solid var(--border); color:var(--text); cursor:pointer;
+  }
+  main{max-width:960px; margin:0 auto;}
+  .hero{text-align:center; padding:48px 16px 32px;}
+  .hero h1{font-size:32px; margin:0 0 10px; font-weight:800;}
+  .hero p{color:var(--muted); font-size:15px; max-width:520px; margin:0 auto; line-height:1.5;}
+  .grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:20px; margin-top:32px;}
+  .card{
+    background:var(--panel); border-radius:var(--m3-shape-xl); padding:28px 24px;
+    box-shadow:var(--m3-elev-2); text-decoration:none; color:var(--text);
+    display:flex; flex-direction:column; gap:10px; transition:transform .15s, box-shadow .15s;
+  }
+  .card:not(.soon):hover{transform:translateY(-3px); box-shadow:var(--m3-elev-4);}
+  .card .icon{font-size:34px;}
+  .card h2{margin:0; font-size:19px; font-weight:800;}
+  .card p{margin:0; color:var(--muted); font-size:13.5px; line-height:1.5; flex:1;}
+  .card .cta{font-size:12.5px; font-weight:800; color:var(--pink-deep);}
+  .card.soon{opacity:0.6; cursor:default;}
+  .card.soon .cta{color:var(--muted);}
+  footer{text-align:center; margin-top:48px; color:var(--muted); font-size:11.5px; font-weight:600;}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand"><span class="dot"></span>Geeko<span class="accent">Robin</span></div>
+  <button class="ghost" id="themeToggle" title="Thème clair / sombre">🌙</button>
+</header>
+
+<main>
+  <div class="hero">
+    <h1>Des outils créatifs simples, gratuits, sans compte</h1>
+    <p>Tout tourne directement dans ton navigateur — rien n'est envoyé sur un serveur, jamais.</p>
+  </div>
+
+  <div class="grid">
+    <a class="card" href="./gifio/">
+      <span class="icon">🎞️</span>
+      <h2>GeekoGifio</h2>
+      <p>Monte plusieurs GIF ensemble, découpe, ajuste la vitesse et exporte pour ton écran LED pixel.</p>
+      <span class="cta">Ouvrir →</span>
+    </a>
+    <a class="card" href="./montage/">
+      <span class="icon">🎬</span>
+      <h2>GeekoMontage</h2>
+      <p>Un éditeur vidéo simple : assemble tes clips, coupe où tu veux, ajoute de la musique.</p>
+      <span class="cta">Ouvrir →</span>
+    </a>
+    <a class="card" href="./audio/">
+      <span class="icon">🎵</span>
+      <h2>GeekoAudio</h2>
+      <p>Coupe, assemble et règle le volume de tes fichiers audio, simplement.</p>
+      <span class="cta">Ouvrir →</span>
+    </a>
+  </div>
+</main>
+
+<footer>Une idée d'outil ? Écris à geekorobin@gmail.com</footer>
+
+<script>
+(function(){
+  "use strict";
+  const themeToggle = document.getElementById('themeToggle');
+  function applyTheme(t){
+    document.documentElement.setAttribute('data-theme', t);
+    themeToggle.textContent = t === 'dark' ? '☀️' : '🌙';
+    try{ localStorage.setItem('geekorobin_theme', t); }catch(e){}
+  }
+  themeToggle.addEventListener('click', ()=>{
+    const cur = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+    applyTheme(cur === 'dark' ? 'light' : 'dark');
+  });
+  (function initTheme(){
+    let saved = null;
+    try{ saved = localStorage.getItem('geekorobin_theme'); }catch(e){}
+    if(saved !== 'light' && saved !== 'dark'){
+      saved = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+    }
+    applyTheme(saved);
+  })();
+})();
+</script>
+</body>
+</html>
