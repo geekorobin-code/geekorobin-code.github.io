@@ -1535,6 +1535,26 @@
     </div>
 
     <div class="field">
+      <label title="Un GIF plus léger prend moins de place mais peut avoir des dégradés de couleur un peu moins fins">Poids du fichier</label>
+      <select id="qualityPreset">
+        <option value="1">Meilleure qualité (fichier plus lourd)</option>
+        <option value="8" selected>Équilibré</option>
+        <option value="15">Fichier plus léger</option>
+        <option value="25">Très léger</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label title="Retire une partie des images pour réduire le poids du fichier — la vitesse d'affichage reste la même, juste moins fluide">Nombre d'images</label>
+      <select id="frameSkip">
+        <option value="1" selected>Toutes les images</option>
+        <option value="2">1 image sur 2 (moitié moins lourd)</option>
+        <option value="3">1 image sur 3</option>
+        <option value="4">1 image sur 4 (bien plus léger)</option>
+      </select>
+    </div>
+
+    <div class="field">
       <label data-i18n="cropMode">Cadrage de chaque image</label>
       <div class="segmented">
         <button type="button" class="active" data-fit="cover" data-i18n="fitCover">Remplir (crop)</button>
@@ -1698,9 +1718,13 @@
   const customH = document.getElementById('customH');
   const bgColorField = document.getElementById('bgColorField');
   const bgColorInput = document.getElementById('bgColor');
+  const qualityPreset = document.getElementById('qualityPreset');
+  const frameSkipSelect = document.getElementById('frameSkip');
 
   let fitMode = 'cover';
   let outW = 32, outH = 32;
+  let gifQuality = 8;
+  let frameSkipN = 1;
 
   // ---------- Output size handling ----------
   function currentSize(){
@@ -1753,7 +1777,9 @@
         customW: customW.value,
         customH: customH.value,
         fitMode,
-        bgColor: bgColorInput.value
+        bgColor: bgColorInput.value,
+        gifQuality,
+        frameSkipN
       }));
     }catch(err){}
   }
@@ -1768,6 +1794,14 @@
     if(saved.customW) customW.value = saved.customW;
     if(saved.customH) customH.value = saved.customH;
     if(saved.bgColor) bgColorInput.value = saved.bgColor;
+    if(saved.gifQuality){
+      gifQuality = saved.gifQuality;
+      qualityPreset.value = String(gifQuality);
+    }
+    if(saved.frameSkipN){
+      frameSkipN = saved.frameSkipN;
+      frameSkipSelect.value = String(frameSkipN);
+    }
     if(saved.fitMode){
       fitMode = saved.fitMode;
       document.querySelectorAll('.segmented button').forEach(b=>{
@@ -1778,6 +1812,14 @@
     applySize();
   }
   loadPrefs();
+  qualityPreset.addEventListener('change', ()=>{
+    gifQuality = parseInt(qualityPreset.value, 10) || 8;
+    savePrefs();
+  });
+  frameSkipSelect.addEventListener('change', ()=>{
+    frameSkipN = parseInt(frameSkipSelect.value, 10) || 1;
+    savePrefs();
+  });
 
   // ---------- File handling ----------
   // Two separate inputs so the phone's native picker can actually filter:
@@ -3130,7 +3172,7 @@
   // directly, separately from the main multi-clip "Générer" export.
   async function encodeFramesToGif(frames, w, h){
     const workerScript = await ensureWorker();
-    const gif = new GIF({ workers: 2, quality: 8, width: w, height: h, workerScript });
+    const gif = new GIF({ workers: 2, quality: gifQuality, width: w, height: h, workerScript });
     const tmpCanvas = document.createElement('canvas');
     tmpCanvas.width = w; tmpCanvas.height = h;
     const tmpCtx = tmpCanvas.getContext('2d');
@@ -3275,7 +3317,8 @@
     function estimateFrameCount(clip){
       const isAnimated = !!(clip.frames && clip.frames.length);
       const fps = clip.duration > 10 ? 6 : 12; // matches the adaptive fps used below
-      return Math.max(1, Math.round(clip.duration * (isAnimated ? fps : 2)));
+      const raw = Math.max(1, Math.round(clip.duration * (isAnimated ? fps : 2)));
+      return Math.max(1, Math.ceil(raw / frameSkipN));
     }
     const estimatedTotal = clips.reduce((s,c)=> s + estimateFrameCount(c), 0);
     if(estimatedTotal > MAX_SAFE_TOTAL_FRAMES){
@@ -3298,7 +3341,7 @@
       const workerScript = await ensureWorker();
       const gif = new GIF({
         workers: 2,
-        quality: 8,
+        quality: gifQuality,
         width: outW,
         height: outH,
         workerScript
@@ -3321,9 +3364,10 @@
         const delayMs = Math.max(20, Math.round((clip.duration * 1000) / frameCount / speed));
 
         for(let f=0; f<frameCount; f++){
+          if(f % frameSkipN !== 0) continue; // skipped — fewer distinct images, smaller file
           const src = isAnimated ? frameAtTime(clip, (f/frameCount) * clip.duration * 1000 * speed) : clip.imgEl;
           drawFitted(cctx, src, outW, outH, fitMode, bgColorInput.value, clip.crop);
-          gif.addFrame(captureCanvas, {copy:true, delay: delayMs}); // pass the canvas ELEMENT, not its 2D context
+          gif.addFrame(captureCanvas, {copy:true, delay: delayMs * frameSkipN}); // pass the canvas ELEMENT, not its 2D context
         }
         await sleep(0); // yield so the progress bar/UI stays responsive
         progressFill.style.width = (((i+1)/clips.length) * 50) + '%';
