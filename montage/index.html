@@ -235,6 +235,23 @@
     color:var(--muted); font-size:11.5px; font-weight:600;
   }
   .audio-film-bar{height:40px;}
+  .overlay-film-bar{
+    height:34px; display:block; /* not flex — blocks are positioned absolutely by time */
+  }
+  .overlay-film-bar:empty::after{content:'Aucune incrustation pour l\'instant';}
+  .ov-block{
+    position:absolute; top:2px; bottom:2px; border-radius:8px;
+    background:var(--lav-deep); border:2px solid transparent;
+    display:flex; align-items:center; padding:0 8px; overflow:hidden;
+    cursor:grab; white-space:nowrap;
+  }
+  .ov-block.selected{border-color:#fff; box-shadow:0 0 0 2px var(--pink-deep);}
+  .ov-block-label{color:#fff; font-size:11px; font-weight:700; overflow:hidden; text-overflow:ellipsis;}
+  .ov-block .trim-handle{
+    position:absolute; top:0; bottom:0; width:8px; cursor:ew-resize;
+  }
+  .ov-block .trim-left{left:0;}
+  .ov-block .trim-right{right:0;}
   .film-seg{
     flex:0 0 auto; height:100%; min-width:6px; position:relative;
     background-size:cover; background-position:center; background-color:#111;
@@ -530,11 +547,16 @@
         <div class="overlay-panel" id="overlayPanel">
           <div class="overlay-panel-header">
             <strong>Incrustations</strong>
-            <span class="tip">Image ou texte affiché par-dessus la vidéo, à un moment précis</span>
+            <span class="tip">Image ou texte affiché par-dessus la vidéo, à un moment précis — glisse un bloc pour le déplacer dans le temps, tire ses bords pour ajuster sa durée</span>
             <div class="spacer"></div>
             <button class="ghost" id="addImageOverlayBtn">🖼️ + Image</button>
             <button class="ghost" id="addTextOverlayBtn">🔤 + Texte</button>
             <input type="file" id="overlayImageInput" accept="image/*" style="display:none;">
+          </div>
+          <div class="film-bar-wrap" id="overlayFilmBarWrap">
+            <div class="film-bar overlay-film-bar" id="overlayFilmBar">
+              <div class="film-playhead" id="overlayFilmPlayhead"></div>
+            </div>
           </div>
           <div id="overlayList"></div>
         </div>
@@ -983,6 +1005,125 @@
   const addImageOverlayBtn = document.getElementById('addImageOverlayBtn');
   const addTextOverlayBtn = document.getElementById('addTextOverlayBtn');
   const overlayImageInput = document.getElementById('overlayImageInput');
+  const overlayFilmBar = document.getElementById('overlayFilmBar');
+  const overlayFilmBarWrap = document.getElementById('overlayFilmBarWrap');
+  const overlayFilmPlayhead = document.getElementById('overlayFilmPlayhead');
+
+  // A real timeline row for overlays — separate from the video/audio bars,
+  // using the same time scale so it lines up with them. Dragging a block
+  // moves it in time; dragging its edges changes its duration. This is
+  // purely about WHEN it shows — position/size on screen is still set by
+  // dragging the overlay directly on the preview.
+  function renderOverlayFilmBar(){
+    const pxPerSecond = currentPxPerSecond();
+    const barWidthPx = sharedTotalDuration() * pxPerSecond;
+    overlayFilmBar.style.width = barWidthPx + 'px';
+    const existingIds = new Set(overlays.map(o=>o.id));
+    [...overlayFilmBar.querySelectorAll('.ov-block')].forEach(b=>{
+      if(!existingIds.has(b.dataset.id)) b.remove();
+    });
+    overlays.forEach(ov=>{
+      let block = overlayFilmBar.querySelector(`.ov-block[data-id="${ov.id}"]`);
+      if(!block){
+        block = document.createElement('div');
+        block.className = 'ov-block';
+        block.dataset.id = ov.id;
+        block.innerHTML = `<span class="ov-block-label"></span><div class="trim-handle trim-left"></div><div class="trim-handle trim-right"></div>`;
+        overlayFilmBar.insertBefore(block, overlayFilmPlayhead);
+        wireOverlayBlockDrag(block, ov);
+      }
+      block.classList.toggle('selected', ov.id === selectedOverlayId);
+      block.style.left = (ov.startTime * pxPerSecond) + 'px';
+      block.style.width = Math.max(24, ov.duration * pxPerSecond) + 'px';
+      const label = ov.type === 'text' ? ('🔤 ' + (ov.text||'').slice(0,24)) : '🖼️ Image';
+      block.querySelector('.ov-block-label').textContent = label;
+    });
+  }
+
+  function selectOverlay(id){
+    selectedOverlayId = id;
+    renderOverlayList();
+    renderOverlayElements(); // also refreshes the film bar
+  }
+
+  function wireOverlayBlockDrag(block, ov){
+    block.addEventListener('pointerdown', (e)=>{
+      if(e.target.classList.contains('trim-handle')) return;
+      e.stopPropagation();
+      selectOverlay(ov.id);
+      const pxPerSecond = currentPxPerSecond();
+      const startX = e.clientX;
+      const startTime0 = ov.startTime;
+      let moved = false;
+      function onMove(ev){
+        moved = true;
+        const dxSec = (ev.clientX - startX) / pxPerSecond;
+        ov.startTime = Math.max(0, startTime0 + dxSec);
+        block.style.left = (ov.startTime * pxPerSecond) + 'px';
+        updateOverlayVisibility(currentGlobalSecondsForOverlays());
+      }
+      function onUp(){
+        window.removeEventListener('pointermove', onMove);
+        window.removeEventListener('pointerup', onUp);
+        if(moved) renderOverlayList();
+      }
+      window.addEventListener('pointermove', onMove);
+      window.addEventListener('pointerup', onUp);
+    });
+
+    const leftHandle = block.querySelector('.trim-left');
+    const rightHandle = block.querySelector('.trim-right');
+    leftHandle.addEventListener('pointerdown', (e)=>{
+      e.stopPropagation(); e.preventDefault();
+      const pxPerSecond = currentPxPerSecond();
+      const startX = e.clientX;
+      const startTime0 = ov.startTime, startDur0 = ov.duration;
+      function onMove(ev){
+        const dxSec = (ev.clientX-startX)/pxPerSecond;
+        const newStart = Math.max(0, Math.min(startTime0+startDur0-0.2, startTime0+dxSec));
+        ov.duration = startDur0 - (newStart - startTime0);
+        ov.startTime = newStart;
+        renderOverlayFilmBar();
+        updateOverlayVisibility(currentGlobalSecondsForOverlays());
+      }
+      function onUp(){
+        window.removeEventListener('pointermove', onMove);
+        window.removeEventListener('pointerup', onUp);
+        renderOverlayList();
+      }
+      window.addEventListener('pointermove', onMove);
+      window.addEventListener('pointerup', onUp);
+    });
+    rightHandle.addEventListener('pointerdown', (e)=>{
+      e.stopPropagation(); e.preventDefault();
+      const pxPerSecond = currentPxPerSecond();
+      const startX = e.clientX;
+      const startDur0 = ov.duration;
+      function onMove(ev){
+        const dxSec = (ev.clientX-startX)/pxPerSecond;
+        ov.duration = Math.max(0.2, startDur0 + dxSec);
+        renderOverlayFilmBar();
+        updateOverlayVisibility(currentGlobalSecondsForOverlays());
+      }
+      function onUp(){
+        window.removeEventListener('pointermove', onMove);
+        window.removeEventListener('pointerup', onUp);
+        renderOverlayList();
+      }
+      window.addEventListener('pointermove', onMove);
+      window.addEventListener('pointerup', onUp);
+    });
+  }
+
+  // Clicking empty space on the bar seeks, same as the video/audio bars.
+  overlayFilmBar.addEventListener('pointerdown', (e)=>{
+    if(e.target !== overlayFilmBar) return; // a block or handle handled its own click
+    const rect = overlayFilmBar.getBoundingClientRect();
+    seekToGlobal(((e.clientX-rect.left)/rect.width) * sharedTotalDuration());
+  });
+  overlayFilmBarWrap.addEventListener('scroll', ()=>{
+    mirrorScroll(overlayFilmBarWrap, [timeRulerWrap, videoFilmBar.parentElement, audioFilmBar.parentElement]);
+  });
 
   function addImageOverlayFromFile(file){
     if(!file || !file.type.startsWith('image/')) return;
@@ -1074,6 +1215,7 @@
       }
     });
     updateOverlayVisibility(currentGlobalSecondsForOverlays());
+    renderOverlayFilmBar();
   }
 
   function hexToRgba(hex, alpha){
@@ -1391,13 +1533,22 @@
       const clip = videoClips[activeVideoIdx];
       if(!clip) return;
       const vidRect = activePreviewEl().getBoundingClientRect();
-      const centerX = vidRect.left + vidRect.width/2;
-      const centerY = vidRect.top + vidRect.height/2;
-      const startDist = Math.max(1, Math.hypot(e.clientX-centerX, e.clientY-centerY));
       const startScale = clip.cropScale || 1;
+      const startX = e.clientX, startY = e.clientY;
+      const corner = handle.dataset.corner; // 'tl' | 'tr' | 'bl' | 'br'
+      const refSize = Math.max(50, Math.min(vidRect.width, vidRect.height) / 2);
       function onMove(ev){
-        const dist = Math.hypot(ev.clientX-centerX, ev.clientY-centerY);
-        const newScale = Math.max(1, Math.min(4, startScale * (dist/startDist)));
+        const dx = ev.clientX - startX, dy = ev.clientY - startY;
+        // Project the drag onto "away from center" for whichever corner
+        // this is — a simple, predictable delta (not a ratio of distances,
+        // which fed back on itself and made the corner run away from the
+        // cursor instead of following it).
+        let delta;
+        if(corner === 'br') delta = (dx + dy) / 2;
+        else if(corner === 'tl') delta = (-dx - dy) / 2;
+        else if(corner === 'tr') delta = (dx - dy) / 2;
+        else delta = (-dx + dy) / 2; // bl
+        const newScale = Math.max(1, Math.min(4, startScale + delta / refSize));
         clip.cropScale = newScale;
         applyCropToPreview(clip);
         positionCropHandles();
@@ -1807,10 +1958,10 @@
     syncingScroll = false;
   }
   videoFilmBar.parentElement.addEventListener('scroll', ()=>{
-    mirrorScroll(videoFilmBar.parentElement, [timeRulerWrap, audioFilmBar.parentElement]);
+    mirrorScroll(videoFilmBar.parentElement, [timeRulerWrap, audioFilmBar.parentElement, overlayFilmBarWrap]);
   });
   audioFilmBar.parentElement.addEventListener('scroll', ()=>{
-    mirrorScroll(audioFilmBar.parentElement, [timeRulerWrap, videoFilmBar.parentElement]);
+    mirrorScroll(audioFilmBar.parentElement, [timeRulerWrap, videoFilmBar.parentElement, overlayFilmBarWrap]);
   });
 
   function updatePreviewAvailability(){
