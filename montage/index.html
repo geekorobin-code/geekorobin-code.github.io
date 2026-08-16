@@ -1882,6 +1882,14 @@
     seg.addEventListener('click', (e)=>{
       if(e.target.closest('.seg-mute-btn') || e.target.closest('.trim-handle')) return;
       if(seekFn) seekFn(e);
+      // Selecting a main clip here should hand Delete back to it — without
+      // this, a previously-selected overlay would keep "stealing" Delete
+      // even after clicking away to work on the video/audio track instead.
+      if(selectedOverlayId){
+        selectedOverlayId = null;
+        renderOverlayList();
+        renderOverlayElements();
+      }
       // A draggable element can end up holding keyboard focus after being
       // clicked in some browsers — clearing it makes sure Delete/Backspace
       // always reaches the page-level handler instead of possibly being
@@ -2673,9 +2681,16 @@
     const tag = (e.target.tagName || '').toLowerCase();
     const isEditable = tag === 'input' || tag === 'textarea' || tag === 'select' || e.target.isContentEditable;
     if(isEditable) return;
+    e.preventDefault();
+    // An overlay selected on the preview or in its list takes priority —
+    // otherwise Delete always fell through to the main video/audio clip,
+    // even while clearly working with a picture or text overlay instead.
+    if(selectedOverlayId){
+      removeOverlay(selectedOverlayId);
+      return;
+    }
     const { clip } = activeClipAndIndex();
     if(!clip) return;
-    e.preventDefault();
     removeClip(clip.id, activeTrackKind);
   }
   window.addEventListener('keydown', handleDeleteKey);
