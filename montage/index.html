@@ -324,6 +324,7 @@
     font-size:12px; padding:6px 10px;
   }
   .clip-toolbar .icon-btn.danger:hover{background:var(--danger); color:#fff; border-color:transparent;}
+  .clip-toolbar .icon-btn.active{background:var(--pink-deep); color:#fff; border-color:transparent;}
 
   /* ---- Tracks ---- */
   .track-section{margin-top:18px;}
@@ -493,15 +494,16 @@
         <div class="clip-toolbar" id="clipToolbar" style="display:none;">
           <span id="clipToolbarIcon" style="font-size:15px;">🎬</span>
           <label>Vol.</label>
-          <select id="selVol">
-            <option value="0">0%</option><option value="0.25">25%</option><option value="0.5">50%</option>
-            <option value="0.75">75%</option><option value="1">100%</option><option value="1.5">150%</option><option value="2">200%</option>
-          </select>
+          <input type="range" id="selVol" min="0" max="2" step="0.01" value="1" style="width:110px;">
+          <span id="selVolLabel" style="font-size:12px; font-weight:700; color:var(--muted); min-width:34px; text-align:right;">100%</span>
           <label id="speedLabel">Vit.</label>
           <select id="selSpeed">
             <option value="0.5">0.5×</option><option value="0.75">0.75×</option><option value="1">1×</option>
             <option value="1.25">1.25×</option><option value="1.5">1.5×</option><option value="2">2×</option>
           </select>
+          <button class="ghost icon-btn" id="flipHBtn" title="Inverser horizontalement">⇋</button>
+          <button class="ghost icon-btn" id="flipVBtn" title="Inverser verticalement">⇅</button>
+          <button class="ghost icon-btn" id="rotateBtn" title="Faire pivoter de 90°">↻</button>
           <div class="spacer"></div>
           <button class="ghost icon-btn" id="moveLeftBtn" title="Déplacer avant">◀</button>
           <button class="ghost icon-btn" id="moveRightBtn" title="Déplacer après">▶</button>
@@ -1478,7 +1480,7 @@
     if(previewVideo.src !== clip.url) previewVideo.src = clip.url;
     previewVideo.currentTime = clip.trimStart;
     previewVideo.playbackRate = clip.speed || 1;
-    previewVideo.volume = clip.volume;
+    previewVideo.volume = Math.min(1, Math.max(0, clip.volume));
     previewVideo.muted = !!clip.muted;
     applyCropToPreview(clip);
     positionCropHandles();
@@ -1492,7 +1494,7 @@
     activeAudioIdx = idx;
     if(previewAudio.src !== clip.url) previewAudio.src = clip.url;
     previewAudio.currentTime = clip.trimStart;
-    previewAudio.volume = clip.volume;
+    previewAudio.volume = Math.min(1, Math.max(0, clip.volume));
     if(paused) previewAudio.pause();
     updateAudioActiveHighlight();
     updateClipToolbar();
@@ -1514,7 +1516,7 @@
     if(previewVideo.src !== clip.url) previewVideo.src = clip.url;
     previewVideo.currentTime = clip.trimStart + Math.max(0, local) * (clip.speed||1);
     previewVideo.playbackRate = clip.speed || 1;
-    previewVideo.volume = clip.volume;
+    previewVideo.volume = Math.min(1, Math.max(0, clip.volume));
     previewVideo.muted = !!clip.muted;
     applyCropToPreview(clip);
     positionCropHandles();
@@ -1540,7 +1542,7 @@
     activeAudioIdx = idx;
     if(previewAudio.src !== clip.url) previewAudio.src = clip.url;
     previewAudio.currentTime = clip.trimStart + Math.max(0, local);
-    previewAudio.volume = clip.volume;
+    previewAudio.volume = Math.min(1, Math.max(0, clip.volume));
     updateAudioSeekUI(sec);
     updateAudioActiveHighlight();
     updateClipToolbar();
@@ -1680,7 +1682,7 @@
           && (next.speed||1) === (clip.speed||1);
         if(seamless){
           activeVideoIdx += 1;
-          previewVideo.volume = next.volume;
+          previewVideo.volume = Math.min(1, Math.max(0, next.volume));
           previewVideo.muted = !!next.muted;
           applyCropToPreview(next);
           positionCropHandles();
@@ -1810,11 +1812,15 @@
   const clipToolbar = document.getElementById('clipToolbar');
   const clipToolbarIcon = document.getElementById('clipToolbarIcon');
   const selVol = document.getElementById('selVol');
+  const selVolLabel = document.getElementById('selVolLabel');
   const speedLabel = document.getElementById('speedLabel');
   const selSpeed = document.getElementById('selSpeed');
   const moveLeftBtn = document.getElementById('moveLeftBtn');
   const moveRightBtn = document.getElementById('moveRightBtn');
   const selDeleteBtn = document.getElementById('selDeleteBtn');
+  const flipHBtn = document.getElementById('flipHBtn');
+  const flipVBtn = document.getElementById('flipVBtn');
+  const rotateBtn = document.getElementById('rotateBtn');
 
   function activeClipAndIndex(){
     if(activeTrackKind === 'audio') return { clip: audioClips[activeAudioIdx], idx: activeAudioIdx, arr: audioClips };
@@ -1829,21 +1835,58 @@
     clipToolbar.style.display = 'flex';
     clipToolbarIcon.textContent = activeTrackKind === 'audio' ? '🎵' : '🎬';
     selVol.value = String(clip.volume);
+    selVolLabel.textContent = Math.round(clip.volume * 100) + '%';
     const isVideo = activeTrackKind === 'video';
     speedLabel.style.display = isVideo ? '' : 'none';
     selSpeed.style.display = isVideo ? '' : 'none';
-    if(isVideo) selSpeed.value = String(clip.speed);
+    flipHBtn.style.display = isVideo ? '' : 'none';
+    flipVBtn.style.display = isVideo ? '' : 'none';
+    rotateBtn.style.display = isVideo ? '' : 'none';
+    if(isVideo){
+      selSpeed.value = String(clip.speed);
+      flipHBtn.classList.toggle('active', !!clip.flipH);
+      flipVBtn.classList.toggle('active', !!clip.flipV);
+    }
     moveLeftBtn.disabled = idx === 0;
     moveRightBtn.disabled = idx === arr.length - 1;
     updateUnifiedTime();
   }
 
-  selVol.addEventListener('change', ()=>{
+  flipHBtn.addEventListener('click', ()=>{
+    if(activeTrackKind !== 'video') return;
+    const clip = videoClips[activeVideoIdx];
+    if(!clip) return;
+    clip.flipH = !clip.flipH;
+    applyCropToPreview(clip);
+    positionCropHandles();
+    updateClipToolbar();
+  });
+  flipVBtn.addEventListener('click', ()=>{
+    if(activeTrackKind !== 'video') return;
+    const clip = videoClips[activeVideoIdx];
+    if(!clip) return;
+    clip.flipV = !clip.flipV;
+    applyCropToPreview(clip);
+    positionCropHandles();
+    updateClipToolbar();
+  });
+  rotateBtn.addEventListener('click', ()=>{
+    if(activeTrackKind !== 'video') return;
+    const clip = videoClips[activeVideoIdx];
+    if(!clip) return;
+    clip.rotation = ((clip.rotation||0) + 90) % 360;
+    applyCropToPreview(clip);
+    positionCropHandles();
+  });
+
+  selVol.addEventListener('input', ()=>{
     const { clip } = activeClipAndIndex();
     if(!clip) return;
     clip.volume = parseFloat(selVol.value);
-    if(activeTrackKind === 'audio') previewAudio.volume = clip.volume;
-    else previewVideo.volume = clip.volume;
+    selVolLabel.textContent = Math.round(clip.volume * 100) + '%';
+    const domVol = Math.min(1, Math.max(0, clip.volume)); // <video>/<audio>.volume only accepts 0–1
+    if(activeTrackKind === 'audio') previewAudio.volume = domVol;
+    else previewVideo.volume = domVol;
     previewVideo.muted = !!clip.muted;
   });
   selSpeed.addEventListener('change', ()=>{
