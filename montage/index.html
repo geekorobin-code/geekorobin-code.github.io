@@ -236,14 +236,18 @@
   }
   .audio-film-bar{height:40px;}
   .overlay-film-bar{
-    height:34px; display:block; /* not flex — blocks are positioned absolutely by time */
+    height:44px; display:block; position:relative; /* not flex — blocks are positioned absolutely by time */
+    background:repeating-linear-gradient(135deg, var(--panel-alt), var(--panel-alt) 10px, var(--panel) 10px, var(--panel) 20px);
   }
-  .overlay-film-bar:empty::after{content:'Aucune incrustation pour l\'instant';}
+  .overlay-film-bar-empty-msg{
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    color:var(--muted); font-size:12px; font-weight:700; pointer-events:none;
+  }
   .ov-block{
-    position:absolute; top:2px; bottom:2px; border-radius:8px;
+    position:absolute; top:3px; bottom:3px; border-radius:8px;
     background:var(--lav-deep); border:2px solid transparent;
     display:flex; align-items:center; padding:0 8px; overflow:hidden;
-    cursor:grab; white-space:nowrap;
+    cursor:grab; white-space:nowrap; z-index:2;
   }
   .ov-block.selected{border-color:#fff; box-shadow:0 0 0 2px var(--pink-deep);}
   .ov-block-label{color:#fff; font-size:11px; font-weight:700; overflow:hidden; text-overflow:ellipsis;}
@@ -555,6 +559,7 @@
           </div>
           <div class="film-bar-wrap" id="overlayFilmBarWrap">
             <div class="film-bar overlay-film-bar" id="overlayFilmBar">
+              <div class="overlay-film-bar-empty-msg" id="overlayFilmBarEmptyMsg">Clique "+ Image" ou "+ Texte" ci-dessus pour ajouter une incrustation ici</div>
               <div class="film-playhead" id="overlayFilmPlayhead"></div>
             </div>
           </div>
@@ -1008,6 +1013,7 @@
   const overlayFilmBar = document.getElementById('overlayFilmBar');
   const overlayFilmBarWrap = document.getElementById('overlayFilmBarWrap');
   const overlayFilmPlayhead = document.getElementById('overlayFilmPlayhead');
+  const overlayFilmBarEmptyMsg = document.getElementById('overlayFilmBarEmptyMsg');
 
   // A real timeline row for overlays — separate from the video/audio bars,
   // using the same time scale so it lines up with them. Dragging a block
@@ -1018,6 +1024,7 @@
     const pxPerSecond = currentPxPerSecond();
     const barWidthPx = sharedTotalDuration() * pxPerSecond;
     overlayFilmBar.style.width = barWidthPx + 'px';
+    overlayFilmBarEmptyMsg.style.display = overlays.length ? 'none' : 'flex';
     const existingIds = new Set(overlays.map(o=>o.id));
     [...overlayFilmBar.querySelectorAll('.ov-block')].forEach(b=>{
       if(!existingIds.has(b.dataset.id)) b.remove();
@@ -2625,6 +2632,7 @@
 
   // ---------- Init ----------
   updatePreviewAvailability();
+  renderOverlayFilmBar();
 })();
 </script>
 
