@@ -572,6 +572,7 @@
           <button class="ghost icon-btn" id="playBtn" title="Lecture / Pause">▶</button>
           <button class="ghost icon-btn" id="fwd5Btn" title="Avancer de 5s">↻5</button>
           <button class="ghost" id="splitBtn" title="Coupe le clip actif en deux à la position actuelle">✂ Couper ici</button>
+          <button class="ghost icon-btn" id="undoBtn" title="Annuler la dernière suppression (Ctrl+Z)" disabled>↩</button>
           <span id="playheadTime">0.0s / 0.0s</span>
           <div class="spacer"></div>
           <button class="ghost icon-btn" id="zoomOutBtn" title="Zoom arrière">🔍−</button>
@@ -581,10 +582,8 @@
         <div class="clip-toolbar" id="clipToolbar" style="display:none;">
           <span id="clipToolbarIcon" style="font-size:15px;">🎬</span>
           <label>Vol.</label>
-          <select id="selVol">
-            <option value="0">0%</option><option value="0.25">25%</option><option value="0.5">50%</option>
-            <option value="0.75">75%</option><option value="1">100%</option><option value="1.5">150%</option><option value="2">200%</option>
-          </select>
+          <input type="range" id="selVol" min="0" max="2" step="0.01" value="1" style="width:90px;">
+          <span id="selVolLabel" style="font-size:11px; font-weight:800; color:var(--muted); min-width:34px;">100%</span>
           <label id="speedLabel">Vit.</label>
           <select id="selSpeed">
             <option value="0.5">0.5×</option><option value="0.75">0.75×</option><option value="1">1×</option>
@@ -668,6 +667,8 @@
   let overlays = []; // {id, type:'image'|'text', startTime, duration, x, y, w, h, ...type-specific}
   let overlayIdCounter = 0;
   let selectedOverlayId = null;
+  let undoStack = []; // { type:'removeClip', kind, index, clipData } | { type:'removeOverlay', index, overlay }
+  const MAX_UNDO = 20;
   const FONT_OPTIONS = [
     {label:'Arial',            family:'Arial, Helvetica, sans-serif'},
     {label:'Georgia',          family:'Georgia, serif'},
@@ -1169,12 +1170,65 @@
   });
 
   function removeOverlay(id){
+    const idx = overlays.findIndex(o=>o.id===id);
+    if(idx===-1) return;
+    pushUndo({ type:'removeOverlay', index: idx, overlay: overlays[idx] });
     overlays = overlays.filter(o=>o.id !== id);
     if(selectedOverlayId === id) selectedOverlayId = null;
     renderOverlayList();
     renderOverlayElements();
     updateExportState();
   }
+
+  function pushUndo(entry){
+    undoStack.push(entry);
+    if(undoStack.length > MAX_UNDO) undoStack.shift();
+    undoBtn.disabled = undoStack.length === 0;
+  }
+
+  function performUndo(){
+    const entry = undoStack.pop();
+    undoBtn.disabled = undoStack.length === 0;
+    if(!entry) return;
+
+    if(entry.type === 'removeClip'){
+      const { kind, index, clipData } = entry;
+      const arr = kind === 'video' ? videoClips : audioClips;
+      const freshUrl = URL.createObjectURL(clipData.file); // the old URL may have been revoked
+      let el;
+      if(clipData.kind === 'image'){
+        el = new Image();
+        el.src = freshUrl;
+        videoPool.appendChild(el);
+      } else {
+        el = document.createElement(kind === 'video' ? 'video' : 'audio');
+        if(kind === 'video'){ el.muted = true; el.playsInline = true; el.preload = 'metadata'; el.src = freshUrl; }
+        else { el.preload = 'none'; el.src = freshUrl; }
+        (kind === 'video' ? videoPool : audioPool).appendChild(el);
+      }
+      const restored = Object.assign({}, clipData, { el, url: freshUrl });
+      arr.splice(Math.min(index, arr.length), 0, restored);
+      renderTracks();
+      updateExportState();
+      updatePreviewAvailability();
+    } else if(entry.type === 'removeOverlay'){
+      overlays.splice(Math.min(entry.index, overlays.length), 0, entry.overlay);
+      renderOverlayList();
+      renderOverlayElements();
+      updateExportState();
+    }
+  }
+
+  const undoBtn = document.getElementById('undoBtn');
+  undoBtn.addEventListener('click', performUndo);
+  window.addEventListener('keydown', (e)=>{
+    if((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key.toLowerCase() === 'z'){
+      const tag = (e.target.tagName || '').toLowerCase();
+      if(tag === 'input' || tag === 'textarea' || tag === 'select' || e.target.isContentEditable) return;
+      e.preventDefault();
+      performUndo();
+    }
+  });
 
   // Cuts the subject out of an image overlay and makes the rest
   // transparent — runs entirely in the browser via a small AI model
@@ -1471,6 +1525,10 @@
     const idx = arr.findIndex(c=>c.id===id);
     if(idx===-1) return;
     const clip = arr[idx];
+    const clipData = Object.assign({}, clip);
+    delete clipData.el; // will be recreated fresh on undo — the URL below may get revoked
+    pushUndo({ type:'removeClip', kind, index: idx, clipData });
+
     clip.el.remove();
     const stillShared = [...videoClips, ...audioClips].some(c=>c.id!==id && c.url===clip.url);
     if(!stillShared) URL.revokeObjectURL(clip.url);
@@ -1697,7 +1755,12 @@
   let zoomOverride = null; // null = auto-fit both bars to the panel width
 
   function sharedTotalDuration(){
-    return Math.max(totalTimelineDuration, totalAudioDuration, 0.001);
+    // Anchored to the video timeline specifically — trimming the audio bar
+    // used to shrink/grow this shared scale, which visually resized the
+    // video bar even though its own length never changed. Falls back to
+    // the audio's own length only when there's no video at all yet.
+    if(totalTimelineDuration > 0.001) return totalTimelineDuration;
+    return Math.max(totalAudioDuration, 0.001);
   }
   function currentPxPerSecond(){
     const wrapWidth = (videoFilmBar.parentElement && videoFilmBar.parentElement.clientWidth) || 0;
@@ -1930,10 +1993,10 @@
   function renderFilmBars(){
     const pxPerSecond = currentPxPerSecond();
     const wrapWidth = (videoFilmBar.parentElement && videoFilmBar.parentElement.clientWidth) || 0;
-    const barWidthPx = sharedTotalDuration() * pxPerSecond; // no forced minimum — zooming out can shrink the bar below the panel width
+    const videoBarWidthPx = totalTimelineDuration * pxPerSecond; // no forced minimum — zooming out can shrink the bar below the panel width
 
     videoFilmBar.querySelectorAll('.film-seg').forEach(s=>s.remove());
-    videoFilmBar.style.width = barWidthPx + 'px';
+    videoFilmBar.style.width = videoBarWidthPx + 'px';
     videoClips.forEach((clip, idx)=>{
       const seg = document.createElement('div');
       seg.className = 'film-seg';
@@ -1983,8 +2046,8 @@
     });
 
     audioFilmBar.querySelectorAll('.film-seg').forEach(s=>s.remove());
-    audioFilmBar.style.width = barWidthPx + 'px';
     totalAudioDuration = audioClips.reduce((s,c)=>s+effectiveDuration(c),0);
+    audioFilmBar.style.width = (totalAudioDuration * pxPerSecond) + 'px';
     if(audioClips.length){
       audioFilmBarWrap.style.display = 'block';
       audioClips.forEach((clip, idx)=>{
@@ -2563,6 +2626,7 @@
   const clipToolbar = document.getElementById('clipToolbar');
   const clipToolbarIcon = document.getElementById('clipToolbarIcon');
   const selVol = document.getElementById('selVol');
+  const selVolLabel = document.getElementById('selVolLabel');
   const speedLabel = document.getElementById('speedLabel');
   const selSpeed = document.getElementById('selSpeed');
   const moveLeftBtn = document.getElementById('moveLeftBtn');
@@ -2585,7 +2649,11 @@
     const isVideo = activeTrackKind === 'video' && !isImage;
     selVol.style.display = isImage ? 'none' : '';
     selVol.previousElementSibling.style.display = isImage ? 'none' : ''; // the "Vol." label right before it
-    if(!isImage) selVol.value = String(clip.volume);
+    selVolLabel.style.display = isImage ? 'none' : '';
+    if(!isImage){
+      selVol.value = String(clip.volume);
+      selVolLabel.textContent = Math.round(clip.volume * 100) + '%';
+    }
     speedLabel.style.display = isVideo ? '' : 'none';
     selSpeed.style.display = isVideo ? '' : 'none';
     if(isVideo) selSpeed.value = String(clip.speed);
@@ -2639,10 +2707,11 @@
     updateExportState();
   });
 
-  selVol.addEventListener('change', ()=>{
+  selVol.addEventListener('input', ()=>{
     const { clip } = activeClipAndIndex();
     if(!clip) return;
     clip.volume = parseFloat(selVol.value);
+    selVolLabel.textContent = Math.round(clip.volume * 100) + '%';
     if(activeTrackKind === 'audio') previewAudio.volume = clip.volume;
     else previewVideo.volume = clip.volume;
     previewVideo.muted = !!clip.muted;
