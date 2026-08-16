@@ -324,7 +324,6 @@
     font-size:12px; padding:6px 10px;
   }
   .clip-toolbar .icon-btn.danger:hover{background:var(--danger); color:#fff; border-color:transparent;}
-  .clip-toolbar .icon-btn.active{background:var(--pink-deep); color:#fff; border-color:transparent;}
 
   /* ---- Tracks ---- */
   .track-section{margin-top:18px;}
@@ -440,7 +439,7 @@
     <aside class="media-library">
       <h3 class="lib-title">Mon média</h3>
       <button class="primary lib-import-btn" id="importBtn">+ Importer un média</button>
-      <input type="file" id="mediaFileInput" accept="video/*,audio/*" multiple style="display:none;">
+      <input type="file" id="mediaFileInput" accept="video/*,audio/*,image/*" multiple style="display:none;">
       <div class="media-grid" id="mediaGrid">
         <div class="lib-empty" id="libEmpty">Tes vidéos et audios importés apparaîtront ici</div>
       </div>
@@ -450,6 +449,7 @@
       <div class="preview-panel">
         <div class="preview-wrap">
           <video id="previewVideo" style="display:none;" playsinline muted></video>
+          <img id="previewImage" style="display:none; width:100%; height:100%; object-fit:contain; position:absolute; inset:0;" alt="">
           <div class="preview-empty" id="previewEmpty">Importe un média puis ajoute-le au montage pour voir l'aperçu ici</div>
           <div class="video-crop-handles" id="videoCropHandles" style="display:none;">
             <div class="crop-handle" data-corner="tl"></div>
@@ -494,16 +494,17 @@
         <div class="clip-toolbar" id="clipToolbar" style="display:none;">
           <span id="clipToolbarIcon" style="font-size:15px;">🎬</span>
           <label>Vol.</label>
-          <input type="range" id="selVol" min="0" max="2" step="0.01" value="1" style="width:110px;">
-          <span id="selVolLabel" style="font-size:12px; font-weight:700; color:var(--muted); min-width:34px; text-align:right;">100%</span>
+          <select id="selVol">
+            <option value="0">0%</option><option value="0.25">25%</option><option value="0.5">50%</option>
+            <option value="0.75">75%</option><option value="1">100%</option><option value="1.5">150%</option><option value="2">200%</option>
+          </select>
           <label id="speedLabel">Vit.</label>
           <select id="selSpeed">
             <option value="0.5">0.5×</option><option value="0.75">0.75×</option><option value="1">1×</option>
             <option value="1.25">1.25×</option><option value="1.5">1.5×</option><option value="2">2×</option>
           </select>
-          <button class="ghost icon-btn" id="flipHBtn" title="Inverser horizontalement">⇋</button>
-          <button class="ghost icon-btn" id="flipVBtn" title="Inverser verticalement">⇅</button>
-          <button class="ghost icon-btn" id="rotateBtn" title="Faire pivoter de 90°">↻</button>
+          <label id="imageDurLabel" style="display:none;">Durée</label>
+          <input type="number" id="imageDurInput" min="0.5" max="60" step="0.5" style="display:none; width:64px;">
           <div class="spacer"></div>
           <button class="ghost icon-btn" id="moveLeftBtn" title="Déplacer avant">◀</button>
           <button class="ghost icon-btn" id="moveRightBtn" title="Déplacer après">▶</button>
@@ -665,7 +666,7 @@
 
   function handleLibraryFiles(fileList){
     Array.from(fileList).forEach(file=>{
-      const kind = file.type.startsWith('video/') ? 'video' : file.type.startsWith('audio/') ? 'audio' : null;
+      const kind = file.type.startsWith('video/') ? 'video' : file.type.startsWith('audio/') ? 'audio' : file.type.startsWith('image/') ? 'image' : null;
       if(!kind) return;
       addToLibrary(file, kind);
     });
@@ -674,6 +675,22 @@
   function addToLibrary(file, kind){
     const id = 'lib' + (libIdCounter++);
     const url = URL.createObjectURL(file);
+    if(kind === 'image'){
+      const img = new Image();
+      const item = {
+        id, file, url, kind, name: file.name.replace(/\.[^.]+$/, ''),
+        duration: 0, thumbFrames: null, _waveform: null, el: img, naturalW: 0, naturalH: 0
+      };
+      mediaLibrary.push(item);
+      renderMediaLibrary();
+      img.onload = ()=>{
+        item.naturalW = img.naturalWidth;
+        item.naturalH = img.naturalHeight;
+        renderMediaLibrary();
+      };
+      img.src = url;
+      return;
+    }
     const el = document.createElement(kind === 'video' ? 'video' : 'audio');
     if(kind === 'video'){ el.muted = true; el.playsInline = true; }
     el.preload = 'metadata';
@@ -716,32 +733,45 @@
       // Only ever touch the inner content here — never remove/recreate the
       // card element itself, or an active drag on it gets cancelled the
       // moment a background thumbnail update fires for ANY library item.
-      const firstFrame = (item.kind === 'video' && item.thumbFrames && item.thumbFrames[0]) ? item.thumbFrames[0] : null;
+      const firstFrame = (item.kind === 'video' && item.thumbFrames && item.thumbFrames[0]) ? item.thumbFrames[0]
+        : (item.kind === 'image' ? item.url : null);
       const thumbStyle = firstFrame ? `background-image:url(${firstFrame})` : '';
       const thumbIcon = firstFrame ? '' : (item.kind === 'audio' ? '🎵' : '🎬');
+      const kindLabel = item.kind === 'video' ? 'Vidéo' : item.kind === 'image' ? 'Image' : 'Audio';
+      const durLabel = item.kind === 'image' ? '' : fmtTime(item.duration);
       card.innerHTML =
-        `<div class="thumb" style="${thumbStyle}">${thumbIcon}<span class="dur">${fmtTime(item.duration)}</span></div>` +
-        `<div class="meta"><div class="name">${escapeHtml(item.name)}</div><div class="kind">${item.kind==='video'?'Vidéo':'Audio'}</div></div>` +
+        `<div class="thumb" style="${thumbStyle}">${thumbIcon}<span class="dur">${durLabel}</span></div>` +
+        `<div class="meta"><div class="name">${escapeHtml(item.name)}</div><div class="kind">${kindLabel}</div></div>` +
         `<button class="add-btn" title="Ajouter au montage">+</button>`;
     });
   }
 
+  const DEFAULT_IMAGE_DURATION = 3;
   function addLibraryItemToTimeline(item, insertIndex){
     const id = 'c' + (clipIdCounter++);
-    const el = document.createElement(item.kind === 'video' ? 'video' : 'audio');
-    if(item.kind === 'video'){ el.muted = true; el.playsInline = true; el.preload = 'metadata'; el.src = item.url; }
-    else { el.preload = 'none'; }
-    (item.kind === 'video' ? videoPool : audioPool).appendChild(el);
+    let el;
+    if(item.kind === 'image'){
+      el = new Image();
+      el.src = item.url;
+      videoPool.appendChild(el);
+    } else {
+      el = document.createElement(item.kind === 'video' ? 'video' : 'audio');
+      if(item.kind === 'video'){ el.muted = true; el.playsInline = true; el.preload = 'metadata'; el.src = item.url; }
+      else { el.preload = 'none'; }
+      (item.kind === 'video' ? videoPool : audioPool).appendChild(el);
+    }
+    const dur = item.kind === 'image' ? DEFAULT_IMAGE_DURATION : item.duration;
     const clip = {
       id, file: item.file, url: item.url, name: item.name, kind: item.kind,
-      duration: item.duration, trimStart: 0, trimEnd: item.duration,
-      speed: 1, volume: 1, muted: false, cropX: 50, cropY: 50, cropScale: 1,
+      duration: dur, trimStart: 0, trimEnd: dur,
+      speed: 1, volume: item.kind === 'image' ? 0 : 1, muted: item.kind === 'image', cropX: 50, cropY: 50, cropScale: 1,
       rotation: 0, flipH: false, flipV: false, el,
+      naturalW: item.naturalW || 0, naturalH: item.naturalH || 0,
       thumbFrames: item.kind === 'video' ? item.thumbFrames : null,
       _waveform: item.kind === 'audio' ? item._waveform : null,
       derivedFromVideoId: null
     };
-    const arr = item.kind === 'video' ? videoClips : audioClips;
+    const arr = item.kind === 'audio' ? audioClips : videoClips; // images live on the video track
     if(insertIndex === undefined || insertIndex >= arr.length) arr.push(clip);
     else arr.splice(Math.max(0, insertIndex), 0, clip);
     renderTracks();
@@ -764,7 +794,9 @@
       e.preventDefault();
       const libId = e.dataTransfer.getData('text/plain');
       const item = mediaLibrary.find(m=>m.id===libId);
-      if(!item || item.kind !== expectedKind) return;
+      if(!item) return;
+      const acceptsKind = expectedKind === 'video' ? (item.kind === 'video' || item.kind === 'image') : item.kind === expectedKind;
+      if(!acceptsKind) return;
       const idx = filmBarDropIndex(bar, e.clientX, clipsArrGetter());
       addLibraryItemToTimeline(item, idx);
     });
@@ -855,9 +887,15 @@
 
   function updateExportState(){
     exportBtn.disabled = videoClips.length === 0;
+    const vCount = videoClips.filter(c=>c.kind!=='image').length;
+    const iCount = videoClips.filter(c=>c.kind==='image').length;
+    const parts = [];
+    if(vCount) parts.push(`${vCount} clip${vCount>1?'s':''} vidéo`);
+    if(iCount) parts.push(`${iCount} image${iCount>1?'s':''}`);
+    parts.push(`${audioClips.length} clip${audioClips.length>1?'s':''} audio`);
     exportTip.textContent = videoClips.length === 0
-      ? 'Ajoute au moins un clip vidéo pour pouvoir exporter'
-      : `${videoClips.length} clip${videoClips.length>1?'s':''} vidéo, ${audioClips.length} clip${audioClips.length>1?'s':''} audio`;
+      ? 'Ajoute au moins un clip vidéo ou une image pour pouvoir exporter'
+      : parts.join(', ');
   }
 
   function fmtTime(s){
@@ -918,8 +956,10 @@
   fitModeBtn.addEventListener('click', ()=>{
     fitMode = fitMode === 'contain' ? 'cover' : 'contain';
     previewVideo.style.objectFit = fitMode;
+    previewImage.style.objectFit = fitMode;
     fitModeBtn.innerHTML = fitMode === 'contain' ? '🔳 Ajuster' : '🔲 Remplir';
     previewVideo.classList.toggle('croppable', fitMode === 'cover');
+    previewImage.classList.toggle('croppable', fitMode === 'cover');
     cropZoomControls.style.display = fitMode === 'cover' ? 'flex' : 'none';
     videoCropHandles.style.display = fitMode === 'cover' ? 'block' : 'none';
     if(fitMode === 'cover') positionCropHandles();
@@ -931,15 +971,26 @@
     e.preventDefault();
     openSegContextMenu(e, clip, 'video');
   });
+  previewImage.addEventListener('contextmenu', (e)=>{
+    const clip = videoClips[activeVideoIdx];
+    if(!clip) return;
+    e.preventDefault();
+    openSegContextMenu(e, clip, 'video');
+  });
 
   // The handles sit exactly on the video's own rendered corners — read
   // straight from the DOM (getBoundingClientRect already accounts for the
   // current zoom/pan transform), instead of trying to predict where they
   // should be with a separate formula that can drift out of sync.
+  function activePreviewEl(){
+    const clip = videoClips[activeVideoIdx];
+    return (clip && clip.kind === 'image') ? previewImage : previewVideo;
+  }
+
   function positionCropHandles(){
     if(fitMode !== 'cover') return;
     const wrapRect = previewWrap.getBoundingClientRect();
-    const vidRect = previewVideo.getBoundingClientRect();
+    const vidRect = activePreviewEl().getBoundingClientRect();
     const x0 = vidRect.left - wrapRect.left, y0 = vidRect.top - wrapRect.top;
     const x1 = x0 + vidRect.width, y1 = y0 + vidRect.height;
     const set = (corner, x, y)=>{
@@ -950,29 +1001,33 @@
     set('tl', x0, y0); set('tr', x1, y0); set('bl', x0, y1); set('br', x1, y1);
   }
 
-  // Drag anywhere on the video (in fill mode) to reposition it within the frame.
-  previewVideo.addEventListener('pointerdown', (e)=>{
-    if(fitMode !== 'cover') return;
-    const clip = videoClips[activeVideoIdx];
-    if(!clip) return;
-    const wrapRect = previewWrap.getBoundingClientRect();
-    const startX = e.clientX, startY = e.clientY;
-    const startCropX = clip.cropX!=null?clip.cropX:50, startCropY = clip.cropY!=null?clip.cropY:50;
-    function onMove(ev){
-      const dxPct = ((ev.clientX-startX)/wrapRect.width) * 100;
-      const dyPct = ((ev.clientY-startY)/wrapRect.height) * 100;
-      clip.cropX = Math.max(0, Math.min(100, startCropX - dxPct));
-      clip.cropY = Math.max(0, Math.min(100, startCropY - dyPct));
-      applyCropToPreview(clip);
-      positionCropHandles();
-    }
-    function onUp(){
-      window.removeEventListener('pointermove', onMove);
-      window.removeEventListener('pointerup', onUp);
-    }
-    window.addEventListener('pointermove', onMove);
-    window.addEventListener('pointerup', onUp);
-  });
+  // Drag anywhere on the video/image (in fill mode) to reposition it within the frame.
+  function wirePanDrag(el){
+    el.addEventListener('pointerdown', (e)=>{
+      if(fitMode !== 'cover') return;
+      const clip = videoClips[activeVideoIdx];
+      if(!clip) return;
+      const wrapRect = previewWrap.getBoundingClientRect();
+      const startX = e.clientX, startY = e.clientY;
+      const startCropX = clip.cropX!=null?clip.cropX:50, startCropY = clip.cropY!=null?clip.cropY:50;
+      function onMove(ev){
+        const dxPct = ((ev.clientX-startX)/wrapRect.width) * 100;
+        const dyPct = ((ev.clientY-startY)/wrapRect.height) * 100;
+        clip.cropX = Math.max(0, Math.min(100, startCropX - dxPct));
+        clip.cropY = Math.max(0, Math.min(100, startCropY - dyPct));
+        applyCropToPreview(clip);
+        positionCropHandles();
+      }
+      function onUp(){
+        window.removeEventListener('pointermove', onMove);
+        window.removeEventListener('pointerup', onUp);
+      }
+      window.addEventListener('pointermove', onMove);
+      window.addEventListener('pointerup', onUp);
+    });
+  }
+  wirePanDrag(previewVideo);
+  wirePanDrag(previewImage);
 
   // Dragging a corner handle directly grows or shrinks the video — moving
   // it away from the center zooms in, moving it toward the center zooms
@@ -982,7 +1037,7 @@
       e.stopPropagation(); e.preventDefault();
       const clip = videoClips[activeVideoIdx];
       if(!clip) return;
-      const vidRect = previewVideo.getBoundingClientRect();
+      const vidRect = activePreviewEl().getBoundingClientRect();
       const centerX = vidRect.left + vidRect.width/2;
       const centerY = vidRect.top + vidRect.height/2;
       const startDist = Math.max(1, Math.hypot(e.clientX-centerX, e.clientY-centerY));
@@ -1036,14 +1091,6 @@
   const audioFilmBar = document.getElementById('audioFilmBar');
   const audioFilmBarWrap = document.getElementById('audioFilmBarWrap');
   const previewAudio = document.getElementById('previewAudio');
-  previewAudio.addEventListener('error', ()=>{
-    const err = previewAudio.error;
-    console.error('previewAudio media error', err && err.code, err && err.message);
-  });
-  previewVideo.addEventListener('error', ()=>{
-    const err = previewVideo.error;
-    console.error('previewVideo media error', err && err.code, err && err.message);
-  });
   const audioFilmPlayhead = document.getElementById('audioFilmPlayhead');
   const zoomInBtn = document.getElementById('zoomInBtn');
   const zoomOutBtn = document.getElementById('zoomOutBtn');
@@ -1135,10 +1182,17 @@
     const idx = arr.indexOf(clip);
     if(idx === -1) return;
     const id = 'c' + (clipIdCounter++);
-    const el = document.createElement(kind === 'video' ? 'video' : 'audio');
-    if(kind === 'video'){ el.muted = true; el.playsInline = true; el.preload = 'metadata'; el.src = clip.url; }
-    else { el.preload = 'none'; }
-    (kind === 'video' ? videoPool : audioPool).appendChild(el);
+    let el;
+    if(clip.kind === 'image'){
+      el = new Image();
+      el.src = clip.url;
+      videoPool.appendChild(el);
+    } else {
+      el = document.createElement(kind === 'video' ? 'video' : 'audio');
+      if(kind === 'video'){ el.muted = true; el.playsInline = true; el.preload = 'metadata'; el.src = clip.url; }
+      else { el.preload = 'none'; }
+      (kind === 'video' ? videoPool : audioPool).appendChild(el);
+    }
     const copy = Object.assign({}, clip, { id, el });
     arr.splice(idx+1, 0, copy);
     if(kind === 'video'){
@@ -1180,9 +1234,13 @@
     });
   });
 
+  const MAX_IMAGE_DURATION = 60;
   function attachTrimHandles(seg, clip, pxPerSecondGetter, onTrim){
     const leftHandle = seg.querySelector('.trim-left');
     const rightHandle = seg.querySelector('.trim-right');
+    if(clip.kind === 'image'){
+      leftHandle.style.display = 'none'; // no earlier "source" content to reveal for a static image
+    }
     function wire(handle, edge){
       handle.addEventListener('pointerdown', (e)=>{
         e.stopPropagation();
@@ -1194,6 +1252,9 @@
           const dxNative = ((ev.clientX - startX) / pxPerSecondGetter()) * (clip.speed||1);
           if(edge === 'left'){
             clip.trimStart = Math.max(0, Math.min(startTrimStart + dxNative, startTrimEnd - 0.2));
+          } else if(clip.kind === 'image'){
+            clip.trimEnd = Math.min(MAX_IMAGE_DURATION, Math.max(startTrimEnd + dxNative, startTrimStart + 0.2));
+            clip.duration = clip.trimEnd; // an image's "duration" IS just how long it's shown
           } else {
             clip.trimEnd = Math.min(clip.duration, Math.max(startTrimEnd + dxNative, startTrimStart + 0.2));
           }
@@ -1293,10 +1354,12 @@
         const i1 = Math.min(total, Math.max(i0+1, Math.ceil(endFrac*total)));
         const visible = clip.thumbFrames.slice(i0, i1).filter(Boolean);
         filmstripHtml = `<div class="filmstrip">${visible.map(f=>`<img src="${f}">`).join('')}</div>`;
+      } else if(clip.kind === 'image'){
+        filmstripHtml = `<div class="filmstrip"><img src="${clip.url}" style="width:100%;height:100%;object-fit:cover;"></div>`;
       }
       seg.innerHTML = filmstripHtml +
-        `<button class="seg-mute-btn" data-clip-id="${clip.id}" title="${clip.muted ? 'Réactiver le son de ce clip' : 'Couper le son de ce clip'}">${clip.muted ? '🔇' : '🔊'}</button>` +
-        `<span class="seg-label">${escapeHtml(clip.name)}</span>` +
+        (clip.kind === 'image' ? '' : `<button class="seg-mute-btn" data-clip-id="${clip.id}" title="${clip.muted ? 'Réactiver le son de ce clip' : 'Couper le son de ce clip'}">${clip.muted ? '🔇' : '🔊'}</button>`) +
+        `<span class="seg-label">${clip.kind === 'image' ? '🖼️ ' : ''}${escapeHtml(clip.name)}</span>` +
         `<div class="trim-handle trim-left"></div><div class="trim-handle trim-right"></div>`;
       videoFilmBar.insertBefore(seg, filmPlayhead);
       attachSegmentReorderDrag(seg, videoFilmBar, videoClips, filmPlayhead, ()=>{
@@ -1401,11 +1464,11 @@
     totalTimelineDuration = videoClips.reduce((s,c)=>s+effectiveDuration(c), 0);
     if(videoClips.length === 0){
       previewVideo.style.display = 'none';
+      previewImage.style.display = 'none';
       previewEmpty.style.display = 'block';
       splitBtn.disabled = audioClips.length === 0;
     } else {
       previewEmpty.style.display = 'none';
-      previewVideo.style.display = 'block';
       if(activeVideoIdx >= videoClips.length) activeVideoIdx = 0;
       if(!sequencePlaying) loadClipIntoPreview(activeVideoIdx, true);
       splitBtn.disabled = false;
@@ -1456,9 +1519,11 @@
   }
 
   function applyCropToPreview(clip){
-    previewVideo.style.objectPosition = '50% 50%'; // base cover-fit always centered — panning is handled entirely by the transform below
+    const target = (clip && clip.kind === 'image') ? previewImage : previewVideo;
+    target.style.objectPosition = '50% 50%'; // base cover-fit always centered — panning is handled entirely by the transform below
     if(!clip){
       previewVideo.style.transform = 'none';
+      previewImage.style.transform = 'none';
       return;
     }
     const zoom = clip.cropScale || 1;
@@ -1470,21 +1535,114 @@
     // no matter how far zoomed in you are.
     const panX = (50 - (clip.cropX!=null?clip.cropX:50));
     const panY = (50 - (clip.cropY!=null?clip.cropY:50));
-    previewVideo.style.transform = `scale(${sx}, ${sy}) rotate(${clip.rotation||0}deg) translate(${panX}%, ${panY}%)`;
+    target.style.transform = `scale(${sx}, ${sy}) rotate(${clip.rotation||0}deg) translate(${panX}%, ${panY}%)`;
+  }
+
+  // ---------- Image clip playback clock ----------
+  // Images don't fire 'timeupdate' the way <video> does, so this small
+  // requestAnimationFrame loop drives their "elapsed time" and triggers the
+  // transition to the next clip when their duration runs out — mirroring
+  // exactly what the previewVideo timeupdate handler does for video clips.
+  let imageClockRAF = null;
+  let imageClockStartWall = 0;
+  let imageClockStartLocal = 0;
+  let imagePausedLocalTime = 0; // remembers where a paused image clip should resume from
+
+  function isActiveClipImage(){
+    const clip = videoClips[activeVideoIdx];
+    return !!(clip && clip.kind === 'image');
+  }
+  function startImageClock(localStartSec){
+    stopImageClock();
+    imageClockStartWall = performance.now();
+    imageClockStartLocal = localStartSec || 0;
+    imageClockRAF = requestAnimationFrame(imageClockTick);
+  }
+  function stopImageClock(){
+    if(imageClockRAF){
+      imagePausedLocalTime = imageClockStartLocal + (performance.now() - imageClockStartWall) / 1000;
+      cancelAnimationFrame(imageClockRAF);
+      imageClockRAF = null;
+    }
+  }
+  function imageClockTick(){
+    if(!sequencePlaying || !isActiveClipImage()){ imageClockRAF = null; return; }
+    const clip = videoClips[activeVideoIdx];
+    const dur = effectiveDuration(clip);
+    const localElapsed = imageClockStartLocal + (performance.now() - imageClockStartWall) / 1000;
+
+    let elapsed = 0;
+    for(let i=0;i<activeVideoIdx;i++) elapsed += effectiveDuration(videoClips[i]);
+    elapsed += Math.min(localElapsed, dur);
+    updateSeekUI(elapsed);
+    if(activeTrackKind === 'video') playheadTimeEl.textContent = `${fmtTime(elapsed)} / ${fmtTime(totalTimelineDuration)}`;
+
+    if(localElapsed >= dur - 0.03){
+      advanceToNextClip(clip);
+      return;
+    }
+    imageClockRAF = requestAnimationFrame(imageClockTick);
+  }
+
+  // Shared "move to the next clip" logic — used by both the video
+  // timeupdate handler and the image clock, so a video→image, image→video,
+  // or image→image transition all behave the same way.
+  function advanceToNextClip(clip){
+    if(activeVideoIdx < videoClips.length - 1){
+      const next = videoClips[activeVideoIdx+1];
+      const bothVideo = clip.kind !== 'image' && next.kind !== 'image';
+      const seamless = bothVideo && next.url === clip.url
+        && Math.abs(next.trimStart - clip.trimEnd) < 0.05
+        && (next.speed||1) === (clip.speed||1);
+      if(seamless){
+        activeVideoIdx += 1;
+        previewVideo.volume = next.volume;
+        previewVideo.muted = !!next.muted;
+        applyCropToPreview(next);
+        positionCropHandles();
+        updateActiveSegHighlight();
+        updateClipToolbar();
+      } else {
+        loadClipIntoPreview(activeVideoIdx+1, false);
+        if(next.kind === 'image'){
+          startImageClock(next.trimStart || 0);
+        } else {
+          previewVideo.play().catch(()=>{});
+        }
+      }
+    } else {
+      sequencePlaying = false;
+      stopImageClock();
+      if(!audioSequencePlaying) playBtn.textContent = '▶';
+      loadClipIntoPreview(0, true);
+    }
   }
 
   function loadClipIntoPreview(idx, paused){
     const clip = videoClips[idx];
     if(!clip) return;
     activeVideoIdx = idx;
-    if(previewVideo.src !== clip.url) previewVideo.src = clip.url;
-    previewVideo.currentTime = clip.trimStart;
-    previewVideo.playbackRate = clip.speed || 1;
-    previewVideo.volume = Math.min(1, Math.max(0, clip.volume));
-    previewVideo.muted = !!clip.muted;
-    applyCropToPreview(clip);
-    positionCropHandles();
-    if(paused) previewVideo.pause();
+    stopImageClock();
+    if(clip.kind === 'image'){
+      previewVideo.pause();
+      previewVideo.style.display = 'none';
+      previewImage.style.display = 'block';
+      if(previewImage.src !== clip.url) previewImage.src = clip.url;
+      applyCropToPreview(clip);
+      positionCropHandles();
+      if(!paused && sequencePlaying) startImageClock(clip.trimStart || 0);
+    } else {
+      previewImage.style.display = 'none';
+      previewVideo.style.display = 'block';
+      if(previewVideo.src !== clip.url) previewVideo.src = clip.url;
+      previewVideo.currentTime = clip.trimStart;
+      previewVideo.playbackRate = clip.speed || 1;
+      previewVideo.volume = clip.volume;
+      previewVideo.muted = !!clip.muted;
+      applyCropToPreview(clip);
+      positionCropHandles();
+      if(paused) previewVideo.pause();
+    }
     updateActiveSegHighlight();
     updateClipToolbar();
   }
@@ -1494,7 +1652,7 @@
     activeAudioIdx = idx;
     if(previewAudio.src !== clip.url) previewAudio.src = clip.url;
     previewAudio.currentTime = clip.trimStart;
-    previewAudio.volume = Math.min(1, Math.max(0, clip.volume));
+    previewAudio.volume = clip.volume;
     if(paused) previewAudio.pause();
     updateAudioActiveHighlight();
     updateClipToolbar();
@@ -1513,13 +1671,28 @@
     const clip = videoClips[idx];
     if(!clip) return;
     activeVideoIdx = idx;
-    if(previewVideo.src !== clip.url) previewVideo.src = clip.url;
-    previewVideo.currentTime = clip.trimStart + Math.max(0, local) * (clip.speed||1);
-    previewVideo.playbackRate = clip.speed || 1;
-    previewVideo.volume = Math.min(1, Math.max(0, clip.volume));
-    previewVideo.muted = !!clip.muted;
-    applyCropToPreview(clip);
-    positionCropHandles();
+    stopImageClock();
+    if(clip.kind === 'image'){
+      previewVideo.pause();
+      previewVideo.style.display = 'none';
+      previewImage.style.display = 'block';
+      if(previewImage.src !== clip.url) previewImage.src = clip.url;
+      applyCropToPreview(clip);
+      positionCropHandles();
+      const localTime = clip.trimStart + Math.max(0, local);
+      imagePausedLocalTime = localTime;
+      if(sequencePlaying) startImageClock(localTime);
+    } else {
+      previewImage.style.display = 'none';
+      previewVideo.style.display = 'block';
+      if(previewVideo.src !== clip.url) previewVideo.src = clip.url;
+      previewVideo.currentTime = clip.trimStart + Math.max(0, local) * (clip.speed||1);
+      previewVideo.playbackRate = clip.speed || 1;
+      previewVideo.volume = clip.volume;
+      previewVideo.muted = !!clip.muted;
+      applyCropToPreview(clip);
+      positionCropHandles();
+    }
     updateSeekUI(sec);
     updateActiveSegHighlight();
     updateClipToolbar();
@@ -1542,7 +1715,7 @@
     activeAudioIdx = idx;
     if(previewAudio.src !== clip.url) previewAudio.src = clip.url;
     previewAudio.currentTime = clip.trimStart + Math.max(0, local);
-    previewAudio.volume = Math.min(1, Math.max(0, clip.volume));
+    previewAudio.volume = clip.volume;
     updateAudioSeekUI(sec);
     updateAudioActiveHighlight();
     updateClipToolbar();
@@ -1601,45 +1774,38 @@
 
   // One button plays/pauses both tracks together — they were already kept
   // in sync position-wise, so this just starts/stops them at the same time.
-  playBtn.addEventListener('click', async ()=>{
+  playBtn.addEventListener('click', ()=>{
     const playing = sequencePlaying || audioSequencePlaying;
     if(playing){
       sequencePlaying = false; audioSequencePlaying = false;
       previewVideo.pause(); previewAudio.pause();
+      stopImageClock();
       playBtn.textContent = '▶';
     } else {
-      let anyStarted = false, lastError = null;
       if(videoClips.length){
-        try{
-          await previewVideo.play();
-          sequencePlaying = true;
-          anyStarted = true;
-        }catch(err){ lastError = err; console.error('video playback failed', err); }
+        sequencePlaying = true;
+        if(isActiveClipImage()){
+          startImageClock(imagePausedLocalTime || 0);
+        } else {
+          previewVideo.play().catch(()=>{});
+        }
       }
       if(audioClips.length){
-        try{
-          await previewAudio.play();
-          audioSequencePlaying = true;
-          anyStarted = true;
-        }catch(err){ lastError = err; console.error('audio playback failed', err); }
+        audioSequencePlaying = true;
+        previewAudio.play().catch(()=>{});
       }
-      if(anyStarted){
-        playBtn.textContent = '⏸';
-      } else {
-        // Playback genuinely failed — the icon stays on ▶ instead of lying
-        // about being paused, and there's at least something in the
-        // console to diagnose instead of a silent no-op.
-        playBtn.textContent = '▶';
-        sequencePlaying = false; audioSequencePlaying = false;
-      }
+      if(sequencePlaying || audioSequencePlaying) playBtn.textContent = '⏸';
     }
   });
 
   restartBtn.addEventListener('click', ()=>{
     if(videoClips.length) seekToGlobal(0);
     else if(audioClips.length) seekAudioToGlobal(0);
-    if(sequencePlaying) previewVideo.play().catch(err=>console.error('playback failed', err));
-    if(audioSequencePlaying) previewAudio.play().catch(err=>console.error('playback failed', err));
+    if(sequencePlaying){
+      if(isActiveClipImage()) startImageClock(videoClips[activeVideoIdx].trimStart || 0);
+      else previewVideo.play().catch(()=>{});
+    }
+    if(audioSequencePlaying) previewAudio.play().catch(()=>{});
   });
 
   function currentGlobalSeconds(){
@@ -1647,7 +1813,14 @@
     const clip = videoClips[activeVideoIdx];
     if(clip){
       for(let i=0;i<activeVideoIdx;i++) elapsed += effectiveDuration(videoClips[i]);
-      elapsed += Math.max(0, ((previewVideo.currentTime||clip.trimStart) - clip.trimStart) / (clip.speed||1));
+      if(clip.kind === 'image'){
+        const localTime = sequencePlaying && imageClockRAF
+          ? imageClockStartLocal + (performance.now() - imageClockStartWall) / 1000
+          : imagePausedLocalTime;
+        elapsed += Math.max(0, localTime - (clip.trimStart||0));
+      } else {
+        elapsed += Math.max(0, ((previewVideo.currentTime||clip.trimStart) - clip.trimStart) / (clip.speed||1));
+      }
     }
     return elapsed;
   }
@@ -1665,7 +1838,7 @@
   previewVideo.addEventListener('timeupdate', ()=>{
     if(seeking) return;
     const clip = videoClips[activeVideoIdx];
-    if(!clip) return;
+    if(!clip || clip.kind === 'image') return; // image clips are driven by the image clock instead
     let elapsed = 0;
     for(let i=0;i<activeVideoIdx;i++) elapsed += effectiveDuration(videoClips[i]);
     const localPlayed = (previewVideo.currentTime - clip.trimStart) / (clip.speed||1);
@@ -1675,28 +1848,7 @@
 
     if(!sequencePlaying) return;
     if(previewVideo.currentTime >= clip.trimEnd - 0.03){
-      if(activeVideoIdx < videoClips.length - 1){
-        const next = videoClips[activeVideoIdx+1];
-        const seamless = next.url === clip.url
-          && Math.abs(next.trimStart - clip.trimEnd) < 0.05
-          && (next.speed||1) === (clip.speed||1);
-        if(seamless){
-          activeVideoIdx += 1;
-          previewVideo.volume = Math.min(1, Math.max(0, next.volume));
-          previewVideo.muted = !!next.muted;
-          applyCropToPreview(next);
-          positionCropHandles();
-          updateActiveSegHighlight();
-          updateClipToolbar();
-        } else {
-          loadClipIntoPreview(activeVideoIdx+1, false);
-          previewVideo.play().catch(err=>console.error('playback failed', err));
-        }
-      } else {
-        sequencePlaying = false;
-        if(!audioSequencePlaying) playBtn.textContent = '▶';
-        loadClipIntoPreview(0, true);
-      }
+      advanceToNextClip(clip);
     }
   });
 
@@ -1721,7 +1873,7 @@
           updateClipToolbar();
         } else {
           loadAudioClipIntoPreview(activeAudioIdx+1, false);
-          previewAudio.play().catch(err=>console.error('playback failed', err));
+          previewAudio.play().catch(()=>{});
         }
       } else {
         audioSequencePlaying = false;
@@ -1735,14 +1887,16 @@
   // position, since they're kept in sync (a video cut without its matching
   // audio cut just leaves the two out of sync from that point on) ----------
   splitBtn.addEventListener('click', ()=>{
-    // Only cuts whichever track is currently selected (activeTrackKind) —
-    // cutting both at once regardless of which one you clicked on was the
-    // source of a lot of confusion (cutting the audio also chopped the
-    // video at the same spot, even when only the audio was meant).
     try{
-      if(activeTrackKind === 'video' && videoClips.length) splitVideoAtPlayhead();
-      else if(activeTrackKind === 'audio' && audioClips.length) splitAudioAtPlayhead();
-    }catch(err){ console.error('split error', err); }
+      if(videoClips.length) splitVideoAtPlayhead();
+    }catch(err){ console.error('splitVideoAtPlayhead error', err); }
+    try{
+      if(audioClips.length) splitAudioAtPlayhead();
+    }catch(err){ console.error('splitAudioAtPlayhead error', err); }
+    // Always re-render both bars from the current arrays afterward, so even
+    // if one of the two split calls above hit a problem partway through,
+    // the audio/video bars still reflect whatever clips genuinely remain
+    // instead of getting stuck on a stale, hidden render.
     renderFilmBars();
   });
 
@@ -1812,15 +1966,11 @@
   const clipToolbar = document.getElementById('clipToolbar');
   const clipToolbarIcon = document.getElementById('clipToolbarIcon');
   const selVol = document.getElementById('selVol');
-  const selVolLabel = document.getElementById('selVolLabel');
   const speedLabel = document.getElementById('speedLabel');
   const selSpeed = document.getElementById('selSpeed');
   const moveLeftBtn = document.getElementById('moveLeftBtn');
   const moveRightBtn = document.getElementById('moveRightBtn');
   const selDeleteBtn = document.getElementById('selDeleteBtn');
-  const flipHBtn = document.getElementById('flipHBtn');
-  const flipVBtn = document.getElementById('flipVBtn');
-  const rotateBtn = document.getElementById('rotateBtn');
 
   function activeClipAndIndex(){
     if(activeTrackKind === 'audio') return { clip: audioClips[activeAudioIdx], idx: activeAudioIdx, arr: audioClips };
@@ -1833,60 +1983,43 @@
     audioFilmBar.classList.toggle('track-active', activeTrackKind === 'audio');
     if(!clip){ clipToolbar.style.display = 'none'; return; }
     clipToolbar.style.display = 'flex';
-    clipToolbarIcon.textContent = activeTrackKind === 'audio' ? '🎵' : '🎬';
-    selVol.value = String(clip.volume);
-    selVolLabel.textContent = Math.round(clip.volume * 100) + '%';
-    const isVideo = activeTrackKind === 'video';
+    const isImage = clip.kind === 'image';
+    clipToolbarIcon.textContent = activeTrackKind === 'audio' ? '🎵' : (isImage ? '🖼️' : '🎬');
+    const isVideo = activeTrackKind === 'video' && !isImage;
+    selVol.style.display = isImage ? 'none' : '';
+    selVol.previousElementSibling.style.display = isImage ? 'none' : ''; // the "Vol." label right before it
+    if(!isImage) selVol.value = String(clip.volume);
     speedLabel.style.display = isVideo ? '' : 'none';
     selSpeed.style.display = isVideo ? '' : 'none';
-    flipHBtn.style.display = isVideo ? '' : 'none';
-    flipVBtn.style.display = isVideo ? '' : 'none';
-    rotateBtn.style.display = isVideo ? '' : 'none';
-    if(isVideo){
-      selSpeed.value = String(clip.speed);
-      flipHBtn.classList.toggle('active', !!clip.flipH);
-      flipVBtn.classList.toggle('active', !!clip.flipV);
-    }
+    if(isVideo) selSpeed.value = String(clip.speed);
+    imageDurLabel.style.display = isImage ? '' : 'none';
+    imageDurInput.style.display = isImage ? '' : 'none';
+    if(isImage) imageDurInput.value = String(clip.duration);
     moveLeftBtn.disabled = idx === 0;
     moveRightBtn.disabled = idx === arr.length - 1;
     updateUnifiedTime();
   }
 
-  flipHBtn.addEventListener('click', ()=>{
-    if(activeTrackKind !== 'video') return;
+  const imageDurLabel = document.getElementById('imageDurLabel');
+  const imageDurInput = document.getElementById('imageDurInput');
+  imageDurInput.addEventListener('change', ()=>{
+    if(!isActiveClipImage()) return;
     const clip = videoClips[activeVideoIdx];
-    if(!clip) return;
-    clip.flipH = !clip.flipH;
-    applyCropToPreview(clip);
-    positionCropHandles();
-    updateClipToolbar();
-  });
-  flipVBtn.addEventListener('click', ()=>{
-    if(activeTrackKind !== 'video') return;
-    const clip = videoClips[activeVideoIdx];
-    if(!clip) return;
-    clip.flipV = !clip.flipV;
-    applyCropToPreview(clip);
-    positionCropHandles();
-    updateClipToolbar();
-  });
-  rotateBtn.addEventListener('click', ()=>{
-    if(activeTrackKind !== 'video') return;
-    const clip = videoClips[activeVideoIdx];
-    if(!clip) return;
-    clip.rotation = ((clip.rotation||0) + 90) % 360;
-    applyCropToPreview(clip);
-    positionCropHandles();
+    const v = Math.min(MAX_IMAGE_DURATION, Math.max(0.5, parseFloat(imageDurInput.value) || DEFAULT_IMAGE_DURATION));
+    clip.duration = v;
+    clip.trimEnd = v;
+    imageDurInput.value = String(v);
+    totalTimelineDuration = videoClips.reduce((s,c)=>s+effectiveDuration(c), 0);
+    renderFilmBars();
+    updateExportState();
   });
 
-  selVol.addEventListener('input', ()=>{
+  selVol.addEventListener('change', ()=>{
     const { clip } = activeClipAndIndex();
     if(!clip) return;
     clip.volume = parseFloat(selVol.value);
-    selVolLabel.textContent = Math.round(clip.volume * 100) + '%';
-    const domVol = Math.min(1, Math.max(0, clip.volume)); // <video>/<audio>.volume only accepts 0–1
-    if(activeTrackKind === 'audio') previewAudio.volume = domVol;
-    else previewVideo.volume = domVol;
+    if(activeTrackKind === 'audio') previewAudio.volume = clip.volume;
+    else previewVideo.volume = clip.volume;
     previewVideo.muted = !!clip.muted;
   });
   selSpeed.addEventListener('change', ()=>{
@@ -1982,10 +2115,16 @@
     if(type.includes('mp4')) return '.mp4';
     if(type.includes('webm')) return '.webm';
     if(type.includes('quicktime')) return '.mov';
-    if(type.includes('mpeg')) return '.mp3';
+    if(type.includes('mpeg') && type.startsWith('audio')) return '.mp3';
     if(type.includes('wav')) return '.wav';
     if(type.includes('ogg')) return '.ogg';
     if(type.includes('aac')) return '.aac';
+    if(type.includes('png')) return '.png';
+    if(type.includes('jpeg') || type.includes('jpg')) return '.jpg';
+    if(type.includes('webp')) return '.webp';
+    if(type.includes('gif')) return '.gif';
+    if(type.includes('bmp')) return '.bmp';
+    if(type.startsWith('image/')) return '.png'; // reasonable fallback ffmpeg can still probe
     return '.dat';
   }
 
@@ -2060,12 +2199,7 @@
       const listLines = [];
       for(let i=0; i<videoClips.length; i++){
         const clip = videoClips[i];
-        const inName = `in${i}${extFromType(clip.file.type)}`;
-        await ff.writeFile(inName, await fetchFileFn(clip.file));
         const outName = `seg${i}.mp4`;
-        const dur = Math.max(0.1, clip.trimEnd - clip.trimStart);
-        const pts = (1/(clip.speed||1)).toFixed(4);
-        const ownVolume = clip.muted ? 0 : clip.volume;
         const zoom = clip.cropScale || 1;
         const cx = (clip.cropX!=null?clip.cropX:50) / 100;
         const cy = (clip.cropY!=null?clip.cropY:50) / 100;
@@ -2077,6 +2211,34 @@
         else if(rot === 180) preFilters.push('hflip', 'vflip');
         else if(rot === 270) preFilters.push('transpose=2');
         const preFilterStr = preFilters.length ? preFilters.join(',') + ',' : '';
+
+        if(clip.kind === 'image'){
+          // Images have no inherent duration/audio — loop the single frame
+          // for the chosen duration and pair it with a silent audio track,
+          // so the resulting segment has the same stream layout (video +
+          // audio) as the video-derived segments, which concat needs.
+          const inName = `in${i}${extFromType(clip.file.type)}`;
+          await ff.writeFile(inName, await fetchFileFn(clip.file));
+          const dur = Math.max(0.1, clip.duration || DEFAULT_IMAGE_DURATION);
+          const vFilter = preFilterStr + (fitMode === 'cover'
+            ? `scale=${canvas.w}:${canvas.h}:force_original_aspect_ratio=increase,scale=iw*${zoom.toFixed(3)}:ih*${zoom.toFixed(3)},crop=${canvas.w}:${canvas.h}:(iw-${canvas.w})*${cx.toFixed(4)}:(ih-${canvas.h})*${cy.toFixed(4)}`
+            : `scale=${canvas.w}:${canvas.h}:force_original_aspect_ratio=decrease,pad=${canvas.w}:${canvas.h}:(ow-iw)/2:(oh-ih)/2:color=black`);
+          await ff.exec([
+            '-loop', '1', '-i', inName,
+            '-f', 'lavfi', '-i', 'anullsrc=r=44100:cl=stereo',
+            '-t', String(dur),
+            '-filter:v', vFilter,
+            '-r', '30', '-preset', 'ultrafast', '-shortest', outName
+          ]);
+          listLines.push(`file '${outName}'`);
+          continue;
+        }
+
+        const inName = `in${i}${extFromType(clip.file.type)}`;
+        await ff.writeFile(inName, await fetchFileFn(clip.file));
+        const dur = Math.max(0.1, clip.trimEnd - clip.trimStart);
+        const pts = (1/(clip.speed||1)).toFixed(4);
+        const ownVolume = clip.muted ? 0 : clip.volume;
         const vFilter = preFilterStr + (fitMode === 'cover'
           ? `scale=${canvas.w}:${canvas.h}:force_original_aspect_ratio=increase,scale=iw*${zoom.toFixed(3)}:ih*${zoom.toFixed(3)},crop=${canvas.w}:${canvas.h}:(iw-${canvas.w})*${cx.toFixed(4)}:(ih-${canvas.h})*${cy.toFixed(4)},setpts=${pts}*PTS`
           : `scale=${canvas.w}:${canvas.h}:force_original_aspect_ratio=decrease,pad=${canvas.w}:${canvas.h}:(ow-iw)/2:(oh-ih)/2:color=black,setpts=${pts}*PTS`);
