@@ -1034,6 +1034,14 @@
   const audioFilmBar = document.getElementById('audioFilmBar');
   const audioFilmBarWrap = document.getElementById('audioFilmBarWrap');
   const previewAudio = document.getElementById('previewAudio');
+  previewAudio.addEventListener('error', ()=>{
+    const err = previewAudio.error;
+    console.error('previewAudio media error', err && err.code, err && err.message);
+  });
+  previewVideo.addEventListener('error', ()=>{
+    const err = previewVideo.error;
+    console.error('previewVideo media error', err && err.code, err && err.message);
+  });
   const audioFilmPlayhead = document.getElementById('audioFilmPlayhead');
   const zoomInBtn = document.getElementById('zoomInBtn');
   const zoomOutBtn = document.getElementById('zoomOutBtn');
@@ -1591,30 +1599,45 @@
 
   // One button plays/pauses both tracks together — they were already kept
   // in sync position-wise, so this just starts/stops them at the same time.
-  playBtn.addEventListener('click', ()=>{
+  playBtn.addEventListener('click', async ()=>{
     const playing = sequencePlaying || audioSequencePlaying;
     if(playing){
       sequencePlaying = false; audioSequencePlaying = false;
       previewVideo.pause(); previewAudio.pause();
       playBtn.textContent = '▶';
     } else {
+      let anyStarted = false, lastError = null;
       if(videoClips.length){
-        sequencePlaying = true;
-        previewVideo.play().catch(()=>{});
+        try{
+          await previewVideo.play();
+          sequencePlaying = true;
+          anyStarted = true;
+        }catch(err){ lastError = err; console.error('video playback failed', err); }
       }
       if(audioClips.length){
-        audioSequencePlaying = true;
-        previewAudio.play().catch(()=>{});
+        try{
+          await previewAudio.play();
+          audioSequencePlaying = true;
+          anyStarted = true;
+        }catch(err){ lastError = err; console.error('audio playback failed', err); }
       }
-      if(sequencePlaying || audioSequencePlaying) playBtn.textContent = '⏸';
+      if(anyStarted){
+        playBtn.textContent = '⏸';
+      } else {
+        // Playback genuinely failed — the icon stays on ▶ instead of lying
+        // about being paused, and there's at least something in the
+        // console to diagnose instead of a silent no-op.
+        playBtn.textContent = '▶';
+        sequencePlaying = false; audioSequencePlaying = false;
+      }
     }
   });
 
   restartBtn.addEventListener('click', ()=>{
     if(videoClips.length) seekToGlobal(0);
     else if(audioClips.length) seekAudioToGlobal(0);
-    if(sequencePlaying) previewVideo.play().catch(()=>{});
-    if(audioSequencePlaying) previewAudio.play().catch(()=>{});
+    if(sequencePlaying) previewVideo.play().catch(err=>console.error('playback failed', err));
+    if(audioSequencePlaying) previewAudio.play().catch(err=>console.error('playback failed', err));
   });
 
   function currentGlobalSeconds(){
@@ -1665,7 +1688,7 @@
           updateClipToolbar();
         } else {
           loadClipIntoPreview(activeVideoIdx+1, false);
-          previewVideo.play().catch(()=>{});
+          previewVideo.play().catch(err=>console.error('playback failed', err));
         }
       } else {
         sequencePlaying = false;
@@ -1696,7 +1719,7 @@
           updateClipToolbar();
         } else {
           loadAudioClipIntoPreview(activeAudioIdx+1, false);
-          previewAudio.play().catch(()=>{});
+          previewAudio.play().catch(err=>console.error('playback failed', err));
         }
       } else {
         audioSequencePlaying = false;
@@ -1710,16 +1733,14 @@
   // position, since they're kept in sync (a video cut without its matching
   // audio cut just leaves the two out of sync from that point on) ----------
   splitBtn.addEventListener('click', ()=>{
+    // Only cuts whichever track is currently selected (activeTrackKind) —
+    // cutting both at once regardless of which one you clicked on was the
+    // source of a lot of confusion (cutting the audio also chopped the
+    // video at the same spot, even when only the audio was meant).
     try{
-      if(videoClips.length) splitVideoAtPlayhead();
-    }catch(err){ console.error('splitVideoAtPlayhead error', err); }
-    try{
-      if(audioClips.length) splitAudioAtPlayhead();
-    }catch(err){ console.error('splitAudioAtPlayhead error', err); }
-    // Always re-render both bars from the current arrays afterward, so even
-    // if one of the two split calls above hit a problem partway through,
-    // the audio/video bars still reflect whatever clips genuinely remain
-    // instead of getting stuck on a stale, hidden render.
+      if(activeTrackKind === 'video' && videoClips.length) splitVideoAtPlayhead();
+      else if(activeTrackKind === 'audio' && audioClips.length) splitAudioAtPlayhead();
+    }catch(err){ console.error('split error', err); }
     renderFilmBars();
   });
 
@@ -1878,8 +1899,11 @@
   });
 
   // Delete/Backspace removes whichever clip (video or audio) is currently selected.
+  let lastDeleteKeyEvent = null;
   function handleDeleteKey(e){
     if(e.key !== 'Delete' && e.key !== 'Backspace') return;
+    if(e === lastDeleteKeyEvent) return; // same physical keypress already handled — guards against ever double-deleting again
+    lastDeleteKeyEvent = e;
     const tag = (e.target.tagName || '').toLowerCase();
     const isEditable = tag === 'input' || tag === 'textarea' || tag === 'select' || e.target.isContentEditable;
     if(isEditable) return;
@@ -1889,7 +1913,6 @@
     removeClip(clip.id, activeTrackKind);
   }
   window.addEventListener('keydown', handleDeleteKey);
-  document.addEventListener('keydown', handleDeleteKey);
 
   // ---------- Init ----------
   updatePreviewAvailability();
@@ -2058,7 +2081,10 @@
       exportProgressText.textContent = `Terminé — ${(blob.size/1024/1024).toFixed(1)} Mo`;
     }catch(err){
       console.error('export error', err);
-      exportProgressText.textContent = "Erreur pendant l'export — essaie avec des vidéos plus courtes, ou vérifie ta connexion (le moteur vidéo se télécharge la première fois).";
+      const detail = (err && (err.message || String(err))) || 'erreur inconnue';
+      exportProgressText.textContent =
+        "Erreur pendant l'export — essaie avec des vidéos plus courtes, ou vérifie ta connexion (le moteur vidéo se télécharge la première fois). " +
+        `Détail technique : ${detail}`;
     }
     exportBtn.disabled = false;
   });
