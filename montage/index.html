@@ -555,7 +555,7 @@
             <div class="spacer"></div>
             <button class="ghost" id="addImageOverlayBtn">🖼️ + Image</button>
             <button class="ghost" id="addTextOverlayBtn">🔤 + Texte</button>
-            <input type="file" id="overlayImageInput" accept="image/*" style="display:none;">
+            <input type="file" id="overlayImageInput" accept="image/*" multiple style="display:none;">
           </div>
           <div class="film-bar-wrap" id="overlayFilmBarWrap">
             <div class="film-bar overlay-film-bar" id="overlayFilmBar">
@@ -1132,15 +1132,16 @@
     mirrorScroll(overlayFilmBarWrap, [timeRulerWrap, videoFilmBar.parentElement, audioFilmBar.parentElement]);
   });
 
-  function addImageOverlayFromFile(file){
+  function addImageOverlayFromFile(file, staggerIndex){
     if(!file || !file.type.startsWith('image/')) return;
     const id = 'ov' + (overlayIdCounter++);
     const url = URL.createObjectURL(file);
-    const start = Math.min(Math.max(0, totalTimelineDuration - 0.5), currentGlobalSeconds());
+    const n = staggerIndex || 0;
+    const start = Math.min(Math.max(0, totalTimelineDuration - 0.5), currentGlobalSeconds() + n * 0.4);
     overlays.push({
       id, type:'image', file, url,
       startTime: start, duration: 3,
-      x: 58, y: 4, w: 38, h: 38
+      x: Math.min(85, 58 + n*3), y: Math.min(60, 4 + n*4), w: 38, h: 38
     });
     renderOverlayList();
     renderOverlayElements();
@@ -1659,6 +1660,32 @@
 
   wireLibraryDrop(videoFilmBar, 'video', ()=>videoClips);
   wireLibraryDrop(audioFilmBar, 'audio', ()=>audioClips);
+
+  // Same idea, but dropping onto the overlay bar adds it as an overlay
+  // instead of a sequential clip — positioned in time by where it was
+  // dropped, reusing the library item's already-loaded file/url.
+  function addImageOverlayFromLibraryItem(item, startTimeSec){
+    if(!item || item.kind !== 'image') return;
+    const id = 'ov' + (overlayIdCounter++);
+    overlays.push({
+      id, type:'image', file: item.file, url: item.url,
+      startTime: Math.max(0, startTimeSec), duration: 3,
+      x: 58, y: 4, w: 38, h: 38
+    });
+    renderOverlayList();
+    renderOverlayElements();
+    updateExportState();
+  }
+  overlayFilmBar.addEventListener('dragover', (e)=>{ e.preventDefault(); e.dataTransfer.dropEffect = 'copy'; });
+  overlayFilmBar.addEventListener('drop', (e)=>{
+    e.preventDefault();
+    const libId = e.dataTransfer.getData('text/plain');
+    const item = mediaLibrary.find(m=>m.id===libId);
+    if(!item || item.kind !== 'image') return;
+    const rect = overlayFilmBar.getBoundingClientRect();
+    const dropSec = (e.clientX - rect.left) / currentPxPerSecond();
+    addImageOverlayFromLibraryItem(item, dropSec);
+  });
 
   let sequencePlaying = false;      // video playing
   let audioSequencePlaying = false; // audio playing
