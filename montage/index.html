@@ -1175,6 +1175,46 @@
     updateExportState();
   }
 
+  // Cuts the subject out of an image overlay and makes the rest
+  // transparent — runs entirely in the browser via a small AI model
+  // (no server, matching how the rest of this app works). The model
+  // itself (~40MB) is fetched once and cached by the browser afterwards.
+  let bgRemovalModulePromise = null;
+  function loadBgRemovalModule(){
+    if(!bgRemovalModulePromise){
+      bgRemovalModulePromise = import('https://esm.sh/@imgly/background-removal@1.7.0');
+    }
+    return bgRemovalModulePromise;
+  }
+  async function removeOverlayBackground(ov, btn){
+    const originalLabel = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = 'Chargement du modèle…';
+    try{
+      const mod = await loadBgRemovalModule();
+      const removeBackground = mod.removeBackground || (mod.default && mod.default.removeBackground);
+      if(typeof removeBackground !== 'function') throw new Error('fonction removeBackground introuvable dans le module');
+      const resultBlob = await removeBackground(ov.url, {
+        progress: (key, current, total)=>{
+          btn.textContent = total ? `Traitement… ${Math.round((current/total)*100)}%` : 'Traitement…';
+        }
+      });
+      const newUrl = URL.createObjectURL(resultBlob);
+      const oldUrl = ov.url;
+      ov.url = newUrl;
+      const imgEl = overlayLayer.querySelector(`.ov-el[data-id="${ov.id}"] img`);
+      if(imgEl) imgEl.src = newUrl;
+      renderOverlayList();
+      renderOverlayElements();
+      setTimeout(()=> URL.revokeObjectURL(oldUrl), 2000); // give the old <img> a moment to stop referencing it
+    }catch(err){
+      console.error('background removal failed', err);
+      btn.disabled = false;
+      btn.textContent = 'Échec — réessaie';
+      setTimeout(()=>{ if(btn.isConnected) btn.textContent = originalLabel; }, 3000);
+    }
+  }
+
   // Shows/positions each overlay's element on the live preview, only for
   // whichever ones are active at the current global playhead position.
   function renderOverlayElements(){
@@ -1357,8 +1397,16 @@
       card.appendChild(fieldsWrap);
       const actions = document.createElement('div');
       actions.className = 'ov-actions';
-      actions.innerHTML = `<button class="ghost icon-btn danger ov-remove" title="Retirer">🗑</button>`;
+      const bgRemoveBtnHtml = ov.type === 'image'
+        ? `<button class="ghost ov-removebg" title="Isoler le sujet et rendre le fond transparent">✂️ Retirer le fond</button>`
+        : '';
+      actions.innerHTML = bgRemoveBtnHtml + `<button class="ghost icon-btn danger ov-remove" title="Retirer">🗑</button>`;
       card.appendChild(actions);
+
+      if(ov.type === 'image'){
+        const bgBtn = card.querySelector('.ov-removebg');
+        bgBtn.addEventListener('click', ()=> removeOverlayBackground(ov, bgBtn));
+      }
 
       card.querySelector('.ov-start').addEventListener('change', (e)=>{
         ov.startTime = Math.max(0, parseFloat(e.target.value) || 0);
