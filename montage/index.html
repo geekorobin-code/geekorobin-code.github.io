@@ -519,6 +519,7 @@
           <video id="previewVideo" style="display:none;" playsinline muted></video>
           <img id="previewImage" style="display:none; width:100%; height:100%; object-fit:contain; position:absolute; inset:0;" alt="">
           <div id="overlayLayer" style="position:absolute; inset:0; z-index:6; pointer-events:none;"></div>
+          <button class="ghost icon-btn" id="fullscreenBtn" title="Plein écran" style="position:absolute; right:10px; bottom:10px; z-index:11;">⛶</button>
           <div class="preview-empty" id="previewEmpty">Importe un média puis ajoute-le au montage pour voir l'aperçu ici</div>
           <div class="video-crop-handles" id="videoCropHandles" style="display:none;">
             <div class="crop-handle" data-corner="tl"></div>
@@ -1228,6 +1229,21 @@
       e.preventDefault();
       performUndo();
     }
+  });
+
+  // Fullscreen shows the whole preview area (video/image + any overlays),
+  // not just the raw <video> element, so incrustations stay visible too.
+  const fullscreenBtn = document.getElementById('fullscreenBtn');
+  fullscreenBtn.addEventListener('click', ()=>{
+    if(document.fullscreenElement){
+      document.exitFullscreen();
+    } else if(previewWrap.requestFullscreen){
+      previewWrap.requestFullscreen().catch(()=>{});
+    }
+  });
+  document.addEventListener('fullscreenchange', ()=>{
+    fullscreenBtn.textContent = document.fullscreenElement ? '⛗' : '⛶';
+    fullscreenBtn.title = document.fullscreenElement ? 'Quitter le plein écran' : 'Plein écran';
   });
 
   // Cuts the subject out of an image overlay and makes the rest
@@ -2791,19 +2807,39 @@
   }
   window.addEventListener('keydown', handleDeleteKey);
 
+  // Enter or Escape dismisses the overlay's selection box — it stays
+  // visible until you deliberately clear it, otherwise dragging/resizing
+  // handles would be too easy to lose after tiny mouse movements.
+  window.addEventListener('keydown', (e)=>{
+    if(e.key !== 'Enter' && e.key !== 'Escape') return;
+    if(!selectedOverlayId) return;
+    const tag = (e.target.tagName || '').toLowerCase();
+    if(tag === 'input' || tag === 'textarea' || tag === 'select' || e.target.isContentEditable) return;
+    selectedOverlayId = null;
+    renderOverlayList();
+    renderOverlayElements();
+  });
+
+  // Clicking anywhere on the preview that isn't an overlay itself clears
+  // the overlay selection (previewWrap's children fill its whole area, so
+  // checking the target itself would almost never match).
+  previewWrap.addEventListener('pointerdown', (e)=>{
+    if(!e.target.closest('.ov-el') && selectedOverlayId){
+      selectedOverlayId = null;
+      renderOverlayList();
+      renderOverlayElements();
+    }
+  });
+
   // ---------- Init ----------
   updatePreviewAvailability();
   renderOverlayFilmBar();
-})();
-</script>
 
-<script type="module">
   // ---------- Export (FFmpeg.wasm, single-thread core — works on GitHub
   // Pages without the cross-origin-isolation headers the multi-thread core
   // requires, which static hosting can't set). This is the least-tested
   // part of GeekoMontage — I couldn't run a real browser to verify it end
   // to end, so treat it as the first thing to check carefully.
-  const exportBtn = document.getElementById('exportBtn');
   const exportProgressWrap = document.getElementById('exportProgressWrap');
   const exportProgressFill = document.getElementById('exportProgressFill');
   const exportProgressText = document.getElementById('exportProgressText');
@@ -3088,6 +3124,7 @@
     }
     exportBtn.disabled = false;
   });
+})();
 </script>
 </body>
 </html>
