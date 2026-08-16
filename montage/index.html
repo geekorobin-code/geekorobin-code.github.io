@@ -377,7 +377,7 @@
     user-select:none; box-sizing:border-box;
   }
   .ov-el.selected{outline:2px dashed #fff;}
-  .ov-el.ov-image img{width:100%; height:100%; object-fit:contain; display:block; pointer-events:none;}
+  .ov-el.ov-image img{width:100%; height:100%; object-fit:contain; display:block;}
   .ov-el .ov-resize-handle{
     position:absolute; right:-8px; bottom:-8px; width:16px; height:16px;
     background:#fff; border-radius:3px; cursor:nwse-resize; box-shadow:0 1px 3px rgba(0,0,0,0.5);
@@ -1398,7 +1398,8 @@
       const actions = document.createElement('div');
       actions.className = 'ov-actions';
       const bgRemoveBtnHtml = ov.type === 'image'
-        ? `<button class="ghost ov-removebg" title="Isoler le sujet et rendre le fond transparent">✂️ Retirer le fond</button>`
+        ? `<button class="ghost ov-removebg" title="Isoler le sujet et rendre le fond transparent">✂️ Retirer le fond</button>` +
+          `<a class="btnlink ghost ov-download" download="incrustation.png" title="Télécharger cette image pour vérifier le résultat">⬇</a>`
         : '';
       actions.innerHTML = bgRemoveBtnHtml + `<button class="ghost icon-btn danger ov-remove" title="Retirer">🗑</button>`;
       card.appendChild(actions);
@@ -1406,6 +1407,7 @@
       if(ov.type === 'image'){
         const bgBtn = card.querySelector('.ov-removebg');
         bgBtn.addEventListener('click', ()=> removeOverlayBackground(ov, bgBtn));
+        card.querySelector('.ov-download').href = ov.url;
       }
 
       card.querySelector('.ov-start').addEventListener('change', (e)=>{
