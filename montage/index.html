@@ -708,6 +708,7 @@
     '4:3':  {w:1440, h:1080, label:'Classique 4:3'}
   };
   let canvasAspectKey = '16:9';
+  let userChoseAspect = false; // true once the person picks a format themselves — auto-detection from the first clip only applies before that
   let fitMode = 'contain'; // 'contain' = fit (letterbox), 'cover' = fill (crop)
   const previewWrap = document.querySelector('.preview-wrap');
   const previewPanel = document.querySelector('.preview-panel');
@@ -742,12 +743,28 @@
     });
     updatePreviewWrapSize();
   }
+
+  // Picks whichever preset's own ratio is closest to the source clip's —
+  // used to auto-set the format from the very first clip added, instead of
+  // always starting on 16:9 regardless of what was actually imported.
+  function bestMatchingAspectKey(w, h){
+    if(!w || !h) return null;
+    const ratio = w / h;
+    let bestKey = null, bestDiff = Infinity;
+    for(const key in ASPECT_PRESETS){
+      const p = ASPECT_PRESETS[key];
+      const diff = Math.abs((p.w/p.h) - ratio);
+      if(diff < bestDiff){ bestDiff = diff; bestKey = key; }
+    }
+    return bestKey;
+  }
   formatBtn.addEventListener('click', (e)=>{
     e.stopPropagation();
     formatMenu.style.display = formatMenu.style.display === 'none' ? 'block' : 'none';
   });
   formatMenu.querySelectorAll('.format-option').forEach(btn=>{
     btn.addEventListener('click', ()=>{
+      userChoseAspect = true;
       applyCanvasAspect(btn.dataset.key);
       formatMenu.style.display = 'none';
     });
@@ -804,12 +821,13 @@
     (kind === 'video' ? videoPool : audioPool).appendChild(el);
     const item = {
       id, file, url, kind, name: file.name.replace(/\.[^.]+$/, ''),
-      duration: 0, thumbFrames: null, _waveform: null, el
+      duration: 0, thumbFrames: null, _waveform: null, el, naturalW: 0, naturalH: 0
     };
     mediaLibrary.push(item);
     renderMediaLibrary();
     el.addEventListener('loadedmetadata', ()=>{
       item.duration = el.duration || 0;
+      if(kind === 'video'){ item.naturalW = el.videoWidth || 0; item.naturalH = el.videoHeight || 0; }
       renderMediaLibrary();
       if(kind === 'video') captureFilmstrip(item, el, renderMediaLibrary);
       else computeWaveform(item, renderMediaLibrary);
@@ -855,6 +873,7 @@
 
   const DEFAULT_IMAGE_DURATION = 3;
   function addLibraryItemToTimeline(item, insertIndex){
+    const isFirstVisualClip = videoClips.length === 0 && (item.kind === 'video' || item.kind === 'image') && !userChoseAspect;
     const id = 'c' + (clipIdCounter++);
     let el;
     if(item.kind === 'image'){
@@ -881,6 +900,22 @@
     const arr = item.kind === 'audio' ? audioClips : videoClips; // images live on the video track
     if(insertIndex === undefined || insertIndex >= arr.length) arr.push(clip);
     else arr.splice(Math.max(0, insertIndex), 0, clip);
+
+    if(isFirstVisualClip){
+      if(clip.naturalW && clip.naturalH){
+        const key = bestMatchingAspectKey(clip.naturalW, clip.naturalH);
+        if(key) applyCanvasAspect(key);
+      } else if(item.kind === 'video'){
+        // Metadata not loaded yet (dropped very soon after import) — pick
+        // it up as soon as it's available instead of silently skipping.
+        el.addEventListener('loadedmetadata', ()=>{
+          if(userChoseAspect) return; // person already changed it in the meantime
+          const key = bestMatchingAspectKey(el.videoWidth, el.videoHeight);
+          if(key) applyCanvasAspect(key);
+        }, { once: true });
+      }
+    }
+
     renderTracks();
     updatePreviewAvailability();
   }
